@@ -54,3 +54,7 @@ Para repetir uno: `python3 scripts/check_ci_regressions.py --case failed-readine
 ## Límites
 
 Esta CI verifica base técnica, contratos e inventario; no acredita autenticación de negocio, diagnósticos, inferencia, precisión ML ni despliegue. Grupo 7 conserva la aceptación global y comprobación remota. Las vulnerabilidades reportadas por un registro externo se revisan aparte: validar locks no equivale a un análisis de seguridad completo ni a ausencia de avisos.
+
+## Aceptación remota del Incremento 0
+
+[Application CI 36749372314](https://github.com/RonaldoMarquina/agrodiagnostico_V1/actions/runs/36749372314) aprobó sobre `97472b1`, incluidos controles, limpieza y artefacto. [Evidencia y fallos previos](evidence/INCREMENTO-0-GRUPO-7-REMOTO.md).

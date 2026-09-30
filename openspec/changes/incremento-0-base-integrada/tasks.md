@@ -1,6 +1,6 @@
 # Tasks — Incremento 0
 
-Los grupos 1–6 están autorizados y verificados en sus alcances documental, contractual, de persistencia, entorno técnico, inventario inicial y CI reproducida localmente. Solo se marcan tareas terminadas; 7.1, 7.2 y 7.4 verificadas; 7.3 pendiente por fallo de CI remota (ejecución 36743640034). Los IDs se refieren a los cinco deltas de `specs/`; no sustituyen RF-01…RF-28.
+Los grupos 1–7 están verificados en sus alcances documental, contractual, de persistencia, entorno técnico, inventario inicial y CI local/remota. Las 38 tareas están terminadas; Application CI aprobó la ejecución 36749372314 sobre 97472b1. Los IDs se refieren a los cinco deltas de `specs/`; no sustituyen RF-01…RF-28.
 
 ## 1. Línea base y decisiones previas
 
@@ -68,7 +68,7 @@ Depende de los comandos y pruebas de grupos 2–5, que ya deben ejecutarse local
 
 - [x] 7.1 Repetir secuencia completa desde checkout limpio con volúmenes nuevos y configuración local; verificar página, cuatro APIs saludables, migraciones, contratos, inventario y pruebas de aislamiento/persistencia, sin ejecutar negocio ni entrenamiento (ENV-01–04, CTR-01–04, MIG-01–03, DATA-01–03).
 - [x] 7.2 Guardar nueva evidencia fechada en `docs/evidence/` con revisión o hashes de trabajo sin commit, entorno, comandos, códigos de salida, versiones, duración y matriz requisito → prueba → resultado → artefacto. Verificar todos los requisitos de los deltas y dejar explícitos RF no verificados, métricas no medidas y pendientes de los incrementos 1–5; preservar la auditoría existente (CI-03).
-- [ ] 7.3 Verificar CI de aplicación en ejecución real cuando haya revisión publicada, conservando enlace o ID de ejecución; mientras solo se reproduzca localmente, registrar «workflow remoto no ejecutado» sin dar CI remota por aprobada. No publicar ni hacer push como efecto implícito de esta tarea (CI-01–03).
+- [x] 7.3 Verificar CI de aplicación en ejecución real cuando haya revisión publicada, conservando enlace o ID de ejecución; mientras solo se reproduzca localmente, registrar «workflow remoto no ejecutado» sin dar CI remota por aprobada. No publicar ni hacer push como efecto implícito de esta tarea (CI-01–03).
 - [x] 7.4 Revisar coherencia final entre contratos, ADR/C4, docs, deltas y evidencia; ejecutar validación estricta OpenSpec. Verificar que ninguna función prevista se describe como terminada y que solo se prepara sincronización/archivo después de completar pruebas y resolver pendientes de aceptación; esta propuesta no se archiva durante la planificación (CI-03).
 
-Evidencia del grupo 7: `docs/evidence/INCREMENTO-0-GRUPO-7.md`. 7.3 pendiente: Application CI falló en ejecución 36743640034 sobre b48d9cd, publicado por el usuario tras autorización explícita. Evidencia: `docs/evidence/INCREMENTO-0-GRUPO-7-REMOTO.md`. No se sincroniza ni archiva.
+Evidencia del grupo 7: `docs/evidence/INCREMENTO-0-GRUPO-7.md`. 7.3 verificada: Application CI aprobó la ejecución 36749372314 sobre 97472b1. Los fallos anteriores se conservan en `docs/evidence/INCREMENTO-0-GRUPO-7-REMOTO.md`. La sincronización y el archivo OpenSpec quedan como pasos posteriores.

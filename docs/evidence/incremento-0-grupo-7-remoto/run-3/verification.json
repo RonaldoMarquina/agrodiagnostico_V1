@@ -1,0 +1,24 @@
+{
+  "checked_utc": "2026-09-30T17:32:14.947948+00:00",
+  "run_id": 36749372314,
+  "url": "https://github.com/RonaldoMarquina/agrodiagnostico_V1/actions/runs/36749372314",
+  "commit": "97472b1279b1f6f46586b30fdcc961ff8640eeeb",
+  "event": "push",
+  "branch": "main",
+  "status": "completed",
+  "conclusion": "success",
+  "required_steps": {
+    "Prepare locked CI tools": "success",
+    "Application checks": "success",
+    "Cleanup isolated projects": "success",
+    "Upload sanitized reports": "success"
+  },
+  "artifacts": [
+    {
+      "id": 11113444774,
+      "name": "application-ci-36749372314-1",
+      "size_in_bytes": 54095,
+      "expired": false
+    }
+  ]
+}
