@@ -1,0 +1,7 @@
+{
+  "source": "application-ci-36743640034-1/agro-env-test-0eb7478c0c62.log",
+  "source_sha256": "8d8dfd446f9f04216103f9a19139858d6bd95342a34309abcb3a842bf5d4c309",
+  "observed": "F0930 16:27:33.113363 auth_credentials.go:280 fail to load config file /run/secrets/s3_config: fail to read /run/secrets/s3_config : open /run/secrets/s3_config: permission denied",
+  "diagnosis": "SeaweedFS exited 255 because mapped UID could not read file-backed Compose secret mode 0600",
+  "fix": "S3 config 0644 inside private 0700 host directory; other secrets stay 0600"
+}

@@ -6,6 +6,7 @@ import os
 import re
 from pathlib import Path
 import socket
+import stat
 import subprocess
 import tempfile
 import time
@@ -49,6 +50,12 @@ def main():
         try:
             run(['python3','scripts/prepare_local.py','--directory',str(tmp/'secrets')])
             run(['python3','scripts/prepare_local.py','--directory',str(tmp/'secrets')])
+            secret_dir = tmp/'secrets'
+            assert stat.S_IMODE(secret_dir.stat().st_mode) == 0o700
+            assert stat.S_IMODE((secret_dir/'s3_config.json').stat().st_mode) == 0o644
+            assert all(stat.S_IMODE(p.stat().st_mode) == 0o600 for p in secret_dir.iterdir()
+                       if p.name != 's3_config.json')
+            print('S3 bind secret mode and private host directory PASS', flush=True)
             for p in (tmp/'secrets').iterdir():
                 if p.name.endswith('_password') or p.name=='rabbit_cookie':secrets.append(p.read_text().strip())
                 elif p.name in ['s3_admin.json','s3_ai.json','s3_diagnosis.json']:
