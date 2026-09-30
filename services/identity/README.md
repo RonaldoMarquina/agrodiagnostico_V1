@@ -6,7 +6,7 @@ Responsabilidad prevista: usuarios, credenciales, roles, sesiones revocables, pe
 
 El grupo 3 aporta dependencias bloqueadas, contenedor de migración y revisión Alembic independiente. El grupo 4 aporta API de salud y contenedor de runtime. Las funciones de dominio corresponden al incremento 1; no están terminadas.
 
-Referencias: [arquitectura](../../docs/ARCHITECTURE.md), [inventario de interfaces](../../docs/API_CONTRACTS.md), [ADR de persistencia](../../docs/adr/0001-incremento-0-base-tecnica.md) y [tareas actuales](../../openspec/changes/incremento-0-base-integrada/tasks.md). Los comandos de persistencia se describen debajo; el servidor HTTP técnico se inicia mediante Compose según DEVELOPMENT.
+Referencias: [arquitectura](../../docs/ARCHITECTURE.md), [inventario de interfaces](../../docs/API_CONTRACTS.md), [ADR de persistencia](../../docs/adr/0001-incremento-0-base-tecnica.md) y [tareas del Incremento 0](../../openspec/changes/archive/2026-09-30-incremento-0-base-integrada/tasks.md). Los comandos de persistencia se describen debajo; el servidor HTTP técnico se inicia mediante Compose según DEVELOPMENT.
 
 
 ## Dependencias y migración base

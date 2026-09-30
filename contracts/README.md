@@ -1,6 +1,6 @@
 # Contratos iniciales V1
 
-Paquete del grupo 2, Incremento 0. Desde grupo4, ocho operaciones de salud están **implemented** y las diecinueve de negocio siguen **contract-only**. Los JSON OpenAPI 3.1.1 son la fuente de interfaz y los eventos usan JSON Schema 2020-12. No se sincronizan aún a specs vigentes ni se archiva el cambio.
+Paquete del grupo 2, Incremento 0. Desde grupo4, ocho operaciones de salud están **implemented** y las diecinueve de negocio siguen **contract-only**. Los JSON OpenAPI 3.1.1 son la fuente de interfaz y los eventos usan JSON Schema 2020-12. El delta de interfaces ya está sincronizado en `openspec/specs/initial-interface-contracts/spec.md` y el cambio se archivó.
 
 ## Verificación reproducible
 

@@ -14,4 +14,4 @@ Curación real, comprobación de bytes, revisión visual de casi duplicados, per
 
 No incorporar automáticamente imágenes ni feedback de usuarios al entrenamiento. Mantener imágenes privadas y ubicación precisa fuera de Git; el validador no acredita consentimiento. CPU es la base de reproducibilidad futura; GPU requiere validación. Plagas/Gemini/voz/PWA no forman parte del núcleo obligatorio.
 
-Referencias: [estrategia IA](../docs/AI_MODEL.md), [fuente reconciliada](../docs/reference/RECONCILIACION-V1.md), [tareas](../openspec/changes/incremento-0-base-integrada/tasks.md) y [evidencia del inventario](../docs/evidence/INCREMENTO-0-GRUPO-5.md).
+Referencias: [estrategia IA](../docs/AI_MODEL.md), [fuente reconciliada](../docs/reference/RECONCILIACION-V1.md), [tareas](../openspec/changes/archive/2026-09-30-incremento-0-base-integrada/tasks.md) y [evidencia del inventario](../docs/evidence/INCREMENTO-0-GRUPO-5.md).

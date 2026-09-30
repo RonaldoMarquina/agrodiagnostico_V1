@@ -65,11 +65,11 @@ El worker provisional **no produce diagnósticos reales**. Los comandos comproba
 | [docs/API_CONTRACTS.md](docs/API_CONTRACTS.md) | Inventario de contratos HTTP y eventos |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Flujo de propuestas, revisión y cierre |
 
-Los requisitos de comportamiento aceptados residirán en `openspec/specs/`; los cambios en curso, en `openspec/changes/`. Hasta poblar OpenSpec, la fuente V1 entregada es [Definición Base del Proyecto – AgroDiagnóstico V1](docs/reference/Definicion_Base_AgroDiagnostico_V1_Limpia.docx), identificada por revisión y hash en la [reconciliación documental](docs/reference/RECONCILIACION-V1.md). Si hay discrepancias, detener el cambio y registrar la decisión antes de actualizar especificaciones, contratos y código.
+Los requisitos vigentes del Incremento 0 están en `openspec/specs/`; los cambios nuevos se proponen en `openspec/changes/`. La fuente V1 entregada es [Definición Base del Proyecto – AgroDiagnóstico V1](docs/reference/Definicion_Base_AgroDiagnostico_V1_Limpia.docx), identificada por revisión y hash en la [reconciliación documental](docs/reference/RECONCILIACION-V1.md). Si hay discrepancias, detener el cambio y registrar la decisión antes de actualizar especificaciones, contratos y código.
 
 ## Estado documental actual
 
-Los grupos 1–7 del [Incremento 0](openspec/changes/incremento-0-base-integrada/tasks.md) están cerrados: fuente reconciliada, ADR y [contratos verificables](contracts/README.md), 38/38 tareas. Ocho operaciones de salud están implementadas y diecinueve de negocio siguen contract-only. Compose integra las cuatro APIs técnicas, página React/Nginx, PostgreSQL, RabbitMQ, Redis y S3 privado. El inventario inicial y la CI de aplicación están verificados localmente; CI remota aprobada en la ejecución 36749372314. Las funciones de usuario siguen pendientes de los incrementos 1–5. Véanse [incrementos](docs/Incrementos.md), [ADR de base](docs/adr/0001-incremento-0-base-tecnica.md), [ADR de interfaces](docs/adr/0002-interfaces-y-eventos-v1.md) y [evidencia documental](docs/evidence/INCREMENTO-0-GRUPO-1.md).
+Los grupos 1–7 del [Incremento 0](openspec/changes/archive/2026-09-30-incremento-0-base-integrada/tasks.md) están cerrados: fuente reconciliada, ADR y [contratos verificables](contracts/README.md), 38/38 tareas. Ocho operaciones de salud están implementadas y diecinueve de negocio siguen contract-only. Compose integra las cuatro APIs técnicas, página React/Nginx, PostgreSQL, RabbitMQ, Redis y S3 privado. El inventario inicial y la CI de aplicación están verificados localmente; CI remota aprobada en la ejecución 36749372314. Las funciones de usuario siguen pendientes de los incrementos 1–5. Véanse [incrementos](docs/Incrementos.md), [ADR de base](docs/adr/0001-incremento-0-base-tecnica.md), [ADR de interfaces](docs/adr/0002-interfaces-y-eventos-v1.md) y [evidencia documental](docs/evidence/INCREMENTO-0-GRUPO-1.md).
 
 La [versión legible de la fuente](docs/reference/Definicion_Base_AgroDiagnostico_V1_Limpia.md) conserva el documento de origen. Sus ejemplos, alternativas y diferencias se interpretan mediante la reconciliación; no prueban capacidades implementadas.
 
@@ -94,8 +94,8 @@ Inventario del dataset: [fuentes, cantidades, taxonomía y límites](ml/manifest
 
 CI de aplicación: [workflow y reproducción local](docs/CI.md), con `bash scripts/prepare_ci.sh` y `python3 scripts/run_ci.py`. [Evidencia del grupo 6](docs/evidence/INCREMENTO-0-GRUPO-6.md).
 
-Aceptación integrada local del grupo 7: 7.1–7.4 verificadas, incluida la CI remota. [Evidencia](docs/evidence/INCREMENTO-0-GRUPO-7.md). No se sincroniza ni archiva el cambio.
+Aceptación integrada local del grupo 7: 7.1–7.4 verificadas, incluida la CI remota. [Evidencia](docs/evidence/INCREMENTO-0-GRUPO-7.md). Los cinco deltas ya están sincronizados y el cambio se encuentra archivado.
 
 Historial de corrección: [primera ejecución fallida 36743640034](https://github.com/RonaldoMarquina/agrodiagnostico_V1/actions/runs/36743640034). [Evidencia](docs/evidence/INCREMENTO-0-GRUPO-7-REMOTO.md).
 
-Cierre de tareas del Incremento 0: [Application CI aprobada](https://github.com/RonaldoMarquina/agrodiagnostico_V1/actions/runs/36749372314) sobre `97472b1`. [Evidencia remota](docs/evidence/INCREMENTO-0-GRUPO-7-REMOTO.md). La sincronización y el archivo OpenSpec son pasos posteriores.
+Cierre de tareas del Incremento 0: [Application CI aprobada](https://github.com/RonaldoMarquina/agrodiagnostico_V1/actions/runs/36749372314) sobre `97472b1`. [Evidencia remota](docs/evidence/INCREMENTO-0-GRUPO-7-REMOTO.md). Los cinco deltas se sincronizaron y el cambio se archivó el 2026-09-30.
