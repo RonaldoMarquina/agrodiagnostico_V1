@@ -1,6 +1,6 @@
 # Tasks — Incremento 0
 
-Los grupos 1–6 están autorizados y verificados en sus alcances documental, contractual, de persistencia, entorno técnico, inventario inicial y CI reproducida localmente. Solo se marcan tareas terminadas; el grupo 7 queda pendiente y fuera de esta ejecución. Workflow remoto no ejecutado. Los IDs se refieren a los cinco deltas de `specs/`; no sustituyen RF-01…RF-28.
+Los grupos 1–6 están autorizados y verificados en sus alcances documental, contractual, de persistencia, entorno técnico, inventario inicial y CI reproducida localmente. Solo se marcan tareas terminadas; 7.1, 7.2 y 7.4 verificadas; 7.3 pendiente por fallo de CI remota (ejecución 36743640034). Los IDs se refieren a los cinco deltas de `specs/`; no sustituyen RF-01…RF-28.
 
 ## 1. Línea base y decisiones previas
 
@@ -71,4 +71,4 @@ Depende de los comandos y pruebas de grupos 2–5, que ya deben ejecutarse local
 - [ ] 7.3 Verificar CI de aplicación en ejecución real cuando haya revisión publicada, conservando enlace o ID de ejecución; mientras solo se reproduzca localmente, registrar «workflow remoto no ejecutado» sin dar CI remota por aprobada. No publicar ni hacer push como efecto implícito de esta tarea (CI-01–03).
 - [x] 7.4 Revisar coherencia final entre contratos, ADR/C4, docs, deltas y evidencia; ejecutar validación estricta OpenSpec. Verificar que ninguna función prevista se describe como terminada y que solo se prepara sincronización/archivo después de completar pruebas y resolver pendientes de aceptación; esta propuesta no se archiva durante la planificación (CI-03).
 
-Evidencia del grupo 7: `docs/evidence/INCREMENTO-0-GRUPO-7.md`. 7.3 pendiente: workflow remoto no ejecutado; remoto sin referencias publicadas. No se publica, sincroniza ni archiva como efecto de esta aceptación.
+Evidencia del grupo 7: `docs/evidence/INCREMENTO-0-GRUPO-7.md`. 7.3 pendiente: Application CI falló en ejecución 36743640034 sobre b48d9cd, publicado por el usuario tras autorización explícita. Evidencia: `docs/evidence/INCREMENTO-0-GRUPO-7-REMOTO.md`. No se sincroniza ni archiva.

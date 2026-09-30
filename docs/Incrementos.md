@@ -1,6 +1,6 @@
 # Incrementos de AgroDiagnóstico V1
 
-Estado actual: estructura y auditoría del equipo disponibles; grupos 1–6 del Incremento 0 completados (reconciliación, ADR, contratos, persistencia, entorno técnico integrado, inventario inicial y CI local). OpenSpec registra 37/38 tareas; la aplicación de negocio, la curación real de datos y la verificación remota de 7.3 siguen pendientes. Workflow remoto no ejecutado.
+Estado actual: estructura y auditoría del equipo disponibles; grupos 1–6 del Incremento 0 completados (reconciliación, ADR, contratos, persistencia, entorno técnico integrado, inventario inicial y CI local). OpenSpec registra 37/38 tareas; la aplicación de negocio, la curación real de datos y la verificación remota de 7.3 siguen pendientes. CI remota ejecutada con fallo, pendiente de corrección.
 
 | Incremento | Resultado previsto | Estado |
 | --- | --- | --- |
@@ -15,4 +15,6 @@ Gemini, voz, PWA y detector de plagas son extensiones posteriores opcionales.
 
 La [fuente V1](reference/Definicion_Base_AgroDiagnostico_V1_Limpia.docx) se interpreta junto con la [reconciliación](reference/RECONCILIACION-V1.md). Consulta [DEVELOPMENT](DEVELOPMENT.md) para el proceso y [tasks.md](../openspec/changes/incremento-0-base-integrada/tasks.md) para el avance verificable; una carpeta o contrato previsto no acredita funcionalidad.
 
-Aceptación integrada local del grupo 7: 7.1, 7.2 y 7.4 verificadas; 7.3 pendiente de ejecución remota. [Evidencia](evidence/INCREMENTO-0-GRUPO-7.md). No se sincroniza ni archiva el cambio.
+Aceptación integrada local del grupo 7: 7.1, 7.2 y 7.4 verificadas; 7.3 pendiente de corregir y repetir la ejecución remota. [Evidencia](evidence/INCREMENTO-0-GRUPO-7.md). No se sincroniza ni archiva el cambio.
+
+Estado remoto actualizado: [ejecución fallida 36743640034](https://github.com/RonaldoMarquina/agrodiagnostico_V1/actions/runs/36743640034). [Evidencia](evidence/INCREMENTO-0-GRUPO-7-REMOTO.md).

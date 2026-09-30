@@ -162,4 +162,4 @@ Los verificadores Compose conservan diagnóstico sanitizado y verifican eliminac
 
 ## Aceptación integrada — grupo 7
 
-Catorce etapas aprobadas desde checkout temporal limpio, con matriz de los 17 requisitos y hashes en `docs/evidence/INCREMENTO-0-GRUPO-7.md`. Código de aplicación sin cambios durante esta aceptación. 7.3 pendiente: workflow remoto no ejecutado, sin revisión publicada. No se sincroniza ni archiva; el cierre depende de resolver esa verificación. Los apartados por grupo conservan su estado histórico.
+Catorce etapas aprobadas desde checkout temporal limpio, con matriz de los 17 requisitos y hashes en `docs/evidence/INCREMENTO-0-GRUPO-7.md`. Código de aplicación sin cambios durante esta aceptación. 7.3 pendiente: Application CI falló en ejecución 36743640034 sobre la revisión publicada b48d9cd. No se sincroniza ni archiva; el cierre depende de resolver esa verificación. Los apartados por grupo conservan su estado histórico.

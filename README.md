@@ -69,7 +69,7 @@ Los requisitos de comportamiento aceptados residirán en `openspec/specs/`; los 
 
 ## Estado documental actual
 
-Los grupos 1–6 del [Incremento 0](openspec/changes/incremento-0-base-integrada/tasks.md) están cerrados: fuente reconciliada, ADR y [contratos verificables](contracts/README.md), 37/38 tareas. Ocho operaciones de salud están implementadas y diecinueve de negocio siguen contract-only. Compose integra las cuatro APIs técnicas, página React/Nginx, PostgreSQL, RabbitMQ, Redis y S3 privado. El inventario inicial y la CI de aplicación están verificados localmente; workflow remoto no ejecutado. Las funciones de usuario y la verificación remota de 7.3 siguen pendientes. Véanse [incrementos](docs/Incrementos.md), [ADR de base](docs/adr/0001-incremento-0-base-tecnica.md), [ADR de interfaces](docs/adr/0002-interfaces-y-eventos-v1.md) y [evidencia documental](docs/evidence/INCREMENTO-0-GRUPO-1.md).
+Los grupos 1–6 del [Incremento 0](openspec/changes/incremento-0-base-integrada/tasks.md) están cerrados: fuente reconciliada, ADR y [contratos verificables](contracts/README.md), 37/38 tareas. Ocho operaciones de salud están implementadas y diecinueve de negocio siguen contract-only. Compose integra las cuatro APIs técnicas, página React/Nginx, PostgreSQL, RabbitMQ, Redis y S3 privado. El inventario inicial y la CI de aplicación están verificados localmente; CI remota ejecutada con fallo, pendiente de corrección. Las funciones de usuario y la verificación remota de 7.3 siguen pendientes. Véanse [incrementos](docs/Incrementos.md), [ADR de base](docs/adr/0001-incremento-0-base-tecnica.md), [ADR de interfaces](docs/adr/0002-interfaces-y-eventos-v1.md) y [evidencia documental](docs/evidence/INCREMENTO-0-GRUPO-1.md).
 
 La [versión legible de la fuente](docs/reference/Definicion_Base_AgroDiagnostico_V1_Limpia.md) conserva el documento de origen. Sus ejemplos, alternativas y diferencias se interpretan mediante la reconciliación; no prueban capacidades implementadas.
 
@@ -94,4 +94,6 @@ Inventario del dataset: [fuentes, cantidades, taxonomía y límites](ml/manifest
 
 CI de aplicación: [workflow y reproducción local](docs/CI.md), con `bash scripts/prepare_ci.sh` y `python3 scripts/run_ci.py`. [Evidencia del grupo 6](docs/evidence/INCREMENTO-0-GRUPO-6.md).
 
-Aceptación integrada local del grupo 7: 7.1, 7.2 y 7.4 verificadas; 7.3 pendiente de ejecución remota. [Evidencia](docs/evidence/INCREMENTO-0-GRUPO-7.md). No se sincroniza ni archiva el cambio.
+Aceptación integrada local del grupo 7: 7.1, 7.2 y 7.4 verificadas; 7.3 pendiente de corregir y repetir la ejecución remota. [Evidencia](docs/evidence/INCREMENTO-0-GRUPO-7.md). No se sincroniza ni archiva el cambio.
+
+Estado remoto actualizado: [ejecución fallida 36743640034](https://github.com/RonaldoMarquina/agrodiagnostico_V1/actions/runs/36743640034). [Evidencia](docs/evidence/INCREMENTO-0-GRUPO-7-REMOTO.md).

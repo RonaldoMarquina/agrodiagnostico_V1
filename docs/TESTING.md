@@ -96,4 +96,6 @@ Resultado del grupo 6: catorce etapas positivas y cinco regresiones verificadas,
 
 ## Aceptación integrada — grupo 7
 
-Las 14 etapas se repitieron desde checkout temporal limpio con instalación nueva y volúmenes propios. [Procedencia, matriz y límites](evidence/INCREMENTO-0-GRUPO-7.md). Workflow remoto no ejecutado; 7.3 pendiente.
+Las 14 etapas se repitieron desde checkout temporal limpio con instalación nueva y volúmenes propios. [Procedencia, matriz y límites](evidence/INCREMENTO-0-GRUPO-7.md). CI remota ejecutada con fallo, pendiente de corrección; 7.3 pendiente.
+
+Estado remoto actualizado: [ejecución fallida 36743640034](https://github.com/RonaldoMarquina/agrodiagnostico_V1/actions/runs/36743640034). [Evidencia](evidence/INCREMENTO-0-GRUPO-7-REMOTO.md).
