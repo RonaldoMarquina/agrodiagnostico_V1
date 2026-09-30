@@ -28,3 +28,7 @@ El inicializador crea bucket privado si falta y conserva el existente. La acepta
 - APIs de negocio provisionales: descartadas; devolver éxito simulado confundiría la base técnica con producto.
 
 SeaweedFS agrega configuración propia de credenciales; sus garantías productivas y elección de proveedor se revisarán antes del despliegue público. HTTP local no satisface dominio, Cloudflare, TLS origen ni CDN. Las pruebas de broker usan una cola sintética durable y confirms, sin eventos de diagnóstico ni consumidores outbox/inbox.
+
+## Ajuste de capacidad técnica para la CI remota (2026-09-30)
+
+El primer PUT sintético del runner intentó crear siete volúmenes; el límite local `volume.max=4` dejó al servidor sin nodos con capacidad, y la prueba agotó su timeout de lectura. El perfil técnico aumenta el máximo a 16 volúmenes de 64 MiB y la espera de lectura de la prueba S3 a 15 s. Son márgenes de aceptación local/CI, no dimensionamiento de producción ni garantía de latencia. La prueba mantiene fallo acotado y verifica escritura, lectura y checksum.

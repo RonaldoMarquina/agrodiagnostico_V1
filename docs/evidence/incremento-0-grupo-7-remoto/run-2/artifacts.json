@@ -1,0 +1,25 @@
+{
+  "total_count": 1,
+  "artifacts": [
+    {
+      "id": 11113391983,
+      "node_id": "MDg6QXJ0aWZhY3QxMTExMzM5MTk4Mw==",
+      "name": "application-ci-36746988446-1",
+      "size_in_bytes": 53998,
+      "url": "https://api.github.com/repos/RonaldoMarquina/agrodiagnostico_V1/actions/artifacts/11113391983",
+      "archive_download_url": "https://api.github.com/repos/RonaldoMarquina/agrodiagnostico_V1/actions/artifacts/11113391983/zip",
+      "expired": false,
+      "digest": "sha256:3c459c89fee0139899a47b13adc89b9b5ab3a4daf3d8406199cdcd74493bb618",
+      "created_at": "2026-09-30T16:56:48Z",
+      "updated_at": "2026-09-30T16:56:48Z",
+      "expires_at": "2026-10-07T16:56:47Z",
+      "workflow_run": {
+        "id": 36746988446,
+        "repository_id": 1393976904,
+        "head_repository_id": 1393976904,
+        "head_branch": "main",
+        "head_sha": "dde4a7f8ca991da057e0188dd52d6139b500c9d3"
+      }
+    }
+  ]
+}

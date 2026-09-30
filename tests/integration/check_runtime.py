@@ -60,7 +60,7 @@ def s3(name):
     credentials = json.loads(Path('/run/secrets/s3_' + name).read_text())
     return boto3.client('s3', endpoint_url='http://s3:8333', region_name=os.environ['S3_REGION'],
                         aws_access_key_id=credentials['access_key'], aws_secret_access_key=credentials['secret_key'],
-                        config=Config(connect_timeout=3, read_timeout=5, retries={'max_attempts': 0}, s3={'addressing_style': 'path'}))
+                        config=Config(connect_timeout=3, read_timeout=15, retries={'max_attempts': 0}, s3={'addressing_style': 'path'}))
 
 
 def broker():

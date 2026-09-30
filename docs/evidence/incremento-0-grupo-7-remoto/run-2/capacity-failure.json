@@ -1,0 +1,12 @@
+{
+  "sources": {
+    "environment.log": "6a77baa0c596f196b3a62a00868f272c1aac9f27592687e05e7983f38b8a50c6",
+    "agro-env-test-68fde82151a0.log": "7e27cd0e8a53a02a3d7eda9e7a3e0f8b8fb40007e564315f57df0baa2a2bdad6"
+  },
+  "environment_observation": "botocore ReadTimeoutError on put_object of synthetic acceptance object, read timeout 5 s",
+  "s3_observation": "create 7 volume, created 4: Not enough data nodes found!",
+  "local_cap_before": 4,
+  "proposed_local_cap": 16,
+  "test_timeout_before_seconds": 5,
+  "proposed_test_timeout_seconds": 15
+}
