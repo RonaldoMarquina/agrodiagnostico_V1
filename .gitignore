@@ -1,0 +1,49 @@
+# Entorno y secretos
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+.coverage
+htmlcov/
+
+# Frontend y compilación
+node_modules/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# Archivos locales
+*.log
+.DS_Store
+.idea/
+.vscode/
+
+# Datos y modelos generados
+/ml/datasets/**
+!/ml/datasets/**/
+!/ml/datasets/**/.gitkeep
+/ml/models/**
+!/ml/models/**/
+!/ml/models/**/.gitkeep
+
+# Credenciales locales de persistencia
+.local/
+
+# Binario verificado de validación CI (regenerable)
+/tooling/ci/bin/
+
+# Evidencia técnica sanitizada que debe acompañar los informes
+!/docs/evidence/**/*.log

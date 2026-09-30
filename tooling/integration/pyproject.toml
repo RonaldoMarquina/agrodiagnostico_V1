@@ -1,0 +1,8 @@
+[project]
+name = "agro-integration-checks"
+version = "0.1.0"
+requires-python = ">=3.12,<3.13"
+dependencies = ["boto3==1.43.104", "pika==1.4.4", "httpx==0.28.1", "psycopg[binary]==3.3.6", "jsonschema[format]==4.26.0", "pyyaml==6.0.3"]
+[tool.uv]
+package = false
+required-version = "==0.12.20"

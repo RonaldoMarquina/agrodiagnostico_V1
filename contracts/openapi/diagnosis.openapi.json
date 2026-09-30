@@ -1,0 +1,2093 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "AgroDiagnóstico diagnosis",
+    "version": "1.0.0",
+    "description": "Contrato inicial: salud técnica implementada; operaciones de negocio contract-only. Sin servidores públicos inventados."
+  },
+  "paths": {
+    "/health/live": {
+      "get": {
+        "operationId": "diagnosis_live",
+        "summary": "Salud live interna",
+        "description": "Solo red interna. No expuesta por proxy. Liveness no sondea dependencias. Readiness según D2; no acredita modelo cargado en incremento 0.",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Salud técnica implementada; no acredita funcionalidad de negocio.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "const": "alive"
+                    },
+                    "service": {
+                      "const": "diagnosis"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "service"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "status": "alive",
+                  "service": "diagnosis"
+                }
+              }
+            }
+          }
+        },
+        "x-status": "implemented",
+        "x-owner": "diagnosis",
+        "x-increment": 0,
+        "x-visibility": "internal"
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "operationId": "diagnosis_ready",
+        "summary": "Salud ready interna",
+        "description": "Solo red interna. No expuesta por proxy. Liveness no sondea dependencias. Readiness según D2; no acredita modelo cargado en incremento 0.",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Salud técnica implementada; no acredita funcionalidad de negocio.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "const": "ready"
+                    },
+                    "service": {
+                      "const": "diagnosis"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "service"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "status": "ready",
+                  "service": "diagnosis"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Dependencia indispensable o migración/configuración no disponible; sin detalles sensibles.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "const": "not_ready"
+                    },
+                    "service": {
+                      "const": "diagnosis"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "service"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "status": "not_ready",
+                  "service": "diagnosis"
+                }
+              }
+            }
+          }
+        },
+        "x-status": "implemented",
+        "x-owner": "diagnosis",
+        "x-increment": 0,
+        "x-visibility": "internal"
+      }
+    },
+    "/api/v1/diagnoses": {
+      "post": {
+        "operationId": "diagnosis_create",
+        "summary": "Aceptar imagen para diagnóstico",
+        "description": "Validar bytes/decodificación antes de guardar y de publicar evento; imagen agronómicamente insuficiente se analiza y puede abstenerse. No exige cultivo. Misma clave+bytes en mismo propietario/operación durante 86400 s devuelve ID/created_at originales y estado actual; contenido distinto 409 IDEMPOTENCY_CONFLICT. Plazo desde primera aceptación, no deslizante: now >= expires_at permite nueva solicitud. Otra cuenta tiene namespace independiente. Fingerprint SHA-256 de bytes de imagen exactos (no filename, MIME declarado ni boundary); no hay otros campos semánticos admitidos. Borrado lógico durante retención: replay 409 IDEMPOTENCY_RESOURCE_DELETED, nunca resucita. Operación concurrente aún en curso:409 IDEMPOTENCY_IN_PROGRESS, reintento posterior.",
+        "security": [
+          {
+            "UserBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "11111111-1111-4111-8111-111111111111",
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9._:-]+$"
+            },
+            "example": "carga-sintetica-001"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Respuesta prevista; aún no implementada.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/DiagnosisAccepted"
+                },
+                "example": {
+                  "id": "11111111-1111-4111-8111-111111111111",
+                  "status": "PENDIENTE",
+                  "created_at": "2026-09-28T12:00:00Z"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitud inválida.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "INVALID_REQUEST",
+                  "message": "Solicitud inválida.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Autenticación requerida o inválida.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "Autenticación requerida o inválida.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "La operación entra en conflicto con el estado actual.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "examples": {
+                  "IDEMPOTENCY_CONFLICT": {
+                    "value": {
+                      "code": "IDEMPOTENCY_CONFLICT",
+                      "message": "Conflicto con la clave de idempotencia.",
+                      "correlation_id": "11111111-1111-4111-8111-111111111111"
+                    }
+                  },
+                  "IDEMPOTENCY_RESOURCE_DELETED": {
+                    "value": {
+                      "code": "IDEMPOTENCY_RESOURCE_DELETED",
+                      "message": "Conflicto con la clave de idempotencia.",
+                      "correlation_id": "11111111-1111-4111-8111-111111111111"
+                    }
+                  },
+                  "IDEMPOTENCY_IN_PROGRESS": {
+                    "value": {
+                      "code": "IDEMPOTENCY_IN_PROGRESS",
+                      "message": "Conflicto con la clave de idempotencia.",
+                      "correlation_id": "11111111-1111-4111-8111-111111111111"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "La imagen supera los límites permitidos.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "IMAGE_TOO_LARGE",
+                  "message": "La imagen supera los límites permitidos.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Formato de imagen no admitido.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "UNSUPPORTED_MEDIA_TYPE",
+                  "message": "Formato de imagen no admitido.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          }
+        },
+        "x-status": "contract-only",
+        "x-owner": "diagnosis",
+        "x-increment": 2,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "image": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Bytes de archivo, no base64; un único campo obligatorio. Máximo 10485760 bytes y 24000000 píxeles decodificados."
+                  }
+                },
+                "required": [
+                  "image"
+                ],
+                "additionalProperties": false
+              },
+              "encoding": {
+                "image": {
+                  "contentType": "image/jpeg, image/png, image/webp"
+                }
+              },
+              "example": {
+                "image": "REPRESENTACION_SINTETICA_NO_ES_UN_ARCHIVO"
+              }
+            }
+          }
+        },
+        "x-upload-policy": {
+          "max_file_bytes": 10485760,
+          "max_decoded_pixels": 24000000,
+          "supported_media_types": [
+            "image/jpeg",
+            "image/png",
+            "image/webp"
+          ],
+          "v1_pending_media_types": [
+            "image/heic",
+            "image/heif"
+          ],
+          "invalid_decode_status": 400,
+          "max_size_status": 413,
+          "unsupported_status": 415,
+          "e2e_verified": false
+        },
+        "x-idempotency": {
+          "namespace": [
+            "owner_id",
+            "operation",
+            "key"
+          ],
+          "retention_seconds": 86400,
+          "expires_when": "now >= first_accepted_at + retention_seconds",
+          "sliding": false,
+          "same_content": "same-id-current-status",
+          "different_content": 409,
+          "different_owner": "independent",
+          "expired": "new-request",
+          "deleted": 409,
+          "in_progress": 409
+        }
+      },
+      "get": {
+        "operationId": "diagnosis_list",
+        "summary": "Historial propio paginado",
+        "description": "Excluye borrado lógico. Sin filtros adicionales en v1 inicial. Cursor inválido/ajeno 400 genérico, nunca revela propietario; orden created_at DESC, id DESC.",
+        "security": [
+          {
+            "UserBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "11111111-1111-4111-8111-111111111111",
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            },
+            "example": 20
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            "example": "cursor-opaco-de-ejemplo",
+            "description": "Opaco, vinculado a propietario/filtros; inválido 400. Orden created_at DESC, id DESC; keyset, no offset."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Respuesta prevista; aún no implementada.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/DiagnosisPage"
+                },
+                "example": {
+                  "items": [
+                    {
+                      "id": "11111111-1111-4111-8111-111111111111",
+                      "status": "PENDIENTE",
+                      "created_at": "2026-09-28T12:00:00Z"
+                    }
+                  ],
+                  "next_cursor": null
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitud inválida.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "INVALID_REQUEST",
+                  "message": "Solicitud inválida.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Autenticación requerida o inválida.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "Autenticación requerida o inválida.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          }
+        },
+        "x-status": "contract-only",
+        "x-owner": "diagnosis",
+        "x-increment": 2
+      }
+    },
+    "/api/v1/diagnoses/{id}": {
+      "get": {
+        "operationId": "diagnosis_detail",
+        "summary": "Detalle propio y estado",
+        "description": "Propietario autenticado; ajeno/inexistente/borrado 404 genérico. Estado terminal inmutable. Snapshot versionado solo en COMPLETADO; no presentar score como certeza.",
+        "security": [
+          {
+            "UserBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "11111111-1111-4111-8111-111111111111",
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "11111111-1111-4111-8111-111111111111"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Respuesta prevista; aún no implementada.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/DiagnosisDetail"
+                },
+                "examples": {
+                  "PENDIENTE": {
+                    "value": {
+                      "id": "11111111-1111-4111-8111-111111111111",
+                      "status": "PENDIENTE",
+                      "created_at": "2026-09-28T12:00:00Z",
+                      "updated_at": "2026-09-28T12:00:00Z"
+                    }
+                  },
+                  "PROCESANDO": {
+                    "value": {
+                      "id": "11111111-1111-4111-8111-111111111111",
+                      "status": "PROCESANDO",
+                      "created_at": "2026-09-28T12:00:00Z",
+                      "updated_at": "2026-09-28T12:00:00Z"
+                    }
+                  },
+                  "COMPLETADO": {
+                    "value": {
+                      "id": "11111111-1111-4111-8111-111111111111",
+                      "status": "COMPLETADO",
+                      "created_at": "2026-09-28T12:00:00Z",
+                      "updated_at": "2026-09-28T12:00:00Z",
+                      "result": {
+                        "crop_code": "POTATO",
+                        "class_code": "POTATO_HEALTHY",
+                        "raw_score": 0.8,
+                        "model": {
+                          "model_id": "synthetic-test",
+                          "model_version": "fixture-1",
+                          "dataset_version": "fixture-1"
+                        },
+                        "recommendation": {
+                          "catalog_version": "fixture-1",
+                          "recommendation_id": "22222222-2222-4222-8222-222222222222",
+                          "text": "Texto sintético del catálogo; no constituye orientación clínica."
+                        }
+                      }
+                    }
+                  },
+                  "NO_CONCLUYENTE": {
+                    "value": {
+                      "id": "11111111-1111-4111-8111-111111111111",
+                      "status": "NO_CONCLUYENTE",
+                      "created_at": "2026-09-28T12:00:00Z",
+                      "updated_at": "2026-09-28T12:00:00Z",
+                      "reason_code": "LOW_CONFIDENCE"
+                    }
+                  },
+                  "FALLIDO": {
+                    "value": {
+                      "id": "11111111-1111-4111-8111-111111111111",
+                      "status": "FALLIDO",
+                      "created_at": "2026-09-28T12:00:00Z",
+                      "updated_at": "2026-09-28T12:00:00Z",
+                      "reason_code": "INFERENCE_ERROR"
+                    }
+                  },
+                  "CANCELADO": {
+                    "value": {
+                      "id": "11111111-1111-4111-8111-111111111111",
+                      "status": "CANCELADO",
+                      "created_at": "2026-09-28T12:00:00Z",
+                      "updated_at": "2026-09-28T12:00:00Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitud inválida.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "INVALID_REQUEST",
+                  "message": "Solicitud inválida.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Autenticación requerida o inválida.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "Autenticación requerida o inválida.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "NOT_FOUND",
+                  "message": "Recurso no encontrado.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          }
+        },
+        "x-status": "contract-only",
+        "x-owner": "diagnosis",
+        "x-increment": 2
+      },
+      "delete": {
+        "operationId": "diagnosis_delete",
+        "summary": "Borrar lógicamente del historial propio",
+        "description": "Primera y sucesivas eliminaciones del mismo recurso propio204; conservar tombstone para autorización. Ajeno/nunca existente404. No equivale a cancelar ni revierte terminal; trabajos admitidos pueden terminar ocultos. Retención física pendiente de política de datos.",
+        "security": [
+          {
+            "UserBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "11111111-1111-4111-8111-111111111111",
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "11111111-1111-4111-8111-111111111111"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Respuesta prevista; aún no implementada.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitud inválida.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "INVALID_REQUEST",
+                  "message": "Solicitud inválida.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Autenticación requerida o inválida.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "Autenticación requerida o inválida.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "NOT_FOUND",
+                  "message": "Recurso no encontrado.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          }
+        },
+        "x-status": "contract-only",
+        "x-owner": "diagnosis",
+        "x-increment": 2
+      }
+    },
+    "/api/v1/diagnoses/{id}/cancel": {
+      "post": {
+        "operationId": "diagnosis_cancel",
+        "summary": "Cancelar solo antes del reclamo",
+        "description": "Transición atómica PENDIENTE→CANCELADO. PROCESANDO o cualquier terminal (incluido CANCELADO)409. Ajeno/inexistente/borrado404. No emite DiagnosisFinished.",
+        "security": [
+          {
+            "UserBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "11111111-1111-4111-8111-111111111111",
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "11111111-1111-4111-8111-111111111111"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Respuesta prevista; aún no implementada.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/DiagnosisCancelled"
+                },
+                "example": {
+                  "id": "11111111-1111-4111-8111-111111111111",
+                  "status": "CANCELADO",
+                  "created_at": "2026-09-28T12:00:00Z",
+                  "updated_at": "2026-09-28T12:00:00Z"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitud inválida.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "INVALID_REQUEST",
+                  "message": "Solicitud inválida.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Autenticación requerida o inválida.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "Autenticación requerida o inválida.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "NOT_FOUND",
+                  "message": "Recurso no encontrado.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "La operación entra en conflicto con el estado actual.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "CONFLICT",
+                  "message": "La operación entra en conflicto con el estado actual.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          }
+        },
+        "x-status": "contract-only",
+        "x-owner": "diagnosis",
+        "x-increment": 2
+      }
+    },
+    "/internal/diagnoses/{id}/claim": {
+      "post": {
+        "operationId": "diagnosis_claim",
+        "summary": "Reclamar atómicamente trabajo",
+        "description": "Solo principal ai_inference; lease_owner lo deriva el servidor de identidad/instancia verificada. PENDIENTE→PROCESANDO o recuperación de PROCESANDO con lease vencido y presupuesto disponible; nuevo UUID de fencing. Vigente/terminal409. Duración configurable: expires_at es autoridad, no duración del ejemplo. CANCELADO nunca reclamable.",
+        "security": [
+          {
+            "ServiceBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "11111111-1111-4111-8111-111111111111",
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "11111111-1111-4111-8111-111111111111"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Respuesta prevista; aún no implementada.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Lease"
+                },
+                "example": {
+                  "lease_owner": "ai-worker-example",
+                  "lease_token": "22222222-2222-4222-8222-222222222222",
+                  "expires_at": "2026-09-28T12:01:00Z"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitud inválida.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "INVALID_REQUEST",
+                  "message": "Solicitud inválida.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Autenticación requerida o inválida.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "Autenticación requerida o inválida.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Operación no autorizada.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "Operación no autorizada.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "NOT_FOUND",
+                  "message": "Recurso no encontrado.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "La operación entra en conflicto con el estado actual.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "CONFLICT",
+                  "message": "La operación entra en conflicto con el estado actual.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          }
+        },
+        "x-status": "contract-only",
+        "x-owner": "diagnosis",
+        "x-increment": 3
+      }
+    },
+    "/internal/diagnoses/{id}/lease/renew": {
+      "post": {
+        "operationId": "diagnosis_renew",
+        "summary": "Renovar lease vigente",
+        "description": "Servicio AI autenticado, mismo lease_owner/token, estado PROCESANDO y now < expires_at. Expirado, distinto token/owner o terminal409 STALE_LEASE; no renueva generación obsoleta.",
+        "security": [
+          {
+            "ServiceBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "11111111-1111-4111-8111-111111111111",
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "11111111-1111-4111-8111-111111111111"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Respuesta prevista; aún no implementada.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Lease"
+                },
+                "example": {
+                  "lease_owner": "ai-worker-example",
+                  "lease_token": "22222222-2222-4222-8222-222222222222",
+                  "expires_at": "2026-09-28T12:01:00Z"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitud inválida.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "INVALID_REQUEST",
+                  "message": "Solicitud inválida.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Autenticación requerida o inválida.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "Autenticación requerida o inválida.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Operación no autorizada.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "Operación no autorizada.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "NOT_FOUND",
+                  "message": "Recurso no encontrado.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Lease no vigente.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "STALE_LEASE",
+                  "message": "Lease no vigente.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          }
+        },
+        "x-status": "contract-only",
+        "x-owner": "diagnosis",
+        "x-increment": 3,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "../schemas/common.schema.json#/$defs/LeaseRenew"
+              },
+              "example": {
+                "lease_token": "22222222-2222-4222-8222-222222222222"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/diagnoses/{id}/image": {
+      "get": {
+        "operationId": "diagnosis_own_image",
+        "summary": "Leer bytes privados autorizados",
+        "description": "Propietario autenticado; ajeno/inexistente/borrado404. Entrega bytes privados, sin URL pública o redirección firmada.",
+        "security": [
+          {
+            "UserBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "11111111-1111-4111-8111-111111111111",
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "11111111-1111-4111-8111-111111111111"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Respuesta prevista; aún no implementada.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "image/jpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                },
+                "example": "REPRESENTACION_SINTETICA_NO_ES_UN_ARCHIVO"
+              },
+              "image/png": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                },
+                "example": "REPRESENTACION_SINTETICA_NO_ES_UN_ARCHIVO"
+              },
+              "image/webp": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                },
+                "example": "REPRESENTACION_SINTETICA_NO_ES_UN_ARCHIVO"
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitud inválida.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "INVALID_REQUEST",
+                  "message": "Solicitud inválida.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Autenticación requerida o inválida.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "Autenticación requerida o inválida.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "NOT_FOUND",
+                  "message": "Recurso no encontrado.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          }
+        },
+        "x-status": "contract-only",
+        "x-owner": "diagnosis",
+        "x-increment": 2
+      }
+    },
+    "/internal/diagnoses/{id}/image": {
+      "get": {
+        "operationId": "diagnosis_internal_image",
+        "summary": "Leer bytes privados autorizados",
+        "description": "Identidad AI más owner/token vigente y PROCESANDO; lease obsoleto409, credencial de usuario403. Lease no es bearer. Sin URL pública o redirección firmada.",
+        "security": [
+          {
+            "ServiceBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "11111111-1111-4111-8111-111111111111",
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
+          },
+          {
+            "name": "X-Lease-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "22222222-2222-4222-8222-222222222222"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "11111111-1111-4111-8111-111111111111"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Respuesta prevista; aún no implementada.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "image/jpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                },
+                "example": "REPRESENTACION_SINTETICA_NO_ES_UN_ARCHIVO"
+              },
+              "image/png": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                },
+                "example": "REPRESENTACION_SINTETICA_NO_ES_UN_ARCHIVO"
+              },
+              "image/webp": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                },
+                "example": "REPRESENTACION_SINTETICA_NO_ES_UN_ARCHIVO"
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitud inválida.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "INVALID_REQUEST",
+                  "message": "Solicitud inválida.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Autenticación requerida o inválida.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "Autenticación requerida o inválida.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Operación no autorizada.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "Operación no autorizada.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "NOT_FOUND",
+                  "message": "Recurso no encontrado.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Lease no vigente.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "STALE_LEASE",
+                  "message": "Lease no vigente.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          }
+        },
+        "x-status": "contract-only",
+        "x-owner": "diagnosis",
+        "x-increment": 3
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "UserBearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Firma, issuer, audience, expiry, revocación/estado de cuenta. Solo identidad de usuario."
+      },
+      "ServiceBearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Identidad ai_inference; audience interna dedicada. Bearer de usuario no autoriza. Algoritmo/configuración en ADR de seguridad antes de incremento 1/3."
+      },
+      "RefreshCookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "__Secure-agro_refresh",
+        "description": "Cookie HttpOnly; Secure; SameSite=Lax; Path=/api/v1/auth; sin Domain. Rotación y revocación."
+      },
+      "CsrfHeader": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-CSRF-Token",
+        "description": "Debe coincidir con token ligado a sesión; además verificar Origin permitido."
+      }
+    }
+  }
+}

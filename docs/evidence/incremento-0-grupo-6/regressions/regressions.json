@@ -1,0 +1,68 @@
+[
+  {
+    "case": "invalid-event",
+    "global_exit": 1,
+    "stage": {
+      "id": "contracts",
+      "exit_code": 1,
+      "duration_seconds": 12.813
+    },
+    "cleanup_verified": true,
+    "mutated_original_sha256": {
+      "tests/contracts/fixtures/schema-cases.json": "e9a2452c370c5036976d6a4a979d68b2b4a1232c305ee6c546f7633c40bf8937"
+    }
+  },
+  {
+    "case": "broken-http-reference",
+    "global_exit": 1,
+    "stage": {
+      "id": "contracts",
+      "exit_code": 1,
+      "duration_seconds": 8.538
+    },
+    "cleanup_verified": true,
+    "mutated_original_sha256": {
+      "contracts/openapi/identity.openapi.json": "986a6ddec706f810fc6cc7a35653216c3e60946c5a99a5893909fc1b03078c33"
+    }
+  },
+  {
+    "case": "failed-migration",
+    "global_exit": 1,
+    "stage": {
+      "id": "persistence",
+      "exit_code": 1,
+      "duration_seconds": 11.616
+    },
+    "cleanup_verified": true,
+    "mutated_original_sha256": {
+      "services/identity/migrations/versions/0001_base.py": "f749539924505c1bcbb694096865620381f283122de863b41d81df8fc725b0bb"
+    }
+  },
+  {
+    "case": "failed-readiness",
+    "global_exit": 1,
+    "stage": {
+      "id": "environment",
+      "exit_code": 1,
+      "duration_seconds": 146.182
+    },
+    "cleanup_verified": true,
+    "mutated_original_sha256": {
+      "docker-compose.yml": "cba359c3a6980327b1ee9a57e1f09f876a0729365de7c8fc9bc8e7943d51db54"
+    }
+  },
+  {
+    "case": "timeout",
+    "global_exit": 1,
+    "stage": {
+      "id": "environment",
+      "exit_code": 124,
+      "duration_seconds": 56.577
+    },
+    "cleanup_verified": true,
+    "mutated_original_sha256": {
+      "docker-compose.yml": "cba359c3a6980327b1ee9a57e1f09f876a0729365de7c8fc9bc8e7943d51db54",
+      "tooling/ci/plan.json": "97729d40fa7cef3c7804a397e6b5cacf71da8c508022d1cb361c4448f9ae9bd6"
+    }
+  }
+]

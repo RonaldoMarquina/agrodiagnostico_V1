@@ -1,0 +1,11 @@
+npm notice run agrodiagnostico-frontend@0.1.0 test
+npm notice run vitest run
+
+ RUN  v5.0.2 /home/ronaldo/Documentos/agrodiagnostico_V1/frontend
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  00:14:21
+   Duration  688ms (environment 68%, tests 16%, import 12%, transform 4%, worker 1%)
+

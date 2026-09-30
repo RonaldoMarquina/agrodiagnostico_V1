@@ -1,0 +1,245 @@
+[
+  {
+    "service": "identity",
+    "method": "GET",
+    "path": "/health/live",
+    "operation_id": "identity_live",
+    "status": "implemented",
+    "increment": 0,
+    "authorization": "internal-network"
+  },
+  {
+    "service": "identity",
+    "method": "GET",
+    "path": "/health/ready",
+    "operation_id": "identity_ready",
+    "status": "implemented",
+    "increment": 0,
+    "authorization": "internal-network"
+  },
+  {
+    "service": "diagnosis",
+    "method": "GET",
+    "path": "/health/live",
+    "operation_id": "diagnosis_live",
+    "status": "implemented",
+    "increment": 0,
+    "authorization": "internal-network"
+  },
+  {
+    "service": "diagnosis",
+    "method": "GET",
+    "path": "/health/ready",
+    "operation_id": "diagnosis_ready",
+    "status": "implemented",
+    "increment": 0,
+    "authorization": "internal-network"
+  },
+  {
+    "service": "ai_inference",
+    "method": "GET",
+    "path": "/health/live",
+    "operation_id": "ai_inference_live",
+    "status": "implemented",
+    "increment": 0,
+    "authorization": "internal-network"
+  },
+  {
+    "service": "ai_inference",
+    "method": "GET",
+    "path": "/health/ready",
+    "operation_id": "ai_inference_ready",
+    "status": "implemented",
+    "increment": 0,
+    "authorization": "internal-network"
+  },
+  {
+    "service": "notification",
+    "method": "GET",
+    "path": "/health/live",
+    "operation_id": "notification_live",
+    "status": "implemented",
+    "increment": 0,
+    "authorization": "internal-network"
+  },
+  {
+    "service": "notification",
+    "method": "GET",
+    "path": "/health/ready",
+    "operation_id": "notification_ready",
+    "status": "implemented",
+    "increment": 0,
+    "authorization": "internal-network"
+  },
+  {
+    "service": "identity",
+    "method": "POST",
+    "path": "/api/v1/auth/register",
+    "operation_id": "identity_register",
+    "status": "contract-only",
+    "increment": 1,
+    "authorization": "public"
+  },
+  {
+    "service": "identity",
+    "method": "POST",
+    "path": "/api/v1/auth/login",
+    "operation_id": "identity_login",
+    "status": "contract-only",
+    "increment": 1,
+    "authorization": "public"
+  },
+  {
+    "service": "identity",
+    "method": "POST",
+    "path": "/api/v1/auth/refresh",
+    "operation_id": "identity_refresh",
+    "status": "contract-only",
+    "increment": 1,
+    "authorization": "cookie"
+  },
+  {
+    "service": "identity",
+    "method": "POST",
+    "path": "/api/v1/auth/logout",
+    "operation_id": "identity_logout",
+    "status": "contract-only",
+    "increment": 1,
+    "authorization": "cookie"
+  },
+  {
+    "service": "identity",
+    "method": "GET",
+    "path": "/api/v1/profile",
+    "operation_id": "identity_get_profile",
+    "status": "contract-only",
+    "increment": 1,
+    "authorization": "user"
+  },
+  {
+    "service": "identity",
+    "method": "PATCH",
+    "path": "/api/v1/profile",
+    "operation_id": "identity_patch_profile",
+    "status": "contract-only",
+    "increment": 1,
+    "authorization": "user"
+  },
+  {
+    "service": "identity",
+    "method": "POST",
+    "path": "/api/v1/auth/password-recovery",
+    "operation_id": "identity_start_recovery",
+    "status": "contract-only",
+    "increment": 1,
+    "authorization": "public"
+  },
+  {
+    "service": "diagnosis",
+    "method": "POST",
+    "path": "/api/v1/diagnoses",
+    "operation_id": "diagnosis_create",
+    "status": "contract-only",
+    "increment": 2,
+    "authorization": "user"
+  },
+  {
+    "service": "diagnosis",
+    "method": "GET",
+    "path": "/api/v1/diagnoses",
+    "operation_id": "diagnosis_list",
+    "status": "contract-only",
+    "increment": 2,
+    "authorization": "user"
+  },
+  {
+    "service": "diagnosis",
+    "method": "GET",
+    "path": "/api/v1/diagnoses/{id}",
+    "operation_id": "diagnosis_detail",
+    "status": "contract-only",
+    "increment": 2,
+    "authorization": "user"
+  },
+  {
+    "service": "diagnosis",
+    "method": "POST",
+    "path": "/api/v1/diagnoses/{id}/cancel",
+    "operation_id": "diagnosis_cancel",
+    "status": "contract-only",
+    "increment": 2,
+    "authorization": "user"
+  },
+  {
+    "service": "diagnosis",
+    "method": "DELETE",
+    "path": "/api/v1/diagnoses/{id}",
+    "operation_id": "diagnosis_delete",
+    "status": "contract-only",
+    "increment": 2,
+    "authorization": "user"
+  },
+  {
+    "service": "diagnosis",
+    "method": "POST",
+    "path": "/internal/diagnoses/{id}/claim",
+    "operation_id": "diagnosis_claim",
+    "status": "contract-only",
+    "increment": 3,
+    "authorization": "service"
+  },
+  {
+    "service": "diagnosis",
+    "method": "POST",
+    "path": "/internal/diagnoses/{id}/lease/renew",
+    "operation_id": "diagnosis_renew",
+    "status": "contract-only",
+    "increment": 3,
+    "authorization": "service"
+  },
+  {
+    "service": "diagnosis",
+    "method": "GET",
+    "path": "/api/v1/diagnoses/{id}/image",
+    "operation_id": "diagnosis_own_image",
+    "status": "contract-only",
+    "increment": 2,
+    "authorization": "user"
+  },
+  {
+    "service": "diagnosis",
+    "method": "GET",
+    "path": "/internal/diagnoses/{id}/image",
+    "operation_id": "diagnosis_internal_image",
+    "status": "contract-only",
+    "increment": 3,
+    "authorization": "service"
+  },
+  {
+    "service": "notification",
+    "method": "GET",
+    "path": "/api/v1/notifications",
+    "operation_id": "notification_list",
+    "status": "contract-only",
+    "increment": 5,
+    "authorization": "user"
+  },
+  {
+    "service": "notification",
+    "method": "GET",
+    "path": "/api/v1/notification-preferences",
+    "operation_id": "notification_get_preferences",
+    "status": "contract-only",
+    "increment": 5,
+    "authorization": "user"
+  },
+  {
+    "service": "notification",
+    "method": "PATCH",
+    "path": "/api/v1/notification-preferences",
+    "operation_id": "notification_patch_preferences",
+    "status": "contract-only",
+    "increment": 5,
+    "authorization": "user"
+  }
+]

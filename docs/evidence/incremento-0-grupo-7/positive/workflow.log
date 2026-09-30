@@ -1,0 +1,1 @@
+PASS workflow: immutable actions, required stages, least permissions, always cleanup/artifacts

@@ -1,0 +1,135 @@
+Using CPython 3.12.3 interpreter at: /usr/bin/python3.12
+Creating virtual environment at: /tmp/agro-service-locks.i7RYbxw2/identity
+Resolved 21 packages in 0.71ms
+Installed 19 packages in 7ms
+ + alembic==1.20.0
+ + annotated-doc==0.0.5
+ + annotated-types==0.8.0
+ + anyio==4.15.1
+ + click==8.5.0
+ + fastapi==0.141.1
+ + h11==0.16.0
+ + idna==3.20
+ + mako==1.4.3
+ + markupsafe==3.0.3
+ + psycopg==3.3.6
+ + psycopg-binary==3.3.6
+ + pydantic==2.13.5
+ + pydantic-core==2.46.5
+ + sqlalchemy==2.1.1
+ + starlette==1.7.0
+ + typing-extensions==4.16.0
+ + typing-inspection==0.4.4
+ + uvicorn==0.54.0
+imports_ok
+test_missing_database_configuration_fails_closed (__main__.HealthTests.test_missing_database_configuration_fails_closed) ... ok
+test_openapi_contains_only_technical_operations (__main__.HealthTests.test_openapi_contains_only_technical_operations) ... ok
+test_readiness_dependency_failure_and_recovery (__main__.HealthTests.test_readiness_dependency_failure_and_recovery) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.006s
+
+OK
+Using CPython 3.12.3 interpreter at: /usr/bin/python3.12
+Creating virtual environment at: /tmp/agro-service-locks.i7RYbxw2/diagnosis
+Resolved 28 packages in 0.72ms
+Installed 26 packages in 51ms
+ + alembic==1.20.0
+ + annotated-doc==0.0.5
+ + annotated-types==0.8.0
+ + anyio==4.15.1
+ + boto3==1.43.104
+ + botocore==1.43.104
+ + click==8.5.0
+ + fastapi==0.141.1
+ + h11==0.16.0
+ + idna==3.20
+ + jmespath==1.1.0
+ + mako==1.4.3
+ + markupsafe==3.0.3
+ + psycopg==3.3.6
+ + psycopg-binary==3.3.6
+ + pydantic==2.13.5
+ + pydantic-core==2.46.5
+ + python-dateutil==2.9.0.post0
+ + s3transfer==0.19.2
+ + six==1.17.0
+ + sqlalchemy==2.1.1
+ + starlette==1.7.0
+ + typing-extensions==4.16.0
+ + typing-inspection==0.4.4
+ + urllib3==2.8.0
+ + uvicorn==0.54.0
+imports_ok
+test_missing_database_configuration_fails_closed (__main__.HealthTests.test_missing_database_configuration_fails_closed) ... ok
+test_openapi_contains_only_technical_operations (__main__.HealthTests.test_openapi_contains_only_technical_operations) ... ok
+test_readiness_dependency_failure_and_recovery (__main__.HealthTests.test_readiness_dependency_failure_and_recovery) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.006s
+
+OK
+Using CPython 3.12.3 interpreter at: /usr/bin/python3.12
+Creating virtual environment at: /tmp/agro-service-locks.i7RYbxw2/ai_inference
+Resolved 21 packages in 0.71ms
+Installed 19 packages in 6ms
+ + alembic==1.20.0
+ + annotated-doc==0.0.5
+ + annotated-types==0.8.0
+ + anyio==4.15.1
+ + click==8.5.0
+ + fastapi==0.141.1
+ + h11==0.16.0
+ + idna==3.20
+ + mako==1.4.3
+ + markupsafe==3.0.3
+ + psycopg==3.3.6
+ + psycopg-binary==3.3.6
+ + pydantic==2.13.5
+ + pydantic-core==2.46.5
+ + sqlalchemy==2.1.1
+ + starlette==1.7.0
+ + typing-extensions==4.16.0
+ + typing-inspection==0.4.4
+ + uvicorn==0.54.0
+imports_ok
+test_missing_database_configuration_fails_closed (__main__.HealthTests.test_missing_database_configuration_fails_closed) ... ok
+test_openapi_contains_only_technical_operations (__main__.HealthTests.test_openapi_contains_only_technical_operations) ... ok
+test_readiness_dependency_failure_and_recovery (__main__.HealthTests.test_readiness_dependency_failure_and_recovery) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.006s
+
+OK
+Using CPython 3.12.3 interpreter at: /usr/bin/python3.12
+Creating virtual environment at: /tmp/agro-service-locks.i7RYbxw2/notification
+Resolved 21 packages in 0.72ms
+Installed 19 packages in 7ms
+ + alembic==1.20.0
+ + annotated-doc==0.0.5
+ + annotated-types==0.8.0
+ + anyio==4.15.1
+ + click==8.5.0
+ + fastapi==0.141.1
+ + h11==0.16.0
+ + idna==3.20
+ + mako==1.4.3
+ + markupsafe==3.0.3
+ + psycopg==3.3.6
+ + psycopg-binary==3.3.6
+ + pydantic==2.13.5
+ + pydantic-core==2.46.5
+ + sqlalchemy==2.1.1
+ + starlette==1.7.0
+ + typing-extensions==4.16.0
+ + typing-inspection==0.4.4
+ + uvicorn==0.54.0
+imports_ok
+test_missing_database_configuration_fails_closed (__main__.HealthTests.test_missing_database_configuration_fails_closed) ... ok
+test_openapi_contains_only_technical_operations (__main__.HealthTests.test_openapi_contains_only_technical_operations) ... ok
+test_readiness_dependency_failure_and_recovery (__main__.HealthTests.test_readiness_dependency_failure_and_recovery) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.006s
+
+OK

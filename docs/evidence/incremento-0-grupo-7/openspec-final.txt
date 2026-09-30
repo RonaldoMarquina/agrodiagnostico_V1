@@ -1,0 +1,15 @@
+✓ change/incremento-0-base-integrada
+Totals: 1 passed, 0 failed (1 items)
+- Loading change status...
+Change: incremento-0-base-integrada
+Schema: spec-driven
+Change root: /home/ronaldo/Documentos/agrodiagnostico_V1/openspec/changes/incremento-0-base-integrada
+Progress: 4/4 artifacts complete
+
+[x] proposal
+[x] specs
+[x] design
+[x] tasks
+
+All planning artifacts complete!
+Next: openspec instructions apply --change "incremento-0-base-integrada" --json

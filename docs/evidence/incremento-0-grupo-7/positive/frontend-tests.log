@@ -1,0 +1,11 @@
+npm notice run agrodiagnostico-frontend@0.1.0 test
+npm notice run vitest run
+
+ RUN  v5.0.2 /tmp/agro-acceptance-vn_aqk8w/checkout/frontend
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  11:07:07
+   Duration  683ms (environment 67%, tests 17%, import 11%, transform 4%, worker 1%)
+

@@ -1,0 +1,1076 @@
+Local persistence secrets prepared; existing values preserved.
+Local configuration prepared; no secret values printed.
+
+Local persistence secrets prepared; existing values preserved.
+Local configuration prepared; no secret values printed.
+
+
+Sending build context to Docker daemon  524.4kB
+Sending build context to Docker daemon  524.4kB
+Sending build context to Docker daemon  524.4kB
+Sending build context to Docker daemon  689.1kB
+
+Sending build context to Docker daemon  689.1kB
+
+Sending build context to Docker daemon  689.1kB
+
+Step 1/12 : FROM python:3.12-slim-bookworm@sha256:392307d22300de8b5986851a12d9176dfc0fc073e65bf6523ebd7dcbeb23564e
+Step 1/15 : FROM python:3.12-slim-bookworm@sha256:392307d22300de8b5986851a12d9176dfc0fc073e65bf6523ebd7dcbeb23564e
+Step 1/12 : FROM python:3.12-slim-bookworm@sha256:392307d22300de8b5986851a12d9176dfc0fc073e65bf6523ebd7dcbeb23564e
+ ---> 392307d22300
+Step 2/12 : COPY tooling/uv.requirements.txt /tmp/uv.requirements.txt
+ ---> 392307d22300
+Step 2/15 : ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 UV_PYTHON_DOWNLOADS=never
+ ---> 392307d22300
+Step 2/12 : COPY tooling/uv.requirements.txt /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> eaff775adc18
+Step 3/12 : RUN python -m pip install --no-cache-dir --require-hashes -r /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> 936ae41f86c8
+Step 3/15 : COPY tooling/uv.requirements.txt /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> eaff775adc18
+Step 3/12 : RUN python -m pip install --no-cache-dir --require-hashes -r /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> 993728a21004
+Step 4/12 : WORKDIR /checks
+ ---> Using cache
+ ---> c582f2708ce8
+Step 4/15 : RUN python -m pip install --no-cache-dir --require-hashes -r /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> 993728a21004
+Step 4/12 : WORKDIR /checks
+ ---> Using cache
+ ---> c9dc341f29d4
+Step 5/12 : COPY tooling/integration/pyproject.toml tooling/integration/uv.lock ./
+ ---> Using cache
+ ---> a8ed5322db04
+Step 5/15 : ARG SERVICE
+ ---> Using cache
+ ---> c9dc341f29d4
+Step 5/12 : COPY tooling/integration/pyproject.toml tooling/integration/uv.lock ./
+ ---> Using cache
+ ---> eaffe54cd2e1
+Step 6/12 : RUN uv sync --locked --no-dev --no-install-project
+ ---> Using cache
+ ---> eaffe54cd2e1
+Step 6/12 : RUN uv sync --locked --no-dev --no-install-project
+ ---> Using cache
+ ---> 459991a36a33
+Step 6/15 : WORKDIR /service
+ ---> Using cache
+ ---> 66bf8e1a3910
+Step 7/12 : ENV PATH="/checks/.venv/bin:$PATH" PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+ ---> Using cache
+ ---> 66bf8e1a3910
+Step 7/12 : ENV PATH="/checks/.venv/bin:$PATH" PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+ ---> Using cache
+ ---> 4248873fba2e
+Step 7/15 : COPY services/${SERVICE}/pyproject.toml services/${SERVICE}/uv.lock ./
+ ---> Using cache
+ ---> 3c335907e129
+Step 8/12 : COPY infra/s3/bootstrap.py /bootstrap.py
+ ---> Using cache
+ ---> 3c335907e129
+Step 8/12 : COPY infra/s3/bootstrap.py /bootstrap.py
+ ---> Using cache
+ ---> 3b5159e4eed2
+Step 9/12 : COPY tests/integration /checks/tests
+ ---> Using cache
+ ---> 3b5159e4eed2
+Step 9/12 : COPY tests/integration /checks/tests
+ ---> Using cache
+ ---> c408c8531fb4
+Step 10/12 : COPY contracts /checks/contracts
+ ---> Using cache
+ ---> c408c8531fb4
+Step 10/12 : COPY contracts /checks/contracts
+ ---> Using cache
+ ---> 122d287763c6
+Step 11/12 : CMD ["python", "/bootstrap.py"]
+ ---> Using cache
+ ---> d824f62f23c2
+Step 8/15 : RUN uv sync --locked --no-dev --no-install-project
+ ---> Using cache
+ ---> 122d287763c6
+Step 11/12 : CMD ["python", "/bootstrap.py"]
+ ---> Using cache
+ ---> 482e3c662492
+Step 12/12 : LABEL com.docker.compose.image.builder=classic
+ ---> Using cache
+ ---> 6e130c1fcbb0
+Step 9/15 : COPY services/${SERVICE}/app ./app
+ ---> Using cache
+ ---> 482e3c662492
+Step 12/12 : LABEL com.docker.compose.image.builder=classic
+ ---> Using cache
+ ---> eef146169e89
+Step 10/15 : COPY services/${SERVICE}/alembic.ini ./
+ ---> Using cache
+ ---> 6885fe9cb67e
+Step 11/15 : COPY services/${SERVICE}/migrations ./migrations
+ ---> Using cache
+ ---> 95c7aba758a9
+Step 12/15 : ENV PATH="/service/.venv/bin:$PATH"
+ ---> Using cache
+ ---> b9b5129581c5
+Step 13/15 : USER 10001:10001
+ ---> Using cache
+ ---> 17489cc181c3
+Step 14/15 : CMD ["python", "-m", "app.migrate", "upgrade", "head"]
+ ---> Running in ee920b2fabba
+ ---> Running in 7a6347c779dc
+ ---> Using cache
+ ---> bd0efc678ed7
+Step 15/15 : LABEL com.docker.compose.image.builder=classic
+ ---> Running in 9af0072664e2
+ ---> Removed intermediate container 9af0072664e2
+ ---> 08a1612ded2c
+Successfully built 08a1612ded2c
+Successfully tagged agro-env-test-c7602e1c60ab-db-bootstrap:latest
+Sending build context to Docker daemon  524.4kB
+Sending build context to Docker daemon  524.4kB
+Sending build context to Docker daemon  524.4kB
+Sending build context to Docker daemon  524.4kB
+Sending build context to Docker daemon  689.1kB
+
+Sending build context to Docker daemon  689.1kB
+
+Sending build context to Docker daemon  689.1kB
+
+Sending build context to Docker daemon  689.1kB
+
+Step 1/15 : FROM python:3.12-slim-bookworm@sha256:392307d22300de8b5986851a12d9176dfc0fc073e65bf6523ebd7dcbeb23564e
+Step 1/15 : FROM python:3.12-slim-bookworm@sha256:392307d22300de8b5986851a12d9176dfc0fc073e65bf6523ebd7dcbeb23564e
+Step 1/15 : FROM python:3.12-slim-bookworm@sha256:392307d22300de8b5986851a12d9176dfc0fc073e65bf6523ebd7dcbeb23564e
+Step 1/15 : FROM python:3.12-slim-bookworm@sha256:392307d22300de8b5986851a12d9176dfc0fc073e65bf6523ebd7dcbeb23564e
+ ---> 392307d22300
+Step 2/15 : ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 UV_PYTHON_DOWNLOADS=never
+ ---> 392307d22300
+Step 2/15 : ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 UV_PYTHON_DOWNLOADS=never
+ ---> 392307d22300
+Step 2/15 : ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 UV_PYTHON_DOWNLOADS=never
+ ---> 392307d22300
+Step 2/15 : ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 UV_PYTHON_DOWNLOADS=never
+ ---> Using cache
+ ---> 936ae41f86c8
+Step 3/15 : COPY tooling/uv.requirements.txt /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> 936ae41f86c8
+Step 3/15 : COPY tooling/uv.requirements.txt /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> 936ae41f86c8
+Step 3/15 : COPY tooling/uv.requirements.txt /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> 936ae41f86c8
+Step 3/15 : COPY tooling/uv.requirements.txt /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> c582f2708ce8
+Step 4/15 : RUN python -m pip install --no-cache-dir --require-hashes -r /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> c582f2708ce8
+Step 4/15 : RUN python -m pip install --no-cache-dir --require-hashes -r /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> c582f2708ce8
+Step 4/15 : RUN python -m pip install --no-cache-dir --require-hashes -r /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> c582f2708ce8
+Step 4/15 : RUN python -m pip install --no-cache-dir --require-hashes -r /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> a8ed5322db04
+Step 5/15 : ARG SERVICE
+ ---> Using cache
+ ---> a8ed5322db04
+Step 5/15 : ARG SERVICE
+ ---> Using cache
+ ---> a8ed5322db04
+Step 5/15 : ARG SERVICE
+ ---> Using cache
+ ---> a8ed5322db04
+Step 5/15 : ARG SERVICE
+ ---> Using cache
+ ---> 459991a36a33
+Step 6/15 : WORKDIR /service
+ ---> Using cache
+ ---> 459991a36a33
+Step 6/15 : WORKDIR /service
+ ---> Using cache
+ ---> 459991a36a33
+Step 6/15 : WORKDIR /service
+ ---> Using cache
+ ---> 459991a36a33
+Step 6/15 : WORKDIR /service
+ ---> Using cache
+ ---> 4248873fba2e
+Step 7/15 : COPY services/${SERVICE}/pyproject.toml services/${SERVICE}/uv.lock ./
+ ---> Using cache
+ ---> 4248873fba2e
+Step 7/15 : COPY services/${SERVICE}/pyproject.toml services/${SERVICE}/uv.lock ./
+ ---> Using cache
+ ---> 4248873fba2e
+Step 7/15 : COPY services/${SERVICE}/pyproject.toml services/${SERVICE}/uv.lock ./
+ ---> Using cache
+ ---> 4248873fba2e
+Step 7/15 : COPY services/${SERVICE}/pyproject.toml services/${SERVICE}/uv.lock ./
+ ---> Using cache
+ ---> e600c6763837
+Step 8/15 : RUN uv sync --locked --no-dev --no-install-project
+ ---> Using cache
+ ---> 4af45150f9c5
+Step 8/15 : RUN uv sync --locked --no-dev --no-install-project
+ ---> Using cache
+ ---> b9d5a69f0dd5
+Step 8/15 : RUN uv sync --locked --no-dev --no-install-project
+ ---> Using cache
+ ---> d824f62f23c2
+Step 8/15 : RUN uv sync --locked --no-dev --no-install-project
+ ---> Using cache
+ ---> 552541d18406
+Step 9/15 : COPY services/${SERVICE}/app ./app
+ ---> Using cache
+ ---> f68f48bf83b4
+Step 9/15 : COPY services/${SERVICE}/app ./app
+ ---> Using cache
+ ---> 400ff290642b
+Step 9/15 : COPY services/${SERVICE}/app ./app
+ ---> Using cache
+ ---> 6e130c1fcbb0
+Step 9/15 : COPY services/${SERVICE}/app ./app
+ ---> Using cache
+ ---> 07cf7f6815cc
+Step 10/15 : COPY services/${SERVICE}/alembic.ini ./
+ ---> Using cache
+ ---> f091d5bcd9fd
+Step 10/15 : COPY services/${SERVICE}/alembic.ini ./
+ ---> Using cache
+ ---> ac75c088aceb
+Step 10/15 : COPY services/${SERVICE}/alembic.ini ./
+ ---> Using cache
+ ---> eef146169e89
+Step 10/15 : COPY services/${SERVICE}/alembic.ini ./
+ ---> Using cache
+ ---> 80a9c631cca3
+Step 11/15 : COPY services/${SERVICE}/migrations ./migrations
+ ---> Using cache
+ ---> b97c9d7db2c0
+Step 11/15 : COPY services/${SERVICE}/migrations ./migrations
+ ---> Using cache
+ ---> 22896b4372fc
+Step 11/15 : COPY services/${SERVICE}/migrations ./migrations
+ ---> Using cache
+ ---> 6885fe9cb67e
+Step 11/15 : COPY services/${SERVICE}/migrations ./migrations
+ ---> Using cache
+ ---> 9bba36e7f6e5
+Step 12/15 : ENV PATH="/service/.venv/bin:$PATH"
+ ---> Using cache
+ ---> 924f91819871
+Step 12/15 : ENV PATH="/service/.venv/bin:$PATH"
+ ---> Using cache
+ ---> 253b8ddc190d
+Step 12/15 : ENV PATH="/service/.venv/bin:$PATH"
+ ---> Using cache
+ ---> e106e7eff731
+Step 13/15 : USER 10001:10001
+ ---> Using cache
+ ---> 35df58d85e99
+Step 13/15 : USER 10001:10001
+ ---> Using cache
+ ---> a01d9ade39d1
+Step 13/15 : USER 10001:10001
+ ---> Using cache
+ ---> 95c7aba758a9
+Step 12/15 : ENV PATH="/service/.venv/bin:$PATH"
+ ---> Using cache
+ ---> dfd87ad1e4ef
+Step 14/15 : CMD ["python", "-m", "app.migrate", "upgrade", "head"]
+ ---> Using cache
+ ---> 940a65497686
+Step 14/15 : CMD ["python", "-m", "app.migrate", "upgrade", "head"]
+ ---> Using cache
+ ---> e5c5c9da4a13
+Step 14/15 : CMD ["python", "-m", "app.migrate", "upgrade", "head"]
+ ---> Using cache
+ ---> b9b5129581c5
+Step 13/15 : USER 10001:10001
+ ---> Using cache
+ ---> 04ade1875f6f
+Step 15/15 : LABEL com.docker.compose.image.builder=classic
+ ---> Using cache
+ ---> 9e14aef743e7
+Step 15/15 : LABEL com.docker.compose.image.builder=classic
+ ---> Using cache
+ ---> a16e6f8c700d
+Step 15/15 : LABEL com.docker.compose.image.builder=classic
+ ---> Using cache
+ ---> 17489cc181c3
+Step 14/15 : CMD ["python", "-m", "app.migrate", "upgrade", "head"]
+ ---> Using cache
+ ---> bd0efc678ed7
+Step 15/15 : LABEL com.docker.compose.image.builder=classic
+ ---> Using cache
+ ---> 08a1612ded2c
+Successfully built 08a1612ded2c
+Successfully tagged agro-env-test-c7602e1c60ab-identity-migrate:latest
+ ---> Running in b8101ba87b48
+ ---> Running in b5a125fdef65
+ ---> Running in b6799dd61c69
+ ---> Removed intermediate container ee920b2fabba
+ ---> 7a707a9d92a0
+ ---> Removed intermediate container 7a6347c779dc
+ ---> 748933b35bd5
+Sending build context to Docker daemon  524.4kB
+Successfully built 7a707a9d92a0
+Successfully built 748933b35bd5
+Successfully tagged agro-env-test-c7602e1c60ab-probe:latest
+Successfully tagged agro-env-test-c7602e1c60ab-s3-bootstrap:latest
+Sending build context to Docker daemon  689.1kB
+
+Step 1/13 : FROM python:3.12-slim-bookworm@sha256:392307d22300de8b5986851a12d9176dfc0fc073e65bf6523ebd7dcbeb23564e
+ ---> 392307d22300
+Step 2/13 : ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 UV_PYTHON_DOWNLOADS=never
+ ---> Using cache
+ ---> 936ae41f86c8
+Step 3/13 : COPY tooling/uv.requirements.txt /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> c582f2708ce8
+Step 4/13 : RUN python -m pip install --no-cache-dir --require-hashes -r /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> a8ed5322db04
+Step 5/13 : WORKDIR /service
+ ---> Using cache
+ ---> fb49524b4201
+Step 6/13 : COPY services/identity/pyproject.toml services/identity/uv.lock ./
+ ---> Using cache
+ ---> 28471ec065ab
+Step 7/13 : RUN uv sync --locked --no-dev --no-install-project
+ ---> Using cache
+ ---> 054bdd12fcb6
+Step 8/13 : COPY services/identity/app ./app
+ ---> Using cache
+ ---> a1a12e8e1349
+Step 9/13 : COPY services/identity/alembic.ini ./
+ ---> Using cache
+ ---> 58ad365cc545
+Step 10/13 : COPY services/identity/migrations ./migrations
+ ---> Using cache
+ ---> 1ce54bd13b74
+Step 11/13 : ENV PATH="/service/.venv/bin:$PATH"
+ ---> Using cache
+ ---> d45a732d1da5
+Step 12/13 : CMD ["python", "-m", "app.run"]
+ ---> Using cache
+ ---> 8fbbbe083585
+Step 13/13 : LABEL com.docker.compose.image.builder=classic
+ ---> Running in a22d8a4b632e
+ ---> Removed intermediate container b8101ba87b48
+ ---> ca3ccb6043af
+ ---> Removed intermediate container b5a125fdef65
+ ---> e069acaa8241
+Successfully built ca3ccb6043af
+Successfully built e069acaa8241
+Successfully tagged agro-env-test-c7602e1c60ab-notification-migrate:latest
+Successfully tagged agro-env-test-c7602e1c60ab-ai_inference-migrate:latest
+Sending build context to Docker daemon  524.4kB
+Sending build context to Docker daemon  524.4kB
+Sending build context to Docker daemon  689.1kB
+
+Sending build context to Docker daemon  689.1kB
+
+Step 1/13 : FROM python:3.12-slim-bookworm@sha256:392307d22300de8b5986851a12d9176dfc0fc073e65bf6523ebd7dcbeb23564e
+Step 1/13 : FROM python:3.12-slim-bookworm@sha256:392307d22300de8b5986851a12d9176dfc0fc073e65bf6523ebd7dcbeb23564e
+ ---> 392307d22300
+Step 2/13 : ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 UV_PYTHON_DOWNLOADS=never
+ ---> 392307d22300
+Step 2/13 : ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 UV_PYTHON_DOWNLOADS=never
+ ---> Using cache
+ ---> 936ae41f86c8
+Step 3/13 : COPY tooling/uv.requirements.txt /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> c582f2708ce8
+Step 4/13 : RUN python -m pip install --no-cache-dir --require-hashes -r /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> 936ae41f86c8
+Step 3/13 : COPY tooling/uv.requirements.txt /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> a8ed5322db04
+Step 5/13 : WORKDIR /service
+ ---> Using cache
+ ---> c582f2708ce8
+Step 4/13 : RUN python -m pip install --no-cache-dir --require-hashes -r /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> a8ed5322db04
+Step 5/13 : WORKDIR /service
+ ---> Using cache
+ ---> fb49524b4201
+Step 6/13 : COPY services/notification/pyproject.toml services/notification/uv.lock ./
+ ---> Using cache
+ ---> fb49524b4201
+Step 6/13 : COPY services/ai_inference/pyproject.toml services/ai_inference/uv.lock ./
+ ---> Removed intermediate container a22d8a4b632e
+ ---> ea3da2027d23
+Successfully built ea3da2027d23
+ ---> Using cache
+ ---> 839c05af7930
+Step 7/13 : RUN uv sync --locked --no-dev --no-install-project
+Successfully tagged agro-env-test-c7602e1c60ab-identity:latest
+ ---> Using cache
+ ---> 63a7922449f0
+Step 8/13 : COPY services/notification/app ./app
+ ---> Using cache
+ ---> 082b542eefff
+Step 7/13 : RUN uv sync --locked --no-dev --no-install-project
+ ---> Using cache
+ ---> bebe651d3b65
+Step 9/13 : COPY services/notification/alembic.ini ./
+ ---> Using cache
+ ---> d7550d86fd9e
+Step 8/13 : COPY services/ai_inference/app ./app
+ ---> Using cache
+ ---> d2ae1433dc0b
+Step 10/13 : COPY services/notification/migrations ./migrations
+ ---> Using cache
+ ---> 46157177a74b
+Step 9/13 : COPY services/ai_inference/alembic.ini ./
+ ---> Using cache
+ ---> de9038295dc4
+Step 11/13 : ENV PATH="/service/.venv/bin:$PATH"
+ ---> Using cache
+ ---> caff1b6e85e2
+Step 10/13 : COPY services/ai_inference/migrations ./migrations
+ ---> Using cache
+ ---> c24ae70c0149
+Step 12/13 : CMD ["python", "-m", "app.run"]
+ ---> Using cache
+ ---> 614777747225
+Step 11/13 : ENV PATH="/service/.venv/bin:$PATH"
+ ---> Using cache
+ ---> 25d0ca0f3f88
+Step 13/13 : LABEL com.docker.compose.image.builder=classic
+ ---> Using cache
+ ---> 0813c9ab8504
+Step 12/13 : CMD ["python", "-m", "app.run"]
+ ---> Using cache
+ ---> 4a9d527bd4c7
+Step 13/13 : LABEL com.docker.compose.image.builder=classic
+ ---> Running in 6b9ed4457646
+ ---> Removed intermediate container b6799dd61c69
+ ---> a5f9ca398688
+ ---> Running in c636564b2f58
+Successfully built a5f9ca398688
+Successfully tagged agro-env-test-c7602e1c60ab-diagnosis-migrate:latest
+Sending build context to Docker daemon  524.4kB
+Sending build context to Docker daemon  689.1kB
+
+Step 1/13 : FROM python:3.12-slim-bookworm@sha256:392307d22300de8b5986851a12d9176dfc0fc073e65bf6523ebd7dcbeb23564e
+ ---> 392307d22300
+Step 2/13 : ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 UV_PYTHON_DOWNLOADS=never
+ ---> Using cache
+ ---> 936ae41f86c8
+Step 3/13 : COPY tooling/uv.requirements.txt /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> c582f2708ce8
+Step 4/13 : RUN python -m pip install --no-cache-dir --require-hashes -r /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> a8ed5322db04
+Step 5/13 : WORKDIR /service
+ ---> Using cache
+ ---> fb49524b4201
+Step 6/13 : COPY services/diagnosis/pyproject.toml services/diagnosis/uv.lock ./
+ ---> Using cache
+ ---> c6b078dd9982
+Step 7/13 : RUN uv sync --locked --no-dev --no-install-project
+ ---> Using cache
+ ---> ef5a0addb2bc
+Step 8/13 : COPY services/diagnosis/app ./app
+ ---> Using cache
+ ---> bc23dd51a8ee
+Step 9/13 : COPY services/diagnosis/alembic.ini ./
+ ---> Using cache
+ ---> 3a165ff9493e
+Step 10/13 : COPY services/diagnosis/migrations ./migrations
+ ---> Using cache
+ ---> 91cff838107c
+Step 11/13 : ENV PATH="/service/.venv/bin:$PATH"
+ ---> Using cache
+ ---> 1440b38edc3f
+Step 12/13 : CMD ["python", "-m", "app.run"]
+ ---> Using cache
+ ---> 1071be7bf899
+Step 13/13 : LABEL com.docker.compose.image.builder=classic
+ ---> Running in 4ae627c61e1b
+ ---> Removed intermediate container 6b9ed4457646
+ ---> adb20a5ab462
+ ---> Removed intermediate container c636564b2f58
+ ---> 6c8c44a93ede
+Successfully built adb20a5ab462
+Successfully built 6c8c44a93ede
+Successfully tagged agro-env-test-c7602e1c60ab-notification:latest
+Successfully tagged agro-env-test-c7602e1c60ab-ai_inference:latest
+ ---> Removed intermediate container 4ae627c61e1b
+ ---> 50d60ba1715d
+Successfully built 50d60ba1715d
+Successfully tagged agro-env-test-c7602e1c60ab-diagnosis:latest
+Sending build context to Docker daemon  524.4kB
+Sending build context to Docker daemon  689.1kB
+
+Step 1/10 : FROM node:24.21.0-bookworm-slim@sha256:0e0ff40c39bc087845bfb27465a0df4ea419520094bc35842ff83dd8cbe6f9b6 AS build
+ ---> 0e0ff40c39bc
+Step 2/10 : WORKDIR /frontend
+ ---> Using cache
+ ---> 3a924e12f3ed
+Step 3/10 : COPY frontend/package*.json ./
+ ---> Using cache
+ ---> 256e0e034412
+Step 4/10 : RUN npm ci --ignore-scripts
+ ---> Using cache
+ ---> f096966e4138
+Step 5/10 : COPY frontend/ ./
+ ---> Using cache
+ ---> 0fb7444f35d1
+Step 6/10 : RUN npm run lint && npm run typecheck && npm test && npm run build
+ ---> Using cache
+ ---> e857c381f56a
+Step 7/10 : FROM nginx:1.28-alpine@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236
+ ---> a8b39bd9cf0f
+Step 8/10 : COPY infra/nginx/default.conf /etc/nginx/conf.d/default.conf
+ ---> Using cache
+ ---> 5cb379f3f7a4
+Step 9/10 : COPY --from=build /frontend/dist /usr/share/nginx/html
+ ---> Using cache
+ ---> 4fee41c5b6ed
+Step 10/10 : LABEL com.docker.compose.image.builder=classic
+ ---> Running in 6930d92bbd09
+ ---> Removed intermediate container 6930d92bbd09
+ ---> a99dafeb0258
+Successfully built a99dafeb0258
+Successfully tagged agro-env-test-c7602e1c60ab-nginx:latest
+time="2026-09-30T00:19:21-05:00" level=warning msg="COMPOSE_BAKE=false is deprecated, support for internal compose builder will be removed in next release"
+ Service probe  Building
+ Service s3-bootstrap  Building
+ Service db-bootstrap  Building
+ Service db-bootstrap  Built
+ Service notification-migrate  Building
+ Service identity-migrate  Building
+ Service diagnosis-migrate  Building
+ Service ai_inference-migrate  Building
+ Service identity-migrate  Built
+ Service identity  Building
+ Service probe  Built
+ Service s3-bootstrap  Built
+ Service notification-migrate  Built
+ Service notification  Building
+ Service ai_inference-migrate  Built
+ Service ai_inference  Building
+ Service identity  Built
+ Service diagnosis-migrate  Built
+ Service diagnosis  Building
+ Service notification  Built
+ Service ai_inference  Built
+ Service diagnosis  Built
+ Service nginx  Building
+ Service nginx  Built
+ ai_inference  Built
+ ai_inference-migrate  Built
+ db-bootstrap  Built
+ diagnosis  Built
+ diagnosis-migrate  Built
+ identity  Built
+ identity-migrate  Built
+ nginx  Built
+ notification  Built
+ notification-migrate  Built
+ probe  Built
+ s3-bootstrap  Built
+
+ps --all
+NAME                                                IMAGE                                                                                              COMMAND                  SERVICE                CREATED          STATUS                             PORTS
+agro-env-test-c7602e1c60ab-ai_inference-1           agro-env-test-c7602e1c60ab-ai_inference                                                            "python -m app.run"      ai_inference           41 seconds ago   Up 35 seconds (healthy)            
+agro-env-test-c7602e1c60ab-ai_inference-migrate-1   agro-env-test-c7602e1c60ab-ai_inference-migrate                                                    "python -m app.migra…"   ai_inference-migrate   41 seconds ago   Exited (0) 36 seconds ago          
+agro-env-test-c7602e1c60ab-db-bootstrap-1           agro-env-test-c7602e1c60ab-db-bootstrap                                                            "python /bootstrap/b…"   db-bootstrap           41 seconds ago   Exited (0) 37 seconds ago          
+agro-env-test-c7602e1c60ab-diagnosis-1              agro-env-test-c7602e1c60ab-diagnosis                                                               "python -m app.run"      diagnosis              41 seconds ago   Up 35 seconds (healthy)            
+agro-env-test-c7602e1c60ab-diagnosis-migrate-1      agro-env-test-c7602e1c60ab-diagnosis-migrate                                                       "python -m app.migra…"   diagnosis-migrate      41 seconds ago   Exited (0) 36 seconds ago          
+agro-env-test-c7602e1c60ab-identity-1               agro-env-test-c7602e1c60ab-identity                                                                "python -m app.run"      identity               41 seconds ago   Up 35 seconds (health: starting)   
+agro-env-test-c7602e1c60ab-identity-migrate-1       agro-env-test-c7602e1c60ab-identity-migrate                                                        "python -m app.migra…"   identity-migrate       41 seconds ago   Exited (0) 36 seconds ago          
+agro-env-test-c7602e1c60ab-nginx-1                  agro-env-test-c7602e1c60ab-nginx                                                                   "/docker-entrypoint.…"   nginx                  41 seconds ago   Created                            
+agro-env-test-c7602e1c60ab-notification-1           agro-env-test-c7602e1c60ab-notification                                                            "python -m app.run"      notification           41 seconds ago   Up 35 seconds (healthy)            
+agro-env-test-c7602e1c60ab-notification-migrate-1   agro-env-test-c7602e1c60ab-notification-migrate                                                    "python -m app.migra…"   notification-migrate   41 seconds ago   Exited (0) 36 seconds ago          
+agro-env-test-c7602e1c60ab-postgres-1               postgres:16-alpine@sha256:3c5c8892d184f738f4fe282d14ddaa613a38f00f4189d2d94725ebe6f2909ddb         "docker-entrypoint.s…"   postgres               41 seconds ago   Up 41 seconds (healthy)            5432/tcp
+agro-env-test-c7602e1c60ab-rabbitmq-1               rabbitmq:4.2-alpine@sha256:1dbd5e0d7c87d44f687866d889cd86b76b5fcaddc64c2b65d367563cbcdff933        "sh /bootstrap/start…"   rabbitmq               41 seconds ago   Up 41 seconds (healthy)            4369/tcp, 5671-5672/tcp, 15691-15692/tcp, 25672/tcp
+agro-env-test-c7602e1c60ab-redis-1                  redis:8.2-alpine@sha256:b51665e66f00759be7c3152ad5ac3c66fb2f619c13ef62dea7cc1f9914524635           "docker-entrypoint.s…"   redis                  41 seconds ago   Up 41 seconds (healthy)            6379/tcp
+agro-env-test-c7602e1c60ab-s3-1                     chrislusf/seaweedfs:4.17@sha256:186de7ef977a20343ee9a5544073f081976a29e2d29ecf8379891e7bf177fbe9   "/entrypoint.sh serv…"   s3                     41 seconds ago   Up 41 seconds (healthy)            7333/tcp, 8080/tcp, 8333/tcp, 8888/tcp, 9333/tcp, 18080/tcp, 18888/tcp, 19333/tcp
+agro-env-test-c7602e1c60ab-s3-bootstrap-1           agro-env-test-c7602e1c60ab-s3-bootstrap                                                            "python /bootstrap.py"   s3-bootstrap           41 seconds ago   Exited (0) 35 seconds ago          
+
+logs --no-color --tail 150
+notification-1  | INFO:     Started server process [1]
+notification-1  | INFO:     Waiting for application startup.
+notification-1  | INFO:     Application startup complete.
+notification-1  | INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+diagnosis-1     | INFO:     Started server process [1]
+diagnosis-1     | INFO:     Waiting for application startup.
+diagnosis-1     | INFO:     Application startup complete.
+diagnosis-1     | INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+s3-1            | I0930 05:19:24.870374 master.go:332 current: 127.0.0.1:9333 peers:
+s3-1            | I0930 05:19:24.870418 file_util.go:28 Folder /data Permission: -rwxr-xr-x
+s3-1            | I0930 05:19:24.870460 master.go:332 current: 127.0.0.1:9333 peers:
+s3-1            | I0930 05:19:24.870493 file_util.go:28 Folder /data Permission: -rwxr-xr-x
+s3-1            | I0930 05:19:24.870536 master_server.go:149 Volume Size Limit is 64 MB
+redis-1         | Starting Redis Server
+s3-1            | I0930 05:19:24.870638 master.go:192 Start Seaweed Master 30GB 4.17 4a5243886 at 127.0.0.1:9333
+s3-1            | I0930 05:19:24.870812 raft_server.go:142 Starting RaftServer with 127.0.0.1:9333
+db-bootstrap-1  | bootstrap_ok: four private databases and restricted roles
+s3-1            | I0930 05:19:24.871065 volume_grpc_client_to_master.go:44 checkWithMaster 127.0.0.1:9333: get master 127.0.0.1:9333 configuration: rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:19333: connect: connection refused"
+s3-1            | I0930 05:19:24.871843 raft_server.go:191 current cluster leader: 
+s3-1            | I0930 05:19:24.871851 master_server.go:247 [127.0.0.1:9333.19333]  - is the leader.
+s3-1            | I0930 05:19:24.871918 master.go:251 Start Seaweed Master 30GB 4.17 4a5243886 grpc server at 127.0.0.1:19333
+s3-1            | I0930 05:19:24.871961 masterclient.go:440 .master masterClient bootstraps with masters {[127.0.0.1:9333.19333] <nil>}
+s3-1            | I0930 05:19:24.872300 masterclient.go:216 .master masterClient gRPC stream established to 127.0.0.1:9333 in 316.88µs
+s3-1            | I0930 05:19:25.870940 filer.go:342 Initialized credential manager: filer_etc
+s3-1            | W0930 05:19:25.871263 filer_server.go:174 skipping default store dir in /data/filerldb2
+identity-1      | INFO:     Started server process [1]
+redis-1         | 1:C 30 Sep 2026 05:19:24.815 # WARNING Memory overcommit must be enabled! Without it, a background save or replication may fail under low memory condition. Being disabled, it can also cause failures without low memory condition, see https://github.com/jemalloc/jemalloc/issues/1328. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
+redis-1         | 1:C 30 Sep 2026 05:19:24.815 * oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+redis-1         | 1:C 30 Sep 2026 05:19:24.815 * Redis version=8.2.10, bits=64, commit=00000000, modified=1, pid=1, just started
+redis-1         | 1:C 30 Sep 2026 05:19:24.815 * Configuration loaded
+identity-1      | INFO:     Waiting for application startup.
+s3-1            | I0930 05:19:25.871490 filer_server.go:180 max_file_name_length 255
+identity-1      | INFO:     Application startup complete.
+s3-1            | I0930 05:19:26.372273 masterclient.go:487 No existing leader found!
+s3-1            | I0930 05:19:26.372292 raft_server.go:213 Initializing new cluster
+redis-1         | 1:M 30 Sep 2026 05:19:24.816 * Increased maximum number of open files to 10032 (it was originally set to 1024).
+ai_inference-1  | INFO:     Started server process [1]
+redis-1         | 1:M 30 Sep 2026 05:19:24.816 * monotonic clock: POSIX clock_gettime
+s3-bootstrap-1  | private_bucket_ready
+redis-1         | 1:M 30 Sep 2026 05:19:24.816 * Running mode=standalone, port=6379.
+identity-1      | INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+ai_inference-1  | INFO:     Waiting for application startup.
+redis-1         | 1:M 30 Sep 2026 05:19:24.816 * <bf> RedisBloom version 8.2.16 (Git=unknown)
+redis-1         | 1:M 30 Sep 2026 05:19:24.817 * <bf> Registering configuration options: [
+ai_inference-1  | INFO:     Application startup complete.
+ai_inference-1  | INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+redis-1         | 1:M 30 Sep 2026 05:19:24.817 * <bf> 	{ bf-error-rate       :      0.01 }
+redis-1         | 1:M 30 Sep 2026 05:19:24.817 * <bf> 	{ bf-initial-size     :       100 }
+redis-1         | 1:M 30 Sep 2026 05:19:24.817 * <bf> 	{ bf-expansion-factor :         2 }
+rabbitmq-1      | 2026-09-30 05:19:26.225453+00:00 [info] <0.209.0>  log(s)         : <stdout>[0m
+s3-1            | I0930 05:19:26.372311 master_server.go:212 leader change event:  => 127.0.0.1:9333.19333
+rabbitmq-1      | 2026-09-30 05:19:26.225453+00:00 [info] <0.209.0>  data dir       : /var/lib/rabbitmq/mnesia/rabbit@rabbitmq[0m
+s3-1            | I0930 05:19:26.372325 master_server.go:215 [127.0.0.1:9333.19333] 127.0.0.1:9333.19333 becomes leader.
+s3-1            | I0930 05:19:26.373303 cluster_commands.go:40 TopologyId generated and applied on leader: c82e8a2e-35c1-4bcb-9fc8-37c22640a3eb
+s3-1            | I0930 05:19:26.373321 raft_common.go:42 TopologyId generated: c82e8a2e-35c1-4bcb-9fc8-37c22640a3eb
+s3-1            | I0930 05:19:26.503741 leveldb2_store.go:43 filer store leveldb2 dir: /data/filerldb2
+postgres-1      | The files belonging to this database system will be owned by user "postgres".
+s3-1            | I0930 05:19:26.503748 masterclient.go:440 .filer masterClient bootstraps with masters {[127.0.0.1:9333] <nil>}
+postgres-1      | This user must also own the server process.
+postgres-1      | 
+rabbitmq-1      | 2026-09-30 05:19:26.268089+00:00 [info] <0.209.0> Running boot step pre_boot defined by app rabbit[0m
+redis-1         | 1:M 30 Sep 2026 05:19:24.817 * <bf> 	{ cf-bucket-size      :         2 }
+redis-1         | 1:M 30 Sep 2026 05:19:24.817 * <bf> 	{ cf-initial-size     :      1024 }
+redis-1         | 1:M 30 Sep 2026 05:19:24.817 * <bf> 	{ cf-max-iterations   :        20 }
+s3-1            | I0930 05:19:26.503761 file_util.go:28 Folder /data/filerldb2 Permission: -rwxr-xr-x
+redis-1         | 1:M 30 Sep 2026 05:19:24.817 * <bf> 	{ cf-expansion-factor :         1 }
+redis-1         | 1:M 30 Sep 2026 05:19:24.817 * <bf> 	{ cf-max-expansions   :        32 }
+s3-1            | I0930 05:19:26.504204 masterclient.go:216 .filer masterClient gRPC stream established to 127.0.0.1:9333 in 439.711µs
+s3-1            | I0930 05:19:26.504499 master_grpc_server.go:406 + client .filer@127.0.0.1:8888.18888
+s3-1            | I0930 05:19:26.504748 masterclient.go:247 master 127.0.0.1:9333 redirected to leader 127.0.0.1:9333.19333
+redis-1         | 1:M 30 Sep 2026 05:19:24.817 * <bf> ]
+postgres-1      | The database cluster will be initialized with locale "en_US.utf8".
+postgres-1      | The default database encoding has accordingly been set to "UTF8".
+redis-1         | 1:M 30 Sep 2026 05:19:24.817 * Module 'bf' loaded from /usr/local/lib/redis/modules//redisbloom.so
+postgres-1      | The default text search configuration will be set to "english".
+s3-1            | I0930 05:19:26.504839 master_grpc_server.go:421 - client .filer@127.0.0.1:8888.18888
+postgres-1      | 
+redis-1         | 1:M 30 Sep 2026 05:19:24.819 * <search> Redis version found by RedisSearch : 8.2.10 - oss
+postgres-1      | Data page checksums are disabled.
+postgres-1      | 
+postgres-1      | fixing permissions on existing directory /var/lib/postgresql/data ... ok
+postgres-1      | creating subdirectories ... ok
+postgres-1      | selecting dynamic shared memory implementation ... posix
+postgres-1      | selecting default max_connections ... 100
+postgres-1      | selecting default shared_buffers ... 128MB
+postgres-1      | selecting default time zone ... UTC
+postgres-1      | creating configuration files ... ok
+postgres-1      | running bootstrap script ... ok
+postgres-1      | sh: locale: not found
+postgres-1      | 2026-09-30 05:19:25.140 UTC [35] WARNING:  no usable system locales were found
+postgres-1      | performing post-bootstrap initialization ... ok
+postgres-1      | initdb: warning: enabling "trust" authentication for local connections
+postgres-1      | initdb: hint: You can change this by editing pg_hba.conf or using the option -A, or --auth-local and --auth-host, the next time you run initdb.
+postgres-1      | syncing data to disk ... ok
+rabbitmq-1      | 2026-09-30 05:19:26.268115+00:00 [info] <0.209.0> Running boot step rabbit_global_counters defined by app rabbit[0m
+redis-1         | 1:M 30 Sep 2026 05:19:24.819 * <search> RediSearch version 8.2.13 (Git=e9cf9bf)
+rabbitmq-1      | 2026-09-30 05:19:26.268400+00:00 [info] <0.209.0> Running boot step rabbit_osiris_metrics defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.268445+00:00 [info] <0.209.0> Running boot step rabbit_core_metrics defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.269343+00:00 [info] <0.209.0> Running boot step rabbit_alarm defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.276740+00:00 [info] <0.597.0> Memory high watermark set to 19199 MiB (20131685990 bytes) of 31998 MiB (33552809984 bytes) total[0m
+rabbitmq-1      | 2026-09-30 05:19:26.278161+00:00 [info] <0.599.0> Enabling free disk space monitoring (disk free space: 432900087808, total memory: 33552809984)[0m
+rabbitmq-1      | 2026-09-30 05:19:26.278194+00:00 [info] <0.599.0> Disk free limit set to 50MB[0m
+rabbitmq-1      | 2026-09-30 05:19:26.279008+00:00 [info] <0.209.0> Running boot step code_server_cache defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.279043+00:00 [info] <0.209.0> Running boot step file_handle_cache defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.281340+00:00 [info] <0.602.0> Limiting to approx 927 file handles (832 sockets)[0m
+rabbitmq-1      | 2026-09-30 05:19:26.281425+00:00 [info] <0.603.0> FHC read buffering: OFF[0m
+rabbitmq-1      | 2026-09-30 05:19:26.281461+00:00 [info] <0.603.0> FHC write buffering: ON[0m
+rabbitmq-1      | [38;5;214m2026-09-30 05:19:26.281623+00:00 [warning] <0.209.0> Available file handles: 1024. Please consider increasing system limits[0m
+rabbitmq-1      | 2026-09-30 05:19:26.281640+00:00 [info] <0.209.0> Running boot step worker_pool defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.281698+00:00 [info] <0.548.0> Will use 16 processes for default worker pool[0m
+rabbitmq-1      | 2026-09-30 05:19:26.281731+00:00 [info] <0.548.0> Starting worker pool 'worker_pool' with 16 processes in it[0m
+rabbitmq-1      | 2026-09-30 05:19:26.282001+00:00 [info] <0.209.0> Running boot step rabbit_registry defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.282037+00:00 [info] <0.209.0> Running boot step database defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.282136+00:00 [info] <0.209.0> Peer discovery: configured backend: rabbit_peer_discovery_classic_config[0m
+rabbitmq-1      | 2026-09-30 05:19:26.282369+00:00 [info] <0.549.0> Feature flags: starting an unclustered node for the first time: all stable feature flags will be enabled by default[0m
+rabbitmq-1      | [38;5;87m2026-09-30 05:19:26.282715+00:00 [notice] <0.549.0> Feature flags: attempt to enable `rabbitmq_4.0.0`...[0m
+rabbitmq-1      | [38;5;87m2026-09-30 05:19:26.288339+00:00 [notice] <0.549.0> Feature flags: `rabbitmq_4.0.0` enabled[0m
+rabbitmq-1      | [38;5;87m2026-09-30 05:19:26.288381+00:00 [notice] <0.549.0> Feature flags: attempt to enable `quorum_queue_non_voters`...[0m
+redis-1         | 1:M 30 Sep 2026 05:19:24.819 * <search> Low level api version 1 initialized successfully
+redis-1         | 1:M 30 Sep 2026 05:19:24.819 * <search> gc: ON, prefix min length: 2, min word length to stem: 4, prefix max expansions: 200, query timeout (ms): 500, timeout policy: return, cursor read size: 1000, cursor max idle (ms): 300000, max doctable size: 1000000, max number of search results:  1000000, default scorer: BM25STD, 
+redis-1         | 1:M 30 Sep 2026 05:19:24.819 * <search> Initialized thread pools!
+redis-1         | 1:M 30 Sep 2026 05:19:24.819 * <search> Disabled workers threadpool of size 0
+redis-1         | 1:M 30 Sep 2026 05:19:24.819 * <search> Subscribe to config changes
+redis-1         | 1:M 30 Sep 2026 05:19:24.819 * <search> Enabled role change notification
+redis-1         | 1:M 30 Sep 2026 05:19:24.819 # <search> Could not create command: _FT.DROP
+redis-1         | 1:M 30 Sep 2026 05:19:24.819 * <search> Registered command _FT.DROP with flags: write
+redis-1         | 1:M 30 Sep 2026 05:19:24.819 # <search> Could not create command: _FT.DROPINDEX
+redis-1         | 1:M 30 Sep 2026 05:19:24.819 * <search> Registered command _FT.DROPINDEX with flags: write
+redis-1         | 1:M 30 Sep 2026 05:19:24.819 # <search> Could not create command: _FT._DROPIFX
+redis-1         | 1:M 30 Sep 2026 05:19:24.819 * <search> Registered command _FT._DROPIFX with flags: write
+redis-1         | 1:M 30 Sep 2026 05:19:24.819 # <search> Could not create command: _FT._DROPINDEXIFX
+rabbitmq-1      | [38;5;87m2026-09-30 05:19:26.293225+00:00 [notice] <0.549.0> Feature flags: `quorum_queue_non_voters` enabled[0m
+rabbitmq-1      | [38;5;87m2026-09-30 05:19:26.293273+00:00 [notice] <0.549.0> Feature flags: attempt to enable `khepri_db`...[0m
+rabbitmq-1      | [38;5;87m2026-09-30 05:19:26.295383+00:00 [notice] <0.549.0> Feature flags: attempt to enable `ram_node_type`...[0m
+rabbitmq-1      | [38;5;87m2026-09-30 05:19:26.299932+00:00 [notice] <0.549.0> Feature flags: `ram_node_type` enabled[0m
+rabbitmq-1      | 2026-09-30 05:19:26.300002+00:00 [info] <0.644.0> Feature flag `khepri_db`: syncing cluster membership[0m
+rabbitmq-1      | 2026-09-30 05:19:26.307719+00:00 [info] <0.645.0> Syncing Mnesia->Khepri clusters membership[0m
+rabbitmq-1      | 2026-09-30 05:19:26.310299+00:00 [info] <0.644.0> Feature flag `khepri_db`: cluster membership synchronized; members are: [rabbit@rabbitmq][0m
+rabbitmq-1      | 2026-09-30 05:19:26.310343+00:00 [info] <0.644.0> Feature flag `khepri_db`: unregistering legacy projections[0m
+rabbitmq-1      | 2026-09-30 05:19:26.312828+00:00 [info] <0.644.0> Feature flag `khepri_db`: registering projections[0m
+rabbitmq-1      | [38;5;87m2026-09-30 05:19:26.702942+00:00 [notice] <0.644.0> Feature flags: `khepri_db`: starting migration of 20 tables from Mnesia to Khepri; expect decrease in performance and increase in memory footprint[0m
+rabbitmq-1      | 2026-09-30 05:19:26.703013+00:00 [info] <0.644.0> Waiting for Mnesia tables for 30000 ms, 9 retries left[0m
+rabbitmq-1      | 2026-09-30 05:19:26.703049+00:00 [info] <0.644.0> Successfully synced tables from a peer[0m
+postgres-1      | 
+postgres-1      | 
+postgres-1      | Success. You can now start the database server using:
+postgres-1      | 
+postgres-1      |     pg_ctl -D /var/lib/postgresql/data -l logfile start
+postgres-1      | 
+postgres-1      | waiting for server to start....2026-09-30 05:19:25.574 UTC [41] LOG:  starting PostgreSQL 16.15 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+postgres-1      | 2026-09-30 05:19:25.575 UTC [41] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+postgres-1      | 2026-09-30 05:19:25.578 UTC [44] LOG:  database system was shut down at 2026-09-30 05:19:25 UTC
+postgres-1      | 2026-09-30 05:19:25.582 UTC [41] LOG:  database system is ready to accept connections
+postgres-1      |  done
+s3-1            | I0930 05:19:26.505463 masterclient.go:216 .filer masterClient gRPC stream established to 127.0.0.1:9333 in 546.76µs
+rabbitmq-1      | [38;5;87m2026-09-30 05:19:26.703087+00:00 [notice] <0.644.0> Feature flags: `khepri_db`: migration from Mnesia to Khepri finished[0m
+s3-1            | I0930 05:19:26.505529 master_grpc_server.go:406 + client .filer@127.0.0.1:8888.18888
+rabbitmq-1      | [38;5;87m2026-09-30 05:19:26.718835+00:00 [notice] <0.45.0> Application mnesia exited with reason: stopped[0m
+s3-1            | I0930 05:19:26.505599 masterclient.go:324 updateVidMap ignore short heartbeat: volume_location:{leader:"127.0.0.1:9333.19333"}
+rabbitmq-1      | [38;5;87m2026-09-30 05:19:26.719167+00:00 [notice] <0.549.0> Feature flags: `khepri_db` enabled[0m
+redis-1         | 1:M 30 Sep 2026 05:19:24.819 * <search> Registered command _FT._DROPINDEXIFX with flags: write
+redis-1         | 1:M 30 Sep 2026 05:19:24.819 * <search> Cluster configuration: AUTO partitions, type: 0, coordinator timeout: 0ms
+redis-1         | 1:M 30 Sep 2026 05:19:24.819 * <search> Register write commands
+redis-1         | 1:M 30 Sep 2026 05:19:24.819 * Module 'search' loaded from /usr/local/lib/redis/modules//redisearch.so
+redis-1         | 1:M 30 Sep 2026 05:19:24.819 * <timeseries> RedisTimeSeries version 80214, git_sha=a51a80c51c8c40601b87b5a5674da0cb12989d58
+redis-1         | 1:M 30 Sep 2026 05:19:24.819 * <timeseries> Redis version found by RedisTimeSeries : 8.2.10 - oss
+redis-1         | 1:M 30 Sep 2026 05:19:24.819 * <timeseries> Registering configuration options: [
+redis-1         | 1:M 30 Sep 2026 05:19:24.819 * <timeseries> 	{ ts-compaction-policy   :              }
+redis-1         | 1:M 30 Sep 2026 05:19:24.819 * <timeseries> 	{ ts-num-threads         :            3 }
+redis-1         | 1:M 30 Sep 2026 05:19:24.819 * <timeseries> 	{ ts-retention-policy    :            0 }
+redis-1         | 1:M 30 Sep 2026 05:19:24.819 * <timeseries> 	{ ts-duplicate-policy    :        block }
+redis-1         | 1:M 30 Sep 2026 05:19:24.819 * <timeseries> 	{ ts-chunk-size-bytes    :         4096 }
+redis-1         | 1:M 30 Sep 2026 05:19:24.819 * <timeseries> 	{ ts-encoding            :   compressed }
+rabbitmq-1      | [38;5;87m2026-09-30 05:19:26.719198+00:00 [notice] <0.549.0> Feature flags: attempt to enable `rabbitmq_4.2.0`...[0m
+rabbitmq-1      | [38;5;87m2026-09-30 05:19:26.721407+00:00 [notice] <0.549.0> Feature flags: attempt to enable `rabbitmq_4.1.0`...[0m
+rabbitmq-1      | [38;5;87m2026-09-30 05:19:26.726506+00:00 [notice] <0.549.0> Feature flags: `rabbitmq_4.1.0` enabled[0m
+rabbitmq-1      | [38;5;87m2026-09-30 05:19:26.730771+00:00 [notice] <0.549.0> Feature flags: `rabbitmq_4.2.0` enabled[0m
+rabbitmq-1      | [38;5;87m2026-09-30 05:19:26.730801+00:00 [notice] <0.549.0> Feature flags: attempt to enable `rabbit_exchange_type_local_random`...[0m
+rabbitmq-1      | [38;5;87m2026-09-30 05:19:26.735713+00:00 [notice] <0.549.0> Feature flags: `rabbit_exchange_type_local_random` enabled[0m
+rabbitmq-1      | [38;5;87m2026-09-30 05:19:26.735742+00:00 [notice] <0.549.0> Feature flags: attempt to enable `message_containers_deaths_v2`...[0m
+rabbitmq-1      | [38;5;87m2026-09-30 05:19:26.741417+00:00 [notice] <0.549.0> Feature flags: `message_containers_deaths_v2` enabled[0m
+rabbitmq-1      | 2026-09-30 05:19:26.741524+00:00 [info] <0.209.0> DB: virgin node -> run peer discovery[0m
+rabbitmq-1      | [38;5;214m2026-09-30 05:19:26.741793+00:00 [warning] <0.209.0> Classic peer discovery backend: list of nodes does not contain the local node [][0m
+rabbitmq-1      | [38;5;87m2026-09-30 05:19:26.741840+00:00 [notice] <0.209.0> Found the following metadata store members: [{rabbitmq_metadata,[0m
+rabbitmq-1      | [38;5;87m2026-09-30 05:19:26.741840+00:00 [notice] <0.209.0>                                               rabbit@rabbitmq}][0m
+rabbitmq-1      | 2026-09-30 05:19:26.751029+00:00 [info] <0.209.0> Running boot step tracking_metadata_store defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.751096+00:00 [info] <0.1026.0> Setting up a table for connection tracking on this node: tracked_connection[0m
+rabbitmq-1      | 2026-09-30 05:19:26.751135+00:00 [info] <0.1026.0> Setting up a table for per-vhost connection counting on this node: tracked_connection_per_vhost[0m
+rabbitmq-1      | 2026-09-30 05:19:26.751212+00:00 [info] <0.1026.0> Setting up a table for per-user connection counting on this node: tracked_connection_per_user[0m
+redis-1         | 1:M 30 Sep 2026 05:19:24.819 * <timeseries> 	{ ts-ignore-max-time-diff:            0 }
+s3-1            | I0930 05:19:26.521688 filer.go:167 create filer.store.id to 1910569919
+redis-1         | 1:M 30 Sep 2026 05:19:24.819 * <timeseries> 	{ ts-ignore-max-val-diff :     0.000000 }
+postgres-1      | server started
+redis-1         | 1:M 30 Sep 2026 05:19:24.819 * <timeseries> ]
+postgres-1      | 
+redis-1         | 1:M 30 Sep 2026 05:19:24.819 * <timeseries> Detected redis oss
+postgres-1      | /usr/local/bin/docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d/*
+redis-1         | 1:M 30 Sep 2026 05:19:24.819 * <timeseries> Enabled diskless replication
+postgres-1      | 
+redis-1         | 1:M 30 Sep 2026 05:19:24.819 * Module 'timeseries' loaded from /usr/local/lib/redis/modules//redistimeseries.so
+postgres-1      | waiting for server to shut down....2026-09-30 05:19:25.672 UTC [41] LOG:  received fast shutdown request
+s3-1            | I0930 05:19:26.521696 configuration.go:29 configured filer store to leveldb2
+postgres-1      | 2026-09-30 05:19:25.672 UTC [41] LOG:  aborting any active transactions
+s3-1            | I0930 05:19:26.521769 filer_server_tus_session.go:400 TUS session cleanup started with interval 1h0m0s
+s3-1            | I0930 05:19:26.521989 master_client.go:24 the cluster has 1 filer
+s3-1            | I0930 05:19:26.522000 filer_server.go:241 127.0.0.1:8888 bootstrap from peers [node_type:"filer"  address:"127.0.0.1:8888.18888"  is_add:true  created_at_ns:1790745566505540817]
+s3-1            | I0930 05:19:26.522023 filer.go:122 127.0.0.1:8888 aggregate from peers [127.0.0.1:8888]
+rabbitmq-1      | 2026-09-30 05:19:26.751281+00:00 [info] <0.1026.0> Setting up a table for channel tracking on this node: tracked_channel[0m
+rabbitmq-1      | 2026-09-30 05:19:26.751320+00:00 [info] <0.1026.0> Setting up a table for channel tracking on this node: tracked_channel_per_user[0m
+postgres-1      | 2026-09-30 05:19:25.674 UTC [41] LOG:  background worker "logical replication launcher" (PID 47) exited with exit code 1
+postgres-1      | 2026-09-30 05:19:25.674 UTC [42] LOG:  shutting down
+postgres-1      | 2026-09-30 05:19:25.675 UTC [42] LOG:  checkpoint starting: shutdown immediate
+postgres-1      | 2026-09-30 05:19:25.680 UTC [42] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.001 s, total=0.006 s; sync files=2, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=0 kB; lsn=0/14F7180, redo lsn=0/14F7180
+postgres-1      | 2026-09-30 05:19:25.684 UTC [41] LOG:  database system is shut down
+postgres-1      |  done
+postgres-1      | server stopped
+postgres-1      | 
+postgres-1      | PostgreSQL init process complete; ready for start up.
+postgres-1      | 
+s3-1            | I0930 05:19:26.522982 filer.go:394 Start Seaweed Filer 30GB 4.17 4a5243886 at 127.0.0.1:8888
+redis-1         | 1:M 30 Sep 2026 05:19:24.820 * <ReJSON> Created new data type 'ReJSON-RL'
+s3-1            | I0930 05:19:26.523014 meta_aggregator.go:80 loopSubscribeToOneFiler read 127.0.0.1:8888 start from 2026-09-30 05:18:26.521994246 +0000 UTC 1790745506521994246
+redis-1         | 1:M 30 Sep 2026 05:19:24.820 * <ReJSON> version: 80209 git sha: unknown branch: unknown
+s3-1            | I0930 05:19:26.523072 filer.go:416 Registered IAM gRPC service on filer
+postgres-1      | 2026-09-30 05:19:25.789 UTC [1] LOG:  starting PostgreSQL 16.15 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+postgres-1      | 2026-09-30 05:19:25.789 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+redis-1         | 1:M 30 Sep 2026 05:19:24.820 * <ReJSON> Exported RedisJSON_V1 API
+s3-1            | I0930 05:19:26.523635 meta_aggregator.go:185 subscribing remote 127.0.0.1:8888 meta change: 2026-09-30 05:18:26.521994246 +0000 UTC, clientId:2108734075
+redis-1         | 1:M 30 Sep 2026 05:19:24.820 * <ReJSON> Exported RedisJSON_V2 API
+s3-1            | I0930 05:19:26.523959 filer_grpc_server_sub_meta.go:411 + local listener filer:127.0.0.1:8888.18888@127.0.0.1:49920 clientId -2108734075 clientEpoch 1
+postgres-1      | 2026-09-30 05:19:25.789 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+postgres-1      | 2026-09-30 05:19:25.790 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+postgres-1      | 2026-09-30 05:19:25.793 UTC [55] LOG:  database system was shut down at 2026-09-30 05:19:25 UTC
+postgres-1      | 2026-09-30 05:19:25.797 UTC [1] LOG:  database system is ready to accept connections
+rabbitmq-1      | 2026-09-30 05:19:26.751363+00:00 [info] <0.209.0> Running boot step networking_metadata_store defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.751421+00:00 [info] <0.209.0> Running boot step feature_flags defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.751482+00:00 [info] <0.209.0> Running boot step auth_backend_plugins_check defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.751504+00:00 [info] <0.209.0> Running boot step codec_correctness_check defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.751528+00:00 [info] <0.209.0> Running boot step external_infrastructure defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.751541+00:00 [info] <0.209.0> Running boot step rabbit_event defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.751602+00:00 [info] <0.209.0> Running boot step rabbit_auth_mechanism_amqplain defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.751639+00:00 [info] <0.209.0> Running boot step rabbit_auth_mechanism_anonymous defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.751676+00:00 [info] <0.209.0> Running boot step rabbit_auth_mechanism_cr_demo defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.751711+00:00 [info] <0.209.0> Running boot step rabbit_auth_mechanism_plain defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.751735+00:00 [info] <0.209.0> Running boot step rabbit_exchange_type_direct defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.751758+00:00 [info] <0.209.0> Running boot step rabbit_exchange_type_fanout defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.751789+00:00 [info] <0.209.0> Running boot step rabbit_exchange_type_headers defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.751824+00:00 [info] <0.209.0> Running boot step rabbit_exchange_type_local_random defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.751847+00:00 [info] <0.209.0> Running boot step rabbit_exchange_type_topic defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.751870+00:00 [info] <0.209.0> Running boot step rabbit_priority_queue defined by app rabbit[0m
+redis-1         | 1:M 30 Sep 2026 05:19:24.820 * <ReJSON> Exported RedisJSON_V3 API
+rabbitmq-1      | 2026-09-30 05:19:26.751904+00:00 [info] <0.209.0> Priority queues enabled, real BQ is rabbit_variable_queue[0m
+redis-1         | 1:M 30 Sep 2026 05:19:24.820 * <ReJSON> Exported RedisJSON_V4 API
+rabbitmq-1      | 2026-09-30 05:19:26.751944+00:00 [info] <0.209.0> Running boot step kernel_ready defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.751973+00:00 [info] <0.209.0> Running boot step pg_local_amqp_connection defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.754574+00:00 [info] <0.209.0> Running boot step pg_local_amqp_session defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.754627+00:00 [info] <0.209.0> Running boot step rabbit_sysmon_minder defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.754703+00:00 [info] <0.209.0> Running boot step rabbit_epmd_monitor defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.755072+00:00 [info] <0.1035.0> epmd monitor knows us, inter-node communication (distribution) port: 25672[0m
+rabbitmq-1      | 2026-09-30 05:19:26.755127+00:00 [info] <0.209.0> Running boot step guid_generator defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.755924+00:00 [info] <0.209.0> Running boot step rabbit_node_monitor defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.755986+00:00 [info] <0.1039.0> Starting rabbit_node_monitor (partition handling strategy unapplicable with Khepri)[0m
+rabbitmq-1      | 2026-09-30 05:19:26.756057+00:00 [info] <0.209.0> Running boot step delegate_sup defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.756278+00:00 [info] <0.209.0> Running boot step rabbit_fifo_dlx_sup defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.756308+00:00 [info] <0.209.0> Running boot step core_initialized defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.756319+00:00 [info] <0.209.0> Running boot step rabbit_channel_tracking_handler defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.756344+00:00 [info] <0.209.0> Running boot step rabbit_classic_queue_type defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.756370+00:00 [info] <0.209.0> Running boot step rabbit_classic_queue defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.756403+00:00 [info] <0.209.0> Running boot step rabbit_connection_tracking_handler defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.756423+00:00 [info] <0.209.0> Running boot step rabbit_definitions_hashing defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.756454+00:00 [info] <0.209.0> Running boot step rabbit_exchange_parameters defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.757164+00:00 [info] <0.209.0> Running boot step rabbit_policies defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.757346+00:00 [info] <0.209.0> Running boot step rabbit_quorum_queue_type defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.757376+00:00 [info] <0.209.0> Running boot step rabbit_stream_queue defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.757400+00:00 [info] <0.209.0> Running boot step rabbit_policy defined by app rabbit[0m
+s3-1            | I0930 05:19:26.523968 filer_grpc_server_sub_meta.go:163  + filer:127.0.0.1:8888.18888@127.0.0.1:49920 local subscribe / from {Time:2026-09-30 05:18:26.521994246 +0000 UTC Offset:-2 IsOffsetBased:false} clientId:-2108734075
+redis-1         | 1:M 30 Sep 2026 05:19:24.820 * <ReJSON> Exported RedisJSON_V5 API
+s3-1            | I0930 05:19:26.607238 masterclient.go:324 updateVidMap ignore short heartbeat: volume_location:{leader:"127.0.0.1:9333.19333"}
+s3-1            | I0930 05:19:26.607286 masterclient.go:268 .master masterClient failed to receive from 127.0.0.1:9333: EOF
+s3-1            | I0930 05:19:26.662797 volume_grpc_client_to_master.go:53 Volume server start with seed master nodes: [127.0.0.1:9333]
+s3-1            | I0930 05:19:26.662960 volume.go:450 Start Seaweed volume server 30GB 4.17 4a5243886 at 127.0.0.1:8080
+redis-1         | 1:M 30 Sep 2026 05:19:24.820 * <ReJSON> Enabled diskless replication
+redis-1         | 1:M 30 Sep 2026 05:19:24.820 * <ReJSON> Initialized shared string cache, thread safe: true.
+redis-1         | 1:M 30 Sep 2026 05:19:24.820 * Module 'ReJSON' loaded from /usr/local/lib/redis/modules//rejson.so
+redis-1         | 1:M 30 Sep 2026 05:19:24.820 * <search> Acquired RedisJSON_V5 API
+redis-1         | 1:M 30 Sep 2026 05:19:24.820 * Server initialized
+redis-1         | 1:M 30 Sep 2026 05:19:24.820 * Ready to accept connections tcp
+rabbitmq-1      | 2026-09-30 05:19:26.757430+00:00 [info] <0.209.0> Running boot step rabbit_quorum_event_subscriber defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.757478+00:00 [info] <0.209.0> Running boot step rabbit_quorum_memory_manager defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.757509+00:00 [info] <0.209.0> Running boot step rabbit_quorum_queue defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.757600+00:00 [info] <0.209.0> Running boot step rabbit_stream_coordinator defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.757681+00:00 [info] <0.209.0> Running boot step rabbit_vhost_limit defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.757714+00:00 [info] <0.209.0> Running boot step rabbit_mgmt_db_handler defined by app rabbitmq_management_agent[0m
+rabbitmq-1      | 2026-09-30 05:19:26.757756+00:00 [info] <0.209.0> Management plugin: using rates mode 'basic'[0m
+rabbitmq-1      | 2026-09-30 05:19:26.757836+00:00 [info] <0.209.0> Running boot step recovery defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.757894+00:00 [info] <0.209.0> Running boot step prevent_startup_if_node_was_reset defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.757911+00:00 [info] <0.209.0> Running boot step empty_db_check defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.757939+00:00 [info] <0.209.0> Will seed default virtual host and user...[0m
+rabbitmq-1      | 2026-09-30 05:19:26.757989+00:00 [info] <0.209.0> Adding vhost '/' (description: 'Default virtual host', tags: [])[0m
+rabbitmq-1      | 2026-09-30 05:19:26.765733+00:00 [info] <0.1066.0> Making sure data directory '/var/lib/rabbitmq/mnesia/rabbit@rabbitmq/msg_stores/vhosts/628WB79CIFDYO9LJI6DKMI09L' for vhost '/' exists[0m
+rabbitmq-1      | 2026-09-30 05:19:26.766169+00:00 [info] <0.1066.0> Setting segment_entry_count for vhost '/' with 0 queues to '2048'[0m
+rabbitmq-1      | 2026-09-30 05:19:26.769763+00:00 [info] <0.1066.0> Starting message stores for vhost '/'[0m
+rabbitmq-1      | 2026-09-30 05:19:26.770390+00:00 [info] <0.1066.0> Started message store of type transient for vhost '/'[0m
+rabbitmq-1      | [38;5;214m2026-09-30 05:19:26.783673+00:00 [warning] <0.1078.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch[0m
+rabbitmq-1      | 2026-09-30 05:19:26.784069+00:00 [info] <0.1066.0> Started message store of type persistent for vhost '/'[0m
+s3-1            | I0930 05:19:26.663210 volume_grpc_client_to_master.go:130 Heartbeat to: 127.0.0.1:9333
+rabbitmq-1      | 2026-09-30 05:19:26.784126+00:00 [info] <0.1066.0> Recovering 0 queues of type rabbit_classic_queue took 17ms[0m
+s3-1            | I0930 05:19:26.663530 node.go:427 topo adds child DefaultDataCenter
+rabbitmq-1      | 2026-09-30 05:19:26.784146+00:00 [info] <0.1066.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms[0m
+s3-1            | I0930 05:19:26.663541 node.go:427 topo:DefaultDataCenter adds child DefaultRack
+rabbitmq-1      | 2026-09-30 05:19:26.784164+00:00 [info] <0.1066.0> Recovering 0 queues of type rabbit_stream_queue took 0ms[0m
+s3-1            | I0930 05:19:26.663546 node.go:427 topo:DefaultDataCenter:DefaultRack adds child 127.0.0.1:8080
+rabbitmq-1      | 2026-09-30 05:19:26.796337+00:00 [info] <0.209.0> Created user 'agro_local'[0m
+s3-1            | I0930 05:19:26.663552 node.go:427 topo:DefaultDataCenter:DefaultRack:127.0.0.1:8080 adds child 
+rabbitmq-1      | 2026-09-30 05:19:26.810332+00:00 [info] <0.209.0> Successfully set user tags for user 'agro_local' to [administrator][0m
+s3-1            | I0930 05:19:26.663559 master_grpc_server.go:142 added volume server 0: 127.0.0.1:8080 (id=127.0.0.1:8080, ip=127.0.0.1:8080) [cf4df599-018a-4d7c-81ca-1fbee3748cf6]
+s3-1            | I0930 05:19:26.663574 master_grpc_server.go:52 found new uuid:127.0.0.1:8080 [cf4df599-018a-4d7c-81ca-1fbee3748cf6] , map[127.0.0.1:8080:[cf4df599-018a-4d7c-81ca-1fbee3748cf6]]
+s3-1            | I0930 05:19:26.871282 s3.go:260 S3 read filer buckets dir: /buckets
+s3-1            | I0930 05:19:26.871291 s3.go:262 S3 read master addresses for discovery: [127.0.0.1:9333]
+s3-1            | I0930 05:19:26.871297 s3.go:270 connected to filers [127.0.0.1:8888]
+s3-1            | I0930 05:19:26.871305 s3.go:291 Starting S3 API Server with standard IAM
+s3-1            | I0930 05:19:26.872800 filer_client.go:176 FilerClient: started filer discovery for group '' (refresh interval: 5m0s)
+s3-1            | I0930 05:19:26.872810 masterclient.go:440 .s3 masterClient bootstraps with masters {[127.0.0.1:9333] <nil>}
+s3-1            | I0930 05:19:26.873211 masterclient.go:216 .s3 masterClient gRPC stream established to 127.0.0.1:9333 in 390.12µs
+s3-1            | I0930 05:19:26.873291 master_grpc_server.go:406 + client .s3@172.19.0.2:18333
+s3-1            | I0930 05:19:26.873412 masterclient.go:247 master 127.0.0.1:9333 redirected to leader 127.0.0.1:9333.19333
+s3-1            | I0930 05:19:26.873415 masterclient.go:291 + filer@127.0.0.1:8888 noticed .s3 172.19.0.2:18333
+s3-1            | I0930 05:19:26.873501 master_grpc_server.go:421 - client .s3@172.19.0.2:18333
+s3-1            | I0930 05:19:26.873544 masterclient.go:293 - filer@127.0.0.1:8888 noticed .s3 172.19.0.2:18333
+s3-1            | I0930 05:19:26.873730 s3_sse_s3.go:379 SSE-S3 KeyManager: Generated and saved new KEK to filer /etc/s3/sse_kek
+s3-1            | I0930 05:19:26.873866 masterclient.go:216 .s3 masterClient gRPC stream established to 127.0.0.1:9333 in 324.31µs
+s3-1            | I0930 05:19:26.873934 master_grpc_server.go:406 + client .s3@172.19.0.2:18333
+s3-1            | I0930 05:19:26.874068 masterclient.go:291 + filer@127.0.0.1:8888 noticed .s3 172.19.0.2:18333
+s3-1            | I0930 05:19:26.875441 s3.go:462 Start Seaweed S3 API Server 30GB 4.17 4a5243886 at http port 8333
+s3-1            | I0930 05:19:26.875763 filer_grpc_server_sub_meta.go:411 +  listener s3@127.0.0.1:49922 clientId -1674340609 clientEpoch 2
+s3-1            | I0930 05:19:26.875773 filer_grpc_server_sub_meta.go:45  s3@127.0.0.1:49922 starts to subscribe /etc/ from {Time:2026-09-30 05:19:26.871315605 +0000 UTC Offset:-2 IsOffsetBased:false}
+s3-1            | I0930 05:19:26.875837 s3.go:502 Start Iceberg REST Catalog Server at http://0.0.0.0:8181
+s3-1            | I0930 05:19:26.932259 master_client.go:24 the cluster has 1 filer
+s3-1            | I0930 05:19:26.932269 filer_client.go:373 FilerClient: discovered 1 new filer(s) in group '': [127.0.0.1:8888]
+s3-1            | I0930 05:19:27.608133 masterclient.go:454 .master masterClient reconnection attempt #1
+s3-1            | I0930 05:19:27.608612 masterclient.go:216 .master masterClient gRPC stream established to 127.0.0.1:9333 in 461.131µs
+s3-1            | I0930 05:19:27.608708 master_grpc_server.go:406 + client .master@127.0.0.1:9333.19333
+s3-1            | I0930 05:19:27.608834 masterclient.go:291 + filer@127.0.0.1:8888 noticed .master 127.0.0.1:9333.19333
+s3-1            | I0930 05:19:27.608842 masterclient.go:291 + master@127.0.0.1:9333 noticed .master 127.0.0.1:9333.19333
+rabbitmq-1      | 2026-09-30 05:19:26.822350+00:00 [info] <0.209.0> Successfully set permissions for user 'agro_local' in virtual host '/' to '.*', '.*', '.*'[0m
+rabbitmq-1      | 2026-09-30 05:19:26.822383+00:00 [info] <0.209.0> Running boot step rabbit_observer_cli defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.822410+00:00 [info] <0.209.0> Running boot step rabbit_core_metrics_gc defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.822498+00:00 [info] <0.209.0> Running boot step background_gc defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.822578+00:00 [info] <0.209.0> Running boot step rabbit_observer_cli_classic_queues defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.822610+00:00 [info] <0.209.0> Running boot step rabbit_observer_cli_quorum_queues defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.822652+00:00 [info] <0.209.0> Running boot step routing_ready defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.822672+00:00 [info] <0.209.0> Running boot step pre_flight defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.822692+00:00 [info] <0.209.0> Running boot step notify_cluster defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.822710+00:00 [info] <0.209.0> Running boot step networking defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.822726+00:00 [info] <0.209.0> Running boot step rabbit_quorum_queue_periodic_membership_reconciliation defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.822813+00:00 [info] <0.209.0> Running boot step definition_import_worker_pool defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.822839+00:00 [info] <0.548.0> Starting worker pool 'definition_import_pool' with 16 processes in it[0m
+rabbitmq-1      | 2026-09-30 05:19:26.823169+00:00 [info] <0.209.0> Running boot step cluster_name defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.823212+00:00 [info] <0.209.0> Initialising internal cluster ID to 'rabbitmq-cluster-id-a4hDpq5BUwHKSp06r752Iw'[0m
+rabbitmq-1      | 2026-09-30 05:19:26.823863+00:00 [info] <0.209.0> Running boot step virtual_host_reconciliation defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.823948+00:00 [info] <0.209.0> Running boot step direct_client defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.823994+00:00 [info] <0.209.0> Running boot step logger_exchange defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.824860+00:00 [info] <0.209.0> Running boot step cluster_tags defined by app rabbit[0m
+rabbitmq-1      | 2026-09-30 05:19:26.825622+00:00 [info] <0.1124.0> Resetting node maintenance status[0m
+rabbitmq-1      | 2026-09-30 05:19:26.865365+00:00 [info] <0.1147.0> Prometheus metrics: HTTP (non-TLS) listener started on port 15692[0m
+rabbitmq-1      | 2026-09-30 05:19:26.865421+00:00 [info] <0.1124.0> Ready to start client connection listeners[0m
+rabbitmq-1      | 2026-09-30 05:19:26.866331+00:00 [info] <0.1191.0> started TCP listener on [::]:5672[0m
+rabbitmq-1      |  completed with 3 plugins.
+rabbitmq-1      | 2026-09-30 05:19:26.899591+00:00 [info] <0.1124.0> Server startup complete; 3 plugins started.[0m
+rabbitmq-1      | 2026-09-30 05:19:26.899591+00:00 [info] <0.1124.0>  * rabbitmq_prometheus[0m
+rabbitmq-1      | 2026-09-30 05:19:26.899591+00:00 [info] <0.1124.0>  * rabbitmq_management_agent[0m
+rabbitmq-1      | 2026-09-30 05:19:26.899591+00:00 [info] <0.1124.0>  * rabbitmq_web_dispatch[0m
+rabbitmq-1      | 2026-09-30 05:19:27.026190+00:00 [info] <0.10.0> Time to start RabbitMQ: 2020 ms[0m
+
+ Container agro-env-test-c7602e1c60ab-rabbitmq-1  Stopping
+ Container agro-env-test-c7602e1c60ab-redis-1  Stopping
+ Container agro-env-test-c7602e1c60ab-nginx-1  Stopping
+ Container agro-env-test-c7602e1c60ab-nginx-1  Stopped
+ Container agro-env-test-c7602e1c60ab-nginx-1  Removing
+ Container agro-env-test-c7602e1c60ab-nginx-1  Removed
+ Container agro-env-test-c7602e1c60ab-diagnosis-1  Stopping
+ Container agro-env-test-c7602e1c60ab-ai_inference-1  Stopping
+ Container agro-env-test-c7602e1c60ab-notification-1  Stopping
+ Container agro-env-test-c7602e1c60ab-identity-1  Stopping
+ Container agro-env-test-c7602e1c60ab-redis-1  Stopped
+ Container agro-env-test-c7602e1c60ab-redis-1  Removing
+ Container agro-env-test-c7602e1c60ab-redis-1  Removed
+ Container agro-env-test-c7602e1c60ab-ai_inference-1  Stopped
+ Container agro-env-test-c7602e1c60ab-ai_inference-1  Removing
+ Container agro-env-test-c7602e1c60ab-identity-1  Stopped
+ Container agro-env-test-c7602e1c60ab-identity-1  Removing
+ Container agro-env-test-c7602e1c60ab-ai_inference-1  Removed
+ Container agro-env-test-c7602e1c60ab-ai_inference-migrate-1  Stopping
+ Container agro-env-test-c7602e1c60ab-ai_inference-migrate-1  Stopped
+ Container agro-env-test-c7602e1c60ab-ai_inference-migrate-1  Removing
+ Container agro-env-test-c7602e1c60ab-identity-1  Removed
+ Container agro-env-test-c7602e1c60ab-identity-migrate-1  Stopping
+ Container agro-env-test-c7602e1c60ab-identity-migrate-1  Stopped
+ Container agro-env-test-c7602e1c60ab-identity-migrate-1  Removing
+ Container agro-env-test-c7602e1c60ab-diagnosis-1  Stopped
+ Container agro-env-test-c7602e1c60ab-diagnosis-1  Removing
+ Container agro-env-test-c7602e1c60ab-notification-1  Stopped
+ Container agro-env-test-c7602e1c60ab-notification-1  Removing
+ Container agro-env-test-c7602e1c60ab-ai_inference-migrate-1  Removed
+ Container agro-env-test-c7602e1c60ab-diagnosis-1  Removed
+ Container agro-env-test-c7602e1c60ab-diagnosis-migrate-1  Stopping
+ Container agro-env-test-c7602e1c60ab-s3-bootstrap-1  Stopping
+ Container agro-env-test-c7602e1c60ab-diagnosis-migrate-1  Stopped
+ Container agro-env-test-c7602e1c60ab-diagnosis-migrate-1  Removing
+ Container agro-env-test-c7602e1c60ab-s3-bootstrap-1  Stopped
+ Container agro-env-test-c7602e1c60ab-s3-bootstrap-1  Removing
+ Container agro-env-test-c7602e1c60ab-identity-migrate-1  Removed
+ Container agro-env-test-c7602e1c60ab-notification-1  Removed
+ Container agro-env-test-c7602e1c60ab-notification-migrate-1  Stopping
+ Container agro-env-test-c7602e1c60ab-notification-migrate-1  Stopped
+ Container agro-env-test-c7602e1c60ab-notification-migrate-1  Removing
+ Container agro-env-test-c7602e1c60ab-diagnosis-migrate-1  Removed
+ Container agro-env-test-c7602e1c60ab-s3-bootstrap-1  Removed
+ Container agro-env-test-c7602e1c60ab-s3-1  Stopping
+ Container agro-env-test-c7602e1c60ab-notification-migrate-1  Removed
+ Container agro-env-test-c7602e1c60ab-db-bootstrap-1  Stopping
+ Container agro-env-test-c7602e1c60ab-db-bootstrap-1  Stopped
+ Container agro-env-test-c7602e1c60ab-db-bootstrap-1  Removing
+ Container agro-env-test-c7602e1c60ab-db-bootstrap-1  Removed
+ Container agro-env-test-c7602e1c60ab-postgres-1  Stopping
+ Container agro-env-test-c7602e1c60ab-postgres-1  Stopped
+ Container agro-env-test-c7602e1c60ab-postgres-1  Removing
+ Container agro-env-test-c7602e1c60ab-postgres-1  Removed
+ Container agro-env-test-c7602e1c60ab-rabbitmq-1  Stopped
+ Container agro-env-test-c7602e1c60ab-rabbitmq-1  Removing
+ Container agro-env-test-c7602e1c60ab-rabbitmq-1  Removed
+ Container agro-env-test-c7602e1c60ab-s3-1  Stopped
+ Container agro-env-test-c7602e1c60ab-s3-1  Removing
+ Container agro-env-test-c7602e1c60ab-s3-1  Removed
+ Image agro-env-test-c7602e1c60ab-identity-migrate:latest  Removing
+ Image agro-env-test-c7602e1c60ab-identity:latest  Removing
+ Image agro-env-test-c7602e1c60ab-ai_inference-migrate:latest  Removing
+ Image agro-env-test-c7602e1c60ab-notification:latest  Removing
+ Image agro-env-test-c7602e1c60ab-db-bootstrap:latest  Removing
+ Image agro-env-test-c7602e1c60ab-diagnosis-migrate:latest  Removing
+ Image agro-env-test-c7602e1c60ab-notification-migrate:latest  Removing
+ Image agro-env-test-c7602e1c60ab-probe:latest  Removing
+ Image agro-env-test-c7602e1c60ab-diagnosis:latest  Removing
+ Image agro-env-test-c7602e1c60ab-ai_inference:latest  Removing
+ Image agro-env-test-c7602e1c60ab-s3-bootstrap:latest  Removing
+ Image agro-env-test-c7602e1c60ab-nginx:latest  Removing
+ Volume agro-env-test-c7602e1c60ab_rabbit_data  Removing
+ Volume agro-env-test-c7602e1c60ab_postgres_data  Removing
+ Volume agro-env-test-c7602e1c60ab_s3_data  Removing
+ Network agro-env-test-c7602e1c60ab_edge  Removing
+ Network agro-env-test-c7602e1c60ab_application  Removing
+ Network agro-env-test-c7602e1c60ab_persistence  Removing
+ Volume agro-env-test-c7602e1c60ab_rabbit_data  Removed
+ Image agro-env-test-c7602e1c60ab-db-bootstrap:latest  Removed
+ Image agro-env-test-c7602e1c60ab-identity-migrate:latest  Removed
+ Image agro-env-test-c7602e1c60ab-notification:latest  Removed
+ Image agro-env-test-c7602e1c60ab-identity:latest  Removed
+ Volume agro-env-test-c7602e1c60ab_postgres_data  Removed
+ Volume agro-env-test-c7602e1c60ab_s3_data  Removed
+ Image agro-env-test-c7602e1c60ab-probe:latest  Removed
+ Image agro-env-test-c7602e1c60ab-nginx:latest  Removed
+ Image agro-env-test-c7602e1c60ab-s3-bootstrap:latest  Removed
+ Image agro-env-test-c7602e1c60ab-diagnosis-migrate:latest  Removed
+ Image agro-env-test-c7602e1c60ab-ai_inference:latest  Removed
+ Image agro-env-test-c7602e1c60ab-diagnosis:latest  Removed
+ Image agro-env-test-c7602e1c60ab-notification-migrate:latest  Removed
+ Image agro-env-test-c7602e1c60ab-ai_inference-migrate:latest  Removed
+ Network agro-env-test-c7602e1c60ab_persistence  Removed
+ Network agro-env-test-c7602e1c60ab_edge  Removed
+ Network agro-env-test-c7602e1c60ab_application  Removed
+

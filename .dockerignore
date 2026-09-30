@@ -1,0 +1,13 @@
+
+# Local credentials and generated environments never enter builds
+.git
+.local
+.env
+.env.*
+**/.venv
+**/__pycache__
+**/node_modules
+ml/datasets
+ml/models
+
+**/dist

@@ -1,0 +1,597 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "AgroDiagnóstico notification",
+    "version": "1.0.0",
+    "description": "Contrato inicial: salud técnica implementada; operaciones de negocio contract-only. Sin servidores públicos inventados."
+  },
+  "paths": {
+    "/health/live": {
+      "get": {
+        "operationId": "notification_live",
+        "summary": "Salud live interna",
+        "description": "Solo red interna. No expuesta por proxy. Liveness no sondea dependencias. Readiness según D2; no acredita modelo cargado en incremento 0.",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Salud técnica implementada; no acredita funcionalidad de negocio.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "const": "alive"
+                    },
+                    "service": {
+                      "const": "notification"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "service"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "status": "alive",
+                  "service": "notification"
+                }
+              }
+            }
+          }
+        },
+        "x-status": "implemented",
+        "x-owner": "notification",
+        "x-increment": 0,
+        "x-visibility": "internal"
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "operationId": "notification_ready",
+        "summary": "Salud ready interna",
+        "description": "Solo red interna. No expuesta por proxy. Liveness no sondea dependencias. Readiness según D2; no acredita modelo cargado en incremento 0.",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Salud técnica implementada; no acredita funcionalidad de negocio.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "const": "ready"
+                    },
+                    "service": {
+                      "const": "notification"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "service"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "status": "ready",
+                  "service": "notification"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Dependencia indispensable o migración/configuración no disponible; sin detalles sensibles.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "const": "not_ready"
+                    },
+                    "service": {
+                      "const": "notification"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "service"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "status": "not_ready",
+                  "service": "notification"
+                }
+              }
+            }
+          }
+        },
+        "x-status": "implemented",
+        "x-owner": "notification",
+        "x-increment": 0,
+        "x-visibility": "internal"
+      }
+    },
+    "/api/v1/notifications": {
+      "get": {
+        "operationId": "notification_list",
+        "summary": "Avisos propios paginados",
+        "description": "Solo avisos del usuario; orden created_at DESC,id DESC; cursor inválido/ajeno400 genérico. CANCELADO no genera aviso. Lectura de aviso tendrá contrato separado en incremento5.",
+        "security": [
+          {
+            "UserBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "11111111-1111-4111-8111-111111111111",
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            },
+            "example": 20
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            "example": "cursor-opaco-de-ejemplo",
+            "description": "Opaco, vinculado a propietario/filtros; inválido 400. Orden created_at DESC, id DESC; keyset, no offset."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Respuesta prevista; aún no implementada.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/NotificationPage"
+                },
+                "example": {
+                  "items": [
+                    {
+                      "id": "22222222-2222-4222-8222-222222222222",
+                      "diagnosis_id": "11111111-1111-4111-8111-111111111111",
+                      "final_status": "NO_CONCLUYENTE",
+                      "created_at": "2026-09-28T12:00:00Z",
+                      "read_at": null
+                    }
+                  ],
+                  "next_cursor": null
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitud inválida.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "INVALID_REQUEST",
+                  "message": "Solicitud inválida.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Autenticación requerida o inválida.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "Autenticación requerida o inválida.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          }
+        },
+        "x-status": "contract-only",
+        "x-owner": "notification",
+        "x-increment": 5
+      }
+    },
+    "/api/v1/notification-preferences": {
+      "get": {
+        "operationId": "notification_get_preferences",
+        "summary": "Preferencias propias de correo",
+        "description": "Aviso interno no desactivable; email_enabled controla intentos de correo futuros, sin modificar diagnóstico. GET retorna preferencia efectiva; PATCH parcial no vacío. Defaults de provisión se fijan antes del consumidor en incremento5.",
+        "security": [
+          {
+            "UserBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "11111111-1111-4111-8111-111111111111",
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Respuesta prevista; aún no implementada.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/NotificationPreferences"
+                },
+                "example": {
+                  "email_enabled": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitud inválida.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "INVALID_REQUEST",
+                  "message": "Solicitud inválida.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Autenticación requerida o inválida.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "Autenticación requerida o inválida.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          }
+        },
+        "x-status": "contract-only",
+        "x-owner": "notification",
+        "x-increment": 5
+      },
+      "patch": {
+        "operationId": "notification_patch_preferences",
+        "summary": "Preferencias propias de correo",
+        "description": "Aviso interno no desactivable; email_enabled controla intentos de correo futuros, sin modificar diagnóstico. GET retorna preferencia efectiva; PATCH parcial no vacío. Defaults de provisión se fijan antes del consumidor en incremento5.",
+        "security": [
+          {
+            "UserBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "11111111-1111-4111-8111-111111111111",
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Respuesta prevista; aún no implementada.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/NotificationPreferences"
+                },
+                "example": {
+                  "email_enabled": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitud inválida.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "INVALID_REQUEST",
+                  "message": "Solicitud inválida.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Autenticación requerida o inválida.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "Autenticación requerida o inválida.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          }
+        },
+        "x-status": "contract-only",
+        "x-owner": "notification",
+        "x-increment": 5,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "../schemas/common.schema.json#/$defs/NotificationPreferencesPatch"
+              },
+              "example": {
+                "email_enabled": false
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "UserBearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Firma, issuer, audience, expiry, revocación/estado de cuenta. Solo identidad de usuario."
+      },
+      "ServiceBearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Identidad ai_inference; audience interna dedicada. Bearer de usuario no autoriza. Algoritmo/configuración en ADR de seguridad antes de incremento 1/3."
+      },
+      "RefreshCookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "__Secure-agro_refresh",
+        "description": "Cookie HttpOnly; Secure; SameSite=Lax; Path=/api/v1/auth; sin Domain. Rotación y revocación."
+      },
+      "CsrfHeader": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-CSRF-Token",
+        "description": "Debe coincidir con token ligado a sesión; además verificar Origin permitido."
+      }
+    }
+  }
+}

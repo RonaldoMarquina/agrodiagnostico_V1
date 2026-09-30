@@ -1,0 +1,20 @@
+PASS dataset inventory: 3 fuentes, 7 clases candidatas, 21 mapeos; filas reales=0; sin entrenamiento
+test_cli_real_manifest_rejects_fixture_nonzero_without_mutation (test_inventory.DatasetTests.test_cli_real_manifest_rejects_fixture_nonzero_without_mutation) ... ok
+test_duplicate_image_id_rejected (test_inventory.DatasetTests.test_duplicate_image_id_rejected) ... ok
+test_each_required_field_missing (test_inventory.DatasetTests.test_each_required_field_missing) ... ok
+test_eligibility_requires_evidence_and_project_review (test_inventory.DatasetTests.test_eligibility_requires_evidence_and_project_review) ... ok
+test_empty_and_bad_header_rejected (test_inventory.DatasetTests.test_empty_and_bad_header_rejected) ... ok
+test_every_partition_pair_for_hash_and_group (test_inventory.DatasetTests.test_every_partition_pair_for_hash_and_group) ... ok
+test_extra_private_fields_rejected (test_inventory.DatasetTests.test_extra_private_fields_rejected) ... ok
+test_group_within_partition_is_allowed (test_inventory.DatasetTests.test_group_within_partition_is_allowed) ... ok
+test_ineligible_source_and_synthetic_in_real_manifest (test_inventory.DatasetTests.test_ineligible_source_and_synthetic_in_real_manifest) ... ok
+test_invalid_fields (test_inventory.DatasetTests.test_invalid_fields) ... ok
+test_positive_seven_classes_four_partitions (test_inventory.DatasetTests.test_positive_seven_classes_four_partitions) ... ok
+test_recorded_counts_match_research_evidence (test_inventory.DatasetTests.test_recorded_counts_match_research_evidence) ... ok
+test_taxonomy_duplicate_retired_supported_crop (test_inventory.DatasetTests.test_taxonomy_duplicate_retired_supported_crop) ... ok
+test_unknown_is_not_zero_and_counts_require_method (test_inventory.DatasetTests.test_unknown_is_not_zero_and_counts_require_method) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.183s
+
+OK

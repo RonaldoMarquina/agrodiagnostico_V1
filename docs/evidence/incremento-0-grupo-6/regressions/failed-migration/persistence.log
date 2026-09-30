@@ -1,0 +1,20 @@
+Building locked migration images...
+Clean bootstrap and second initialization PASS
+Traceback (most recent call last):
+  File "/check.py", line 37, in <module>
+    action(service, 'upgrade', 'head')
+  File "/check.py", line 31, in action
+    assert run.returncode == expected, (service, args, run.returncode, 'unexpected exit')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('identity', ('upgrade', 'head'), 1, 'unexpected exit')
+
+
+Traceback (most recent call last):
+  File "/tmp/agro-ci-regression-aevgaznz/repo/scripts/check_persistence.py", line 90, in <module>
+    main()
+  File "/tmp/agro-ci-regression-aevgaznz/repo/scripts/check_persistence.py", line 48, in main
+    print(run(base + ['run', '--rm', '--no-deps', '-v', str(ROOT / 'services') + ':/sources:ro',
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/agro-ci-regression-aevgaznz/repo/scripts/check_persistence.py", line 35, in run
+    raise RuntimeError('Unexpected command exit: ' + str(result.returncode))
+RuntimeError: Unexpected command exit: 1

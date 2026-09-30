@@ -1,0 +1,112 @@
+Required configuration and idempotent preparation PASS
+Building locked APIs, frontend and probes...
+ Network agro-env-test-bd9c9e6fbc22_edge  Creating
+ Network agro-env-test-bd9c9e6fbc22_edge  Created
+ Network agro-env-test-bd9c9e6fbc22_application  Creating
+ Network agro-env-test-bd9c9e6fbc22_application  Created
+ Network agro-env-test-bd9c9e6fbc22_persistence  Creating
+ Network agro-env-test-bd9c9e6fbc22_persistence  Created
+ Volume agro-env-test-bd9c9e6fbc22_postgres_data  Creating
+ Volume agro-env-test-bd9c9e6fbc22_postgres_data  Created
+ Volume agro-env-test-bd9c9e6fbc22_s3_data  Creating
+ Volume agro-env-test-bd9c9e6fbc22_s3_data  Created
+ Volume agro-env-test-bd9c9e6fbc22_rabbit_data  Creating
+ Volume agro-env-test-bd9c9e6fbc22_rabbit_data  Created
+ Container agro-env-test-bd9c9e6fbc22-redis-1  Creating
+ Container agro-env-test-bd9c9e6fbc22-rabbitmq-1  Creating
+ Container agro-env-test-bd9c9e6fbc22-s3-1  Creating
+ Container agro-env-test-bd9c9e6fbc22-postgres-1  Creating
+ Container agro-env-test-bd9c9e6fbc22-s3-1  Created
+ Container agro-env-test-bd9c9e6fbc22-s3-bootstrap-1  Creating
+ Container agro-env-test-bd9c9e6fbc22-redis-1  Created
+ Container agro-env-test-bd9c9e6fbc22-postgres-1  Created
+ Container agro-env-test-bd9c9e6fbc22-db-bootstrap-1  Creating
+ Container agro-env-test-bd9c9e6fbc22-rabbitmq-1  Created
+ Container agro-env-test-bd9c9e6fbc22-s3-bootstrap-1  Created
+ Container agro-env-test-bd9c9e6fbc22-db-bootstrap-1  Created
+ Container agro-env-test-bd9c9e6fbc22-notification-migrate-1  Creating
+ Container agro-env-test-bd9c9e6fbc22-identity-migrate-1  Creating
+ Container agro-env-test-bd9c9e6fbc22-ai_inference-migrate-1  Creating
+ Container agro-env-test-bd9c9e6fbc22-diagnosis-migrate-1  Creating
+ Container agro-env-test-bd9c9e6fbc22-diagnosis-migrate-1  Created
+ Container agro-env-test-bd9c9e6fbc22-diagnosis-1  Creating
+ Container agro-env-test-bd9c9e6fbc22-identity-migrate-1  Created
+ Container agro-env-test-bd9c9e6fbc22-identity-1  Creating
+ Container agro-env-test-bd9c9e6fbc22-notification-migrate-1  Created
+ Container agro-env-test-bd9c9e6fbc22-notification-1  Creating
+ Container agro-env-test-bd9c9e6fbc22-ai_inference-migrate-1  Created
+ Container agro-env-test-bd9c9e6fbc22-ai_inference-1  Creating
+ Container agro-env-test-bd9c9e6fbc22-identity-1  Created
+ Container agro-env-test-bd9c9e6fbc22-diagnosis-1  Created
+ Container agro-env-test-bd9c9e6fbc22-notification-1  Created
+ Container agro-env-test-bd9c9e6fbc22-ai_inference-1  Created
+ Container agro-env-test-bd9c9e6fbc22-nginx-1  Creating
+ Container agro-env-test-bd9c9e6fbc22-nginx-1  Created
+ Container agro-env-test-bd9c9e6fbc22-redis-1  Starting
+ Container agro-env-test-bd9c9e6fbc22-s3-1  Starting
+ Container agro-env-test-bd9c9e6fbc22-postgres-1  Starting
+ Container agro-env-test-bd9c9e6fbc22-rabbitmq-1  Starting
+ Container agro-env-test-bd9c9e6fbc22-rabbitmq-1  Started
+ Container agro-env-test-bd9c9e6fbc22-redis-1  Started
+ Container agro-env-test-bd9c9e6fbc22-postgres-1  Started
+ Container agro-env-test-bd9c9e6fbc22-postgres-1  Waiting
+ Container agro-env-test-bd9c9e6fbc22-s3-1  Started
+ Container agro-env-test-bd9c9e6fbc22-s3-1  Waiting
+ Container agro-env-test-bd9c9e6fbc22-postgres-1  Healthy
+ Container agro-env-test-bd9c9e6fbc22-db-bootstrap-1  Starting
+ Container agro-env-test-bd9c9e6fbc22-db-bootstrap-1  Started
+ Container agro-env-test-bd9c9e6fbc22-db-bootstrap-1  Waiting
+ Container agro-env-test-bd9c9e6fbc22-db-bootstrap-1  Waiting
+ Container agro-env-test-bd9c9e6fbc22-db-bootstrap-1  Waiting
+ Container agro-env-test-bd9c9e6fbc22-db-bootstrap-1  Waiting
+ Container agro-env-test-bd9c9e6fbc22-db-bootstrap-1  Exited
+ Container agro-env-test-bd9c9e6fbc22-identity-migrate-1  Starting
+ Container agro-env-test-bd9c9e6fbc22-db-bootstrap-1  Exited
+ Container agro-env-test-bd9c9e6fbc22-diagnosis-migrate-1  Starting
+ Container agro-env-test-bd9c9e6fbc22-db-bootstrap-1  Exited
+ Container agro-env-test-bd9c9e6fbc22-notification-migrate-1  Starting
+ Container agro-env-test-bd9c9e6fbc22-db-bootstrap-1  Exited
+ Container agro-env-test-bd9c9e6fbc22-ai_inference-migrate-1  Starting
+ Container agro-env-test-bd9c9e6fbc22-identity-migrate-1  Started
+ Container agro-env-test-bd9c9e6fbc22-identity-migrate-1  Waiting
+ Container agro-env-test-bd9c9e6fbc22-diagnosis-migrate-1  Started
+ Container agro-env-test-bd9c9e6fbc22-notification-migrate-1  Started
+ Container agro-env-test-bd9c9e6fbc22-notification-migrate-1  Waiting
+ Container agro-env-test-bd9c9e6fbc22-ai_inference-migrate-1  Started
+ Container agro-env-test-bd9c9e6fbc22-ai_inference-migrate-1  Waiting
+ Container agro-env-test-bd9c9e6fbc22-identity-migrate-1  Exited
+ Container agro-env-test-bd9c9e6fbc22-identity-1  Starting
+ Container agro-env-test-bd9c9e6fbc22-notification-migrate-1  Exited
+ Container agro-env-test-bd9c9e6fbc22-notification-1  Starting
+ Container agro-env-test-bd9c9e6fbc22-ai_inference-migrate-1  Exited
+ Container agro-env-test-bd9c9e6fbc22-ai_inference-1  Starting
+ Container agro-env-test-bd9c9e6fbc22-identity-1  Started
+ Container agro-env-test-bd9c9e6fbc22-notification-1  Started
+ Container agro-env-test-bd9c9e6fbc22-ai_inference-1  Started
+ Container agro-env-test-bd9c9e6fbc22-s3-1  Healthy
+ Container agro-env-test-bd9c9e6fbc22-s3-bootstrap-1  Starting
+ Container agro-env-test-bd9c9e6fbc22-s3-bootstrap-1  Started
+ Container agro-env-test-bd9c9e6fbc22-diagnosis-migrate-1  Waiting
+ Container agro-env-test-bd9c9e6fbc22-s3-bootstrap-1  Waiting
+ Container agro-env-test-bd9c9e6fbc22-diagnosis-migrate-1  Exited
+ Container agro-env-test-bd9c9e6fbc22-s3-bootstrap-1  Exited
+ Container agro-env-test-bd9c9e6fbc22-diagnosis-1  Starting
+ Container agro-env-test-bd9c9e6fbc22-diagnosis-1  Started
+ Container agro-env-test-bd9c9e6fbc22-diagnosis-1  Waiting
+ Container agro-env-test-bd9c9e6fbc22-ai_inference-1  Waiting
+ Container agro-env-test-bd9c9e6fbc22-notification-1  Waiting
+ Container agro-env-test-bd9c9e6fbc22-identity-1  Waiting
+ Container agro-env-test-bd9c9e6fbc22-notification-1  Healthy
+ Container agro-env-test-bd9c9e6fbc22-ai_inference-1  Healthy
+ Container agro-env-test-bd9c9e6fbc22-diagnosis-1  Healthy
+ Container agro-env-test-bd9c9e6fbc22-identity-1  Error
+dependency failed to start: container agro-env-test-bd9c9e6fbc22-identity-1 is unhealthy
+
+Traceback (most recent call last):
+  File "/tmp/agro-ci-regression-c0qqfcj0/repo/scripts/check_environment.py", line 125, in <module>
+    main()
+  File "/tmp/agro-ci-regression-c0qqfcj0/repo/scripts/check_environment.py", line 65, in main
+    run(base+['up','-d','--wait','--wait-timeout','180'],timeout=240)
+  File "/tmp/agro-ci-regression-c0qqfcj0/repo/scripts/check_environment.py", line 43, in run
+    raise RuntimeError('Unexpected exit '+str(r.returncode)+' for '+args[-1])
+RuntimeError: Unexpected exit 1 for 180

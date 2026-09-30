@@ -1,0 +1,9 @@
+{
+  "name": "agrodiagnostico-ci-tools",
+  "private": true,
+  "version": "1.0.0",
+  "dependencies": {
+    "@fission-ai/openspec": "1.13.2",
+    "npm": "12.1.0"
+  }
+}

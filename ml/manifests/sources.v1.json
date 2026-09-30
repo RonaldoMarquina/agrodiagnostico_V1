@@ -1,0 +1,436 @@
+{
+  "schema_version": 1,
+  "sources": [
+    {
+      "source_id": "plantvillage",
+      "name": "PlantVillage",
+      "authors": [
+        "Sharada P. Mohanty",
+        "David P. Hughes",
+        "Marcel Salathé"
+      ],
+      "version": "Git 7f7ecc7e1eaca78107e3affe7cb5abd9427e139a",
+      "reference": "https://github.com/spMohanty/PlantVillage-Dataset/blob/7f7ecc7e1eaca78107e3affe7cb5abd9427e139a/README.md",
+      "consulted_at": "2026-09-29",
+      "license": {
+        "identifier": "CC-BY-SA-3.0",
+        "evidence": [
+          "https://huggingface.co/datasets/mohanty/PlantVillage"
+        ],
+        "status": "DECLARED_BY_PUBLISHER"
+      },
+      "eligibility": "PENDING",
+      "eligibility_reason": "Pendiente admisión por el proyecto: correspondencia de etiquetas, revisión de derechos/atribución y curación. La licencia declarada no acredita cada fotografía ni calidad.",
+      "restrictions": "Atribución y ShareAlike; verificar alcance sobre la distribución elegida y derivados. No mezclar color/grayscale/segmented como muestras independientes.",
+      "capture_context": "CONTROLLED_LEAF",
+      "label_review": "Curación/etiquetado reportados por autores; revisión local no realizada.",
+      "duplicates": "No evaluados localmente; comparar hashes y grupos entre fuentes y variantes antes de particionar.",
+      "exclusions": "No se admite ninguna imagen todavía. Fuera de papa/maíz o sin equivalencia revisada: excluir o cuarentena.",
+      "reported_total": {
+        "value": 54306,
+        "reference": "https://github.com/spMohanty/PlantVillage-Dataset/blob/7f7ecc7e1eaca78107e3affe7cb5abd9427e139a/README.md",
+        "method": "Total global declarado en README; no es el subconjunto candidato ni conteo local."
+      },
+      "local_total": {
+        "value": null,
+        "reference": "ml/datasets/",
+        "method": "No se ha importado ni medido un dataset por clase; null no significa cero."
+      },
+      "counts": [
+        {
+          "class_code": "POTATO_HEALTHY",
+          "source_label": "Potato___healthy",
+          "reported": {
+            "value": 152,
+            "reference": "https://api.github.com/repos/spMohanty/PlantVillage-Dataset/git/trees/9e73447b5d9bea5bcfd5748ae32fb9b0e9babbf0",
+            "method": "Metadatos remotos Git: blobs .jpg/.jpeg/.png de árbol de clase completo no truncado; sin decodificar imágenes."
+          },
+          "local": {
+            "value": null,
+            "reference": "ml/datasets/",
+            "method": "No importado ni medido por clase."
+          }
+        },
+        {
+          "class_code": "POTATO_EARLY_BLIGHT",
+          "source_label": "Potato___Early_blight",
+          "reported": {
+            "value": 1000,
+            "reference": "https://api.github.com/repos/spMohanty/PlantVillage-Dataset/git/trees/6a05d8fce92f7436da5bca72704ba5596a544e96",
+            "method": "Metadatos remotos Git: blobs .jpg/.jpeg/.png de árbol de clase completo no truncado; sin decodificar imágenes."
+          },
+          "local": {
+            "value": null,
+            "reference": "ml/datasets/",
+            "method": "No importado ni medido por clase."
+          }
+        },
+        {
+          "class_code": "POTATO_LATE_BLIGHT",
+          "source_label": "Potato___Late_blight",
+          "reported": {
+            "value": 1000,
+            "reference": "https://api.github.com/repos/spMohanty/PlantVillage-Dataset/git/trees/32d92d88e9c267a3a3d92e2167a96148d5197e73",
+            "method": "Metadatos remotos Git: blobs .jpg/.jpeg/.png de árbol de clase completo no truncado; sin decodificar imágenes."
+          },
+          "local": {
+            "value": null,
+            "reference": "ml/datasets/",
+            "method": "No importado ni medido por clase."
+          }
+        },
+        {
+          "class_code": "MAIZE_HEALTHY",
+          "source_label": "Corn_(maize)___healthy",
+          "reported": {
+            "value": 1162,
+            "reference": "https://api.github.com/repos/spMohanty/PlantVillage-Dataset/git/trees/08567ffe34691947d9604c6587d6d777dffa7c4f",
+            "method": "Metadatos remotos Git: blobs .jpg/.jpeg/.png de árbol de clase completo no truncado; sin decodificar imágenes."
+          },
+          "local": {
+            "value": null,
+            "reference": "ml/datasets/",
+            "method": "No importado ni medido por clase."
+          }
+        },
+        {
+          "class_code": "MAIZE_COMMON_RUST",
+          "source_label": "Corn_(maize)___Common_rust_",
+          "reported": {
+            "value": 1192,
+            "reference": "https://api.github.com/repos/spMohanty/PlantVillage-Dataset/git/trees/4b67a1bb45178cf251153251f911037505bf57a0",
+            "method": "Metadatos remotos Git: blobs .jpg/.jpeg/.png de árbol de clase completo no truncado; sin decodificar imágenes."
+          },
+          "local": {
+            "value": null,
+            "reference": "ml/datasets/",
+            "method": "No importado ni medido por clase."
+          }
+        },
+        {
+          "class_code": "MAIZE_LEAF_BLIGHT",
+          "source_label": "Corn_(maize)___Northern_Leaf_Blight",
+          "reported": {
+            "value": 985,
+            "reference": "https://api.github.com/repos/spMohanty/PlantVillage-Dataset/git/trees/d9b2c8be02be845df7989102b54124c8034eea3c",
+            "method": "Metadatos remotos Git: blobs .jpg/.jpeg/.png de árbol de clase completo no truncado; sin decodificar imágenes."
+          },
+          "local": {
+            "value": null,
+            "reference": "ml/datasets/",
+            "method": "No importado ni medido por clase."
+          }
+        },
+        {
+          "class_code": "MAIZE_GRAY_LEAF_SPOT",
+          "source_label": "Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot",
+          "reported": {
+            "value": 513,
+            "reference": "https://api.github.com/repos/spMohanty/PlantVillage-Dataset/git/trees/8cc6b2d2ac32539c02a9bd0e39e21062a9536fcc",
+            "method": "Metadatos remotos Git: blobs .jpg/.jpeg/.png de árbol de clase completo no truncado; sin decodificar imágenes."
+          },
+          "local": {
+            "value": null,
+            "reference": "ml/datasets/",
+            "method": "No importado ni medido por clase."
+          }
+        }
+      ],
+      "other_versions": []
+    },
+    {
+      "source_id": "plantdoc",
+      "name": "PlantDoc (Cropped-PlantDoc)",
+      "authors": [
+        "Davinder Singh",
+        "Naman Jain",
+        "Pranjali Jain",
+        "Pratik Kayal",
+        "Sudhakar Kumawat",
+        "Nipun Batra"
+      ],
+      "version": "Git 5467f6012d78d1c446145d5f582da6096f852ae8",
+      "reference": "https://github.com/pratikkayal/PlantDoc-Dataset/blob/5467f6012d78d1c446145d5f582da6096f852ae8/README.md",
+      "consulted_at": "2026-09-29",
+      "license": {
+        "identifier": "CC-BY-4.0",
+        "evidence": [
+          "https://github.com/pratikkayal/PlantDoc-Dataset/blob/5467f6012d78d1c446145d5f582da6096f852ae8/LICENSE.txt"
+        ],
+        "status": "DECLARED_BY_PUBLISHER"
+      },
+      "eligibility": "PENDING",
+      "eligibility_reason": "Pendiente admisión por el proyecto: correspondencia de etiquetas, revisión de derechos/atribución y curación. La licencia declarada no acredita cada fotografía ni calidad.",
+      "restrictions": "Atribución y cambios; imágenes recopiladas de Internet: revisar derechos de terceros y recortes antes de admitirlos.",
+      "capture_context": "WEB_FIELD_MIXED",
+      "label_review": "Curación/etiquetado reportados por autores; revisión local no realizada.",
+      "duplicates": "No evaluados localmente; comparar hashes y grupos entre fuentes y variantes antes de particionar.",
+      "exclusions": "No se admite ninguna imagen todavía. Fuera de papa/maíz o sin equivalencia revisada: excluir o cuarentena.",
+      "reported_total": {
+        "value": 2598,
+        "reference": "https://github.com/pratikkayal/PlantDoc-Dataset/blob/5467f6012d78d1c446145d5f582da6096f852ae8/README.md",
+        "method": "Total global declarado en README; no es el subconjunto candidato ni conteo local."
+      },
+      "local_total": {
+        "value": null,
+        "reference": "ml/datasets/",
+        "method": "No se ha importado ni medido un dataset por clase; null no significa cero."
+      },
+      "counts": [
+        {
+          "class_code": "POTATO_HEALTHY",
+          "source_label": null,
+          "reported": {
+            "value": null,
+            "reference": "https://github.com/pratikkayal/PlantDoc-Dataset/tree/5467f6012d78d1c446145d5f582da6096f852ae8/train",
+            "method": "Sin conteo publicado verificado para esta etiqueta/versión; no inferir cero."
+          },
+          "local": {
+            "value": null,
+            "reference": "ml/datasets/",
+            "method": "No importado ni medido por clase."
+          }
+        },
+        {
+          "class_code": "POTATO_EARLY_BLIGHT",
+          "source_label": "Potato leaf early blight",
+          "reported": {
+            "value": 117,
+            "reference": "https://api.github.com/repos/pratikkayal/PlantDoc-Dataset/git/trees/5467f6012d78d1c446145d5f582da6096f852ae8?recursive=1",
+            "method": "Metadatos remotos Git no truncados: blobs .jpg/.jpeg/.png en train y test por carpeta; no conteo del abstract ni curación local."
+          },
+          "local": {
+            "value": null,
+            "reference": "ml/datasets/",
+            "method": "No importado ni medido por clase."
+          }
+        },
+        {
+          "class_code": "POTATO_LATE_BLIGHT",
+          "source_label": "Potato leaf late blight",
+          "reported": {
+            "value": 105,
+            "reference": "https://api.github.com/repos/pratikkayal/PlantDoc-Dataset/git/trees/5467f6012d78d1c446145d5f582da6096f852ae8?recursive=1",
+            "method": "Metadatos remotos Git no truncados: blobs .jpg/.jpeg/.png en train y test por carpeta; no conteo del abstract ni curación local."
+          },
+          "local": {
+            "value": null,
+            "reference": "ml/datasets/",
+            "method": "No importado ni medido por clase."
+          }
+        },
+        {
+          "class_code": "MAIZE_HEALTHY",
+          "source_label": null,
+          "reported": {
+            "value": null,
+            "reference": "https://github.com/pratikkayal/PlantDoc-Dataset/tree/5467f6012d78d1c446145d5f582da6096f852ae8/train",
+            "method": "Sin conteo publicado verificado para esta etiqueta/versión; no inferir cero."
+          },
+          "local": {
+            "value": null,
+            "reference": "ml/datasets/",
+            "method": "No importado ni medido por clase."
+          }
+        },
+        {
+          "class_code": "MAIZE_COMMON_RUST",
+          "source_label": "Corn rust leaf",
+          "reported": {
+            "value": 116,
+            "reference": "https://api.github.com/repos/pratikkayal/PlantDoc-Dataset/git/trees/5467f6012d78d1c446145d5f582da6096f852ae8?recursive=1",
+            "method": "Metadatos remotos Git no truncados: blobs .jpg/.jpeg/.png en train y test por carpeta; no conteo del abstract ni curación local."
+          },
+          "local": {
+            "value": null,
+            "reference": "ml/datasets/",
+            "method": "No importado ni medido por clase."
+          }
+        },
+        {
+          "class_code": "MAIZE_LEAF_BLIGHT",
+          "source_label": "Corn leaf blight",
+          "reported": {
+            "value": 192,
+            "reference": "https://api.github.com/repos/pratikkayal/PlantDoc-Dataset/git/trees/5467f6012d78d1c446145d5f582da6096f852ae8?recursive=1",
+            "method": "Metadatos remotos Git no truncados: blobs .jpg/.jpeg/.png en train y test por carpeta; no conteo del abstract ni curación local."
+          },
+          "local": {
+            "value": null,
+            "reference": "ml/datasets/",
+            "method": "No importado ni medido por clase."
+          }
+        },
+        {
+          "class_code": "MAIZE_GRAY_LEAF_SPOT",
+          "source_label": "Corn Gray leaf spot",
+          "reported": {
+            "value": 68,
+            "reference": "https://api.github.com/repos/pratikkayal/PlantDoc-Dataset/git/trees/5467f6012d78d1c446145d5f582da6096f852ae8?recursive=1",
+            "method": "Metadatos remotos Git no truncados: blobs .jpg/.jpeg/.png en train y test por carpeta; no conteo del abstract ni curación local."
+          },
+          "local": {
+            "value": null,
+            "reference": "ml/datasets/",
+            "method": "No importado ni medido por clase."
+          }
+        }
+      ],
+      "other_versions": []
+    },
+    {
+      "source_id": "plantseg",
+      "name": "PlantSeg",
+      "authors": [
+        "Tianqi Wei",
+        "Zhi Chen",
+        "Xin Yu",
+        "Scott Chapman",
+        "Paul Melloy",
+        "Zi Huang"
+      ],
+      "version": "Zenodo v7 / 10.5281/zenodo.17719108; código 1a3dd4d9224bcc97a5850af7dd1c423abc24eae0",
+      "reference": "https://github.com/tqwei05/PlantSeg/blob/1a3dd4d9224bcc97a5850af7dd1c423abc24eae0/README.md",
+      "consulted_at": "2026-09-29",
+      "license": {
+        "identifier": "CC-BY-NC-4.0",
+        "evidence": [
+          "https://zenodo.org/api/records/17719108"
+        ],
+        "status": "DECLARED_BY_PUBLISHER"
+      },
+      "eligibility": "PENDING",
+      "eligibility_reason": "Pendiente admisión por el proyecto: correspondencia de etiquetas, revisión de derechos/atribución y curación. La licencia declarada no acredita cada fotografía ni calidad.",
+      "restrictions": "v7 declara uso no comercial y atribución; v5 declara CC BY 4.0. No trasladar licencia entre versiones. Fotos de Internet: revisar derechos y compatibilidad de uso.",
+      "capture_context": "WEB_FIELD_MIXED",
+      "label_review": "Autores describen limpieza, máscaras y revisión experta; revisión local no realizada.",
+      "duplicates": "No evaluados localmente; comparar hashes y grupos entre fuentes y variantes antes de particionar.",
+      "exclusions": "No se admite ninguna imagen todavía. Fuera de papa/maíz o sin equivalencia revisada: excluir o cuarentena.",
+      "reported_total": {
+        "value": null,
+        "reference": "https://github.com/tqwei05/PlantSeg/blob/1a3dd4d9224bcc97a5850af7dd1c423abc24eae0/README.md",
+        "method": "README dice más de 11400; no registrar 11400 como total exacto de v7."
+      },
+      "local_total": {
+        "value": null,
+        "reference": "ml/datasets/",
+        "method": "No se ha importado ni medido un dataset por clase; null no significa cero."
+      },
+      "counts": [
+        {
+          "class_code": "POTATO_HEALTHY",
+          "source_label": null,
+          "reported": {
+            "value": null,
+            "reference": "https://github.com/tqwei05/PlantSeg/blob/1a3dd4d9224bcc97a5850af7dd1c423abc24eae0/mmseg/datasets/plantseg115.py",
+            "method": "Sin conteo publicado verificado para esta etiqueta/versión; no inferir cero."
+          },
+          "local": {
+            "value": null,
+            "reference": "ml/datasets/",
+            "method": "No importado ni medido por clase."
+          }
+        },
+        {
+          "class_code": "POTATO_EARLY_BLIGHT",
+          "source_label": "potato early blight",
+          "reported": {
+            "value": null,
+            "reference": "https://github.com/tqwei05/PlantSeg/blob/1a3dd4d9224bcc97a5850af7dd1c423abc24eae0/mmseg/datasets/plantseg115.py",
+            "method": "Sin conteo publicado verificado para esta etiqueta/versión; no inferir cero."
+          },
+          "local": {
+            "value": null,
+            "reference": "ml/datasets/",
+            "method": "No importado ni medido por clase."
+          }
+        },
+        {
+          "class_code": "POTATO_LATE_BLIGHT",
+          "source_label": "potato late blight",
+          "reported": {
+            "value": null,
+            "reference": "https://github.com/tqwei05/PlantSeg/blob/1a3dd4d9224bcc97a5850af7dd1c423abc24eae0/mmseg/datasets/plantseg115.py",
+            "method": "Sin conteo publicado verificado para esta etiqueta/versión; no inferir cero."
+          },
+          "local": {
+            "value": null,
+            "reference": "ml/datasets/",
+            "method": "No importado ni medido por clase."
+          }
+        },
+        {
+          "class_code": "MAIZE_HEALTHY",
+          "source_label": null,
+          "reported": {
+            "value": null,
+            "reference": "https://github.com/tqwei05/PlantSeg/blob/1a3dd4d9224bcc97a5850af7dd1c423abc24eae0/mmseg/datasets/plantseg115.py",
+            "method": "Sin conteo publicado verificado para esta etiqueta/versión; no inferir cero."
+          },
+          "local": {
+            "value": null,
+            "reference": "ml/datasets/",
+            "method": "No importado ni medido por clase."
+          }
+        },
+        {
+          "class_code": "MAIZE_COMMON_RUST",
+          "source_label": "corn rust",
+          "reported": {
+            "value": null,
+            "reference": "https://github.com/tqwei05/PlantSeg/blob/1a3dd4d9224bcc97a5850af7dd1c423abc24eae0/mmseg/datasets/plantseg115.py",
+            "method": "Sin conteo publicado verificado para esta etiqueta/versión; no inferir cero."
+          },
+          "local": {
+            "value": null,
+            "reference": "ml/datasets/",
+            "method": "No importado ni medido por clase."
+          }
+        },
+        {
+          "class_code": "MAIZE_LEAF_BLIGHT",
+          "source_label": "corn northern leaf blight",
+          "reported": {
+            "value": null,
+            "reference": "https://github.com/tqwei05/PlantSeg/blob/1a3dd4d9224bcc97a5850af7dd1c423abc24eae0/mmseg/datasets/plantseg115.py",
+            "method": "Sin conteo publicado verificado para esta etiqueta/versión; no inferir cero."
+          },
+          "local": {
+            "value": null,
+            "reference": "ml/datasets/",
+            "method": "No importado ni medido por clase."
+          }
+        },
+        {
+          "class_code": "MAIZE_GRAY_LEAF_SPOT",
+          "source_label": "corn gray leaf spot",
+          "reported": {
+            "value": null,
+            "reference": "https://github.com/tqwei05/PlantSeg/blob/1a3dd4d9224bcc97a5850af7dd1c423abc24eae0/mmseg/datasets/plantseg115.py",
+            "method": "Sin conteo publicado verificado para esta etiqueta/versión; no inferir cero."
+          },
+          "local": {
+            "value": null,
+            "reference": "ml/datasets/",
+            "method": "No importado ni medido por clase."
+          }
+        }
+      ],
+      "other_versions": [
+        {
+          "version": "v5",
+          "reference": "https://zenodo.org/api/records/14935094",
+          "license": "CC-BY-4.0",
+          "note": "Enlace del README; registro distinto de v7 seleccionado para seguimiento. Revalidar etiquetas contra el archivo exacto antes de importar."
+        }
+      ]
+    }
+  ],
+  "external_ayacucho": {
+    "availability": "UNAVAILABLE",
+    "permission_evidence": [],
+    "local_count": null,
+    "reason": "No se entregaron imágenes de campo autorizadas ni manifiesto externo; no se midió generalización en Ayacucho."
+  },
+  "scope": "Siete clases candidatas V1; otras etiquetas de las fuentes fuera de este inventario."
+}

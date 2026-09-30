@@ -1,0 +1,301 @@
+[
+  {
+    "operation_id": "identity_live",
+    "security": [],
+    "negative_statuses": [],
+    "runtime_verified": true,
+    "rule": "Solo red interna; proxy no publica salud."
+  },
+  {
+    "operation_id": "identity_ready",
+    "security": [],
+    "negative_statuses": [],
+    "runtime_verified": true,
+    "rule": "Solo red interna; proxy no publica salud."
+  },
+  {
+    "operation_id": "diagnosis_live",
+    "security": [],
+    "negative_statuses": [],
+    "runtime_verified": true,
+    "rule": "Solo red interna; proxy no publica salud."
+  },
+  {
+    "operation_id": "diagnosis_ready",
+    "security": [],
+    "negative_statuses": [],
+    "runtime_verified": true,
+    "rule": "Solo red interna; proxy no publica salud."
+  },
+  {
+    "operation_id": "ai_inference_live",
+    "security": [],
+    "negative_statuses": [],
+    "runtime_verified": true,
+    "rule": "Solo red interna; proxy no publica salud."
+  },
+  {
+    "operation_id": "ai_inference_ready",
+    "security": [],
+    "negative_statuses": [],
+    "runtime_verified": true,
+    "rule": "Solo red interna; proxy no publica salud."
+  },
+  {
+    "operation_id": "notification_live",
+    "security": [],
+    "negative_statuses": [],
+    "runtime_verified": true,
+    "rule": "Solo red interna; proxy no publica salud."
+  },
+  {
+    "operation_id": "notification_ready",
+    "security": [],
+    "negative_statuses": [],
+    "runtime_verified": true,
+    "rule": "Solo red interna; proxy no publica salud."
+  },
+  {
+    "operation_id": "identity_register",
+    "security": [],
+    "negative_statuses": [],
+    "runtime_verified": false,
+    "rule": "Sin bearer; rate limit. Login exige Origin permitido."
+  },
+  {
+    "operation_id": "identity_login",
+    "security": [],
+    "negative_statuses": [],
+    "runtime_verified": false,
+    "rule": "Sin bearer; rate limit. Login exige Origin permitido."
+  },
+  {
+    "operation_id": "identity_refresh",
+    "security": [
+      {
+        "RefreshCookie": [],
+        "CsrfHeader": []
+      }
+    ],
+    "negative_statuses": [
+      401,
+      403
+    ],
+    "runtime_verified": false,
+    "rule": "Refresh cookie vigente AND CSRF ligado a sesión AND Origin permitido."
+  },
+  {
+    "operation_id": "identity_logout",
+    "security": [
+      {
+        "RefreshCookie": [],
+        "CsrfHeader": []
+      }
+    ],
+    "negative_statuses": [
+      401,
+      403
+    ],
+    "runtime_verified": false,
+    "rule": "Refresh cookie vigente AND CSRF ligado a sesión AND Origin permitido."
+  },
+  {
+    "operation_id": "identity_get_profile",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      401
+    ],
+    "runtime_verified": false,
+    "rule": "Identidad de usuario válida, cuenta activa; recursos propios. Ajeno/inexistente404."
+  },
+  {
+    "operation_id": "identity_patch_profile",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      401
+    ],
+    "runtime_verified": false,
+    "rule": "Identidad de usuario válida, cuenta activa; recursos propios. Ajeno/inexistente404."
+  },
+  {
+    "operation_id": "identity_start_recovery",
+    "security": [],
+    "negative_statuses": [],
+    "runtime_verified": false,
+    "rule": "Sin bearer; rate limit. Login exige Origin permitido."
+  },
+  {
+    "operation_id": "diagnosis_create",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      401
+    ],
+    "runtime_verified": false,
+    "rule": "Identidad de usuario válida, cuenta activa; recursos propios. Ajeno/inexistente404."
+  },
+  {
+    "operation_id": "diagnosis_list",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      401
+    ],
+    "runtime_verified": false,
+    "rule": "Identidad de usuario válida, cuenta activa; recursos propios. Ajeno/inexistente404."
+  },
+  {
+    "operation_id": "diagnosis_detail",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      401,
+      404
+    ],
+    "runtime_verified": false,
+    "rule": "Identidad de usuario válida, cuenta activa; recursos propios. Ajeno/inexistente404."
+  },
+  {
+    "operation_id": "diagnosis_cancel",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      401,
+      404
+    ],
+    "runtime_verified": false,
+    "rule": "Identidad de usuario válida, cuenta activa; recursos propios. Ajeno/inexistente404."
+  },
+  {
+    "operation_id": "diagnosis_delete",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      401,
+      404
+    ],
+    "runtime_verified": false,
+    "rule": "Identidad de usuario válida, cuenta activa; recursos propios. Ajeno/inexistente404."
+  },
+  {
+    "operation_id": "diagnosis_claim",
+    "security": [
+      {
+        "ServiceBearer": []
+      }
+    ],
+    "negative_statuses": [
+      401,
+      403,
+      404
+    ],
+    "runtime_verified": false,
+    "rule": "Identidad AI verificada y audience interna; usuario403, sin identidad401; lease no autentica."
+  },
+  {
+    "operation_id": "diagnosis_renew",
+    "security": [
+      {
+        "ServiceBearer": []
+      }
+    ],
+    "negative_statuses": [
+      401,
+      403,
+      404
+    ],
+    "runtime_verified": false,
+    "rule": "Identidad AI verificada y audience interna; usuario403, sin identidad401; lease no autentica."
+  },
+  {
+    "operation_id": "diagnosis_own_image",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      401,
+      404
+    ],
+    "runtime_verified": false,
+    "rule": "Identidad de usuario válida, cuenta activa; recursos propios. Ajeno/inexistente404."
+  },
+  {
+    "operation_id": "diagnosis_internal_image",
+    "security": [
+      {
+        "ServiceBearer": []
+      }
+    ],
+    "negative_statuses": [
+      401,
+      403,
+      404
+    ],
+    "runtime_verified": false,
+    "rule": "Identidad AI verificada y audience interna; usuario403, sin identidad401; lease no autentica."
+  },
+  {
+    "operation_id": "notification_list",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      401
+    ],
+    "runtime_verified": false,
+    "rule": "Identidad de usuario válida, cuenta activa; recursos propios. Ajeno/inexistente404."
+  },
+  {
+    "operation_id": "notification_get_preferences",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      401
+    ],
+    "runtime_verified": false,
+    "rule": "Identidad de usuario válida, cuenta activa; recursos propios. Ajeno/inexistente404."
+  },
+  {
+    "operation_id": "notification_patch_preferences",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      401
+    ],
+    "runtime_verified": false,
+    "rule": "Identidad de usuario válida, cuenta activa; recursos propios. Ajeno/inexistente404."
+  }
+]

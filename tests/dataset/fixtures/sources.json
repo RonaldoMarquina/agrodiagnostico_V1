@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "sources": [
+    {
+      "source_id": "synthetic",
+      "name": "Fixture propio sin imagen",
+      "authors": [
+        "AgroDiagnóstico pruebas"
+      ],
+      "version": "1",
+      "reference": "tests/dataset/fixtures/README.md",
+      "consulted_at": "2026-09-29",
+      "license": {
+        "identifier": "LicenseRef-Synthetic-Test-Only",
+        "evidence": [
+          "tests/dataset/fixtures/README.md"
+        ],
+        "status": "SYNTHETIC_ONLY"
+      },
+      "eligibility": "ELIGIBLE",
+      "eligibility_reason": "Exclusivamente pruebas de estructura, no datos entrenables.",
+      "restrictions": "No contabilizar como imagen real.",
+      "capture_context": "SYNTHETIC",
+      "label_review": "SYNTHETIC",
+      "duplicates": "No aplicable a fotos: hashes de texto sintético.",
+      "exclusions": "Todas las filas excluidas de entrenamiento.",
+      "reported_total": {
+        "value": null,
+        "reference": "tests/dataset/fixtures/README.md",
+        "method": "Sin imágenes."
+      },
+      "local_total": {
+        "value": null,
+        "reference": "tests/dataset/fixtures/README.md",
+        "method": "Sin imágenes."
+      },
+      "counts": [],
+      "other_versions": []
+    }
+  ]
+}

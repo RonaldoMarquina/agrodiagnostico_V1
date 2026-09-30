@@ -1,0 +1,376 @@
+Local persistence secrets prepared; existing values preserved.
+
+
+Sending build context to Docker daemon  524.4kB
+Sending build context to Docker daemon  685.6kB
+
+Step 1/15 : FROM python:3.12-slim-bookworm@sha256:392307d22300de8b5986851a12d9176dfc0fc073e65bf6523ebd7dcbeb23564e
+ ---> 392307d22300
+Step 2/15 : ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 UV_PYTHON_DOWNLOADS=never
+ ---> Using cache
+ ---> 936ae41f86c8
+Step 3/15 : COPY tooling/uv.requirements.txt /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> c582f2708ce8
+Step 4/15 : RUN python -m pip install --no-cache-dir --require-hashes -r /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> a8ed5322db04
+Step 5/15 : ARG SERVICE
+ ---> Using cache
+ ---> 459991a36a33
+Step 6/15 : WORKDIR /service
+ ---> Using cache
+ ---> 4248873fba2e
+Step 7/15 : COPY services/${SERVICE}/pyproject.toml services/${SERVICE}/uv.lock ./
+ ---> Using cache
+ ---> d824f62f23c2
+Step 8/15 : RUN uv sync --locked --no-dev --no-install-project
+ ---> Using cache
+ ---> 6e130c1fcbb0
+Step 9/15 : COPY services/${SERVICE}/app ./app
+ ---> Using cache
+ ---> eef146169e89
+Step 10/15 : COPY services/${SERVICE}/alembic.ini ./
+ ---> Using cache
+ ---> 6885fe9cb67e
+Step 11/15 : COPY services/${SERVICE}/migrations ./migrations
+ ---> f5e65fe66944
+Step 12/15 : ENV PATH="/service/.venv/bin:$PATH"
+ ---> Running in 1f5139fa01f5
+ ---> Removed intermediate container 1f5139fa01f5
+ ---> 66be85180463
+Step 13/15 : USER 10001:10001
+ ---> Running in e38559c6a5f0
+ ---> Removed intermediate container e38559c6a5f0
+ ---> 37454a8b1c28
+Step 14/15 : CMD ["python", "-m", "app.migrate", "upgrade", "head"]
+ ---> Running in 8a03b8ea3361
+ ---> Removed intermediate container 8a03b8ea3361
+ ---> 1f5cad5d1629
+Step 15/15 : LABEL com.docker.compose.image.builder=classic
+ ---> Running in 4345130e740b
+ ---> Removed intermediate container 4345130e740b
+ ---> 196847761bef
+Successfully built 196847761bef
+Successfully tagged agro-mig-test-543d2369489a-db-bootstrap:latest
+Sending build context to Docker daemon  524.4kB
+Sending build context to Docker daemon  524.4kB
+Sending build context to Docker daemon  524.4kB
+Sending build context to Docker daemon  524.4kB
+Sending build context to Docker daemon  685.6kB
+
+Sending build context to Docker daemon  685.6kB
+
+Sending build context to Docker daemon  685.6kB
+
+Sending build context to Docker daemon  685.6kB
+
+Step 1/15 : FROM python:3.12-slim-bookworm@sha256:392307d22300de8b5986851a12d9176dfc0fc073e65bf6523ebd7dcbeb23564e
+Step 1/15 : FROM python:3.12-slim-bookworm@sha256:392307d22300de8b5986851a12d9176dfc0fc073e65bf6523ebd7dcbeb23564e
+Step 1/15 : FROM python:3.12-slim-bookworm@sha256:392307d22300de8b5986851a12d9176dfc0fc073e65bf6523ebd7dcbeb23564e
+Step 1/15 : FROM python:3.12-slim-bookworm@sha256:392307d22300de8b5986851a12d9176dfc0fc073e65bf6523ebd7dcbeb23564e
+ ---> 392307d22300
+Step 2/15 : ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 UV_PYTHON_DOWNLOADS=never
+ ---> 392307d22300
+Step 2/15 : ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 UV_PYTHON_DOWNLOADS=never
+ ---> 392307d22300
+Step 2/15 : ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 UV_PYTHON_DOWNLOADS=never
+ ---> 392307d22300
+Step 2/15 : ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 UV_PYTHON_DOWNLOADS=never
+ ---> Using cache
+ ---> 936ae41f86c8
+Step 3/15 : COPY tooling/uv.requirements.txt /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> 936ae41f86c8
+Step 3/15 : COPY tooling/uv.requirements.txt /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> 936ae41f86c8
+Step 3/15 : COPY tooling/uv.requirements.txt /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> c582f2708ce8
+Step 4/15 : RUN python -m pip install --no-cache-dir --require-hashes -r /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> 936ae41f86c8
+Step 3/15 : COPY tooling/uv.requirements.txt /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> c582f2708ce8
+Step 4/15 : RUN python -m pip install --no-cache-dir --require-hashes -r /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> c582f2708ce8
+Step 4/15 : RUN python -m pip install --no-cache-dir --require-hashes -r /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> a8ed5322db04
+Step 5/15 : ARG SERVICE
+ ---> Using cache
+ ---> c582f2708ce8
+Step 4/15 : RUN python -m pip install --no-cache-dir --require-hashes -r /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> a8ed5322db04
+Step 5/15 : ARG SERVICE
+ ---> Using cache
+ ---> a8ed5322db04
+Step 5/15 : ARG SERVICE
+ ---> Using cache
+ ---> a8ed5322db04
+Step 5/15 : ARG SERVICE
+ ---> Using cache
+ ---> 459991a36a33
+Step 6/15 : WORKDIR /service
+ ---> Using cache
+ ---> 459991a36a33
+Step 6/15 : WORKDIR /service
+ ---> Using cache
+ ---> 459991a36a33
+Step 6/15 : WORKDIR /service
+ ---> Using cache
+ ---> 4248873fba2e
+Step 7/15 : COPY services/${SERVICE}/pyproject.toml services/${SERVICE}/uv.lock ./
+ ---> Using cache
+ ---> 459991a36a33
+Step 6/15 : WORKDIR /service
+ ---> Using cache
+ ---> 4248873fba2e
+Step 7/15 : COPY services/${SERVICE}/pyproject.toml services/${SERVICE}/uv.lock ./
+ ---> Using cache
+ ---> 4248873fba2e
+Step 7/15 : COPY services/${SERVICE}/pyproject.toml services/${SERVICE}/uv.lock ./
+ ---> Using cache
+ ---> 4248873fba2e
+Step 7/15 : COPY services/${SERVICE}/pyproject.toml services/${SERVICE}/uv.lock ./
+ ---> Using cache
+ ---> d824f62f23c2
+Step 8/15 : RUN uv sync --locked --no-dev --no-install-project
+ ---> Using cache
+ ---> b9d5a69f0dd5
+Step 8/15 : RUN uv sync --locked --no-dev --no-install-project
+ ---> Using cache
+ ---> 4af45150f9c5
+Step 8/15 : RUN uv sync --locked --no-dev --no-install-project
+ ---> Using cache
+ ---> 6e130c1fcbb0
+Step 9/15 : COPY services/${SERVICE}/app ./app
+ ---> Using cache
+ ---> e600c6763837
+Step 8/15 : RUN uv sync --locked --no-dev --no-install-project
+ ---> Using cache
+ ---> 400ff290642b
+Step 9/15 : COPY services/${SERVICE}/app ./app
+ ---> Using cache
+ ---> f68f48bf83b4
+Step 9/15 : COPY services/${SERVICE}/app ./app
+ ---> Using cache
+ ---> eef146169e89
+Step 10/15 : COPY services/${SERVICE}/alembic.ini ./
+ ---> Using cache
+ ---> 552541d18406
+Step 9/15 : COPY services/${SERVICE}/app ./app
+ ---> Using cache
+ ---> ac75c088aceb
+Step 10/15 : COPY services/${SERVICE}/alembic.ini ./
+ ---> Using cache
+ ---> Using cache
+ ---> f091d5bcd9fd
+ ---> 6885fe9cb67e
+Step 10/15 : COPY services/${SERVICE}/alembic.ini ./Step 11/15 : COPY services/${SERVICE}/migrations ./migrations
+
+ ---> Using cache
+ ---> 07cf7f6815cc
+Step 10/15 : COPY services/${SERVICE}/alembic.ini ./
+ ---> Using cache
+ ---> 22896b4372fc
+Step 11/15 : COPY services/${SERVICE}/migrations ./migrations
+ ---> Using cache
+ ---> b97c9d7db2c0
+Step 11/15 : COPY services/${SERVICE}/migrations ./migrations
+ ---> Using cache
+ ---> 80a9c631cca3
+Step 11/15 : COPY services/${SERVICE}/migrations ./migrations
+ ---> Using cache
+ ---> 253b8ddc190d
+Step 12/15 : ENV PATH="/service/.venv/bin:$PATH"
+ ---> Using cache
+ ---> f5e65fe66944
+Step 12/15 : ENV PATH="/service/.venv/bin:$PATH"
+ ---> Using cache
+ ---> 924f91819871
+Step 12/15 : ENV PATH="/service/.venv/bin:$PATH"
+ ---> Using cache
+ ---> 9bba36e7f6e5
+Step 12/15 : ENV PATH="/service/.venv/bin:$PATH"
+ ---> Using cache
+ ---> a01d9ade39d1
+Step 13/15 : USER 10001:10001
+ ---> Using cache
+ ---> 66be85180463
+Step 13/15 : USER 10001:10001
+ ---> Using cache
+ ---> 35df58d85e99
+Step 13/15 : USER 10001:10001
+ ---> Using cache
+ ---> e106e7eff731
+Step 13/15 : USER 10001:10001
+ ---> Using cache
+ ---> e5c5c9da4a13
+Step 14/15 : CMD ["python", "-m", "app.migrate", "upgrade", "head"]
+ ---> Using cache
+ ---> 940a65497686
+ ---> Using cache
+ ---> 37454a8b1c28
+Step 14/15 : CMD ["python", "-m", "app.migrate", "upgrade", "head"]
+Step 14/15 : CMD ["python", "-m", "app.migrate", "upgrade", "head"]
+ ---> Using cache
+ ---> dfd87ad1e4ef
+Step 14/15 : CMD ["python", "-m", "app.migrate", "upgrade", "head"]
+ ---> Using cache
+ ---> a16e6f8c700d
+Step 15/15 : LABEL com.docker.compose.image.builder=classic
+ ---> Using cache
+ ---> 1f5cad5d1629
+Step 15/15 : LABEL com.docker.compose.image.builder=classic
+ ---> Using cache
+ ---> 9e14aef743e7
+Step 15/15 : LABEL com.docker.compose.image.builder=classic
+ ---> Using cache
+ ---> 04ade1875f6f
+Step 15/15 : LABEL com.docker.compose.image.builder=classic
+ ---> Using cache
+ ---> 196847761bef
+Successfully built 196847761bef
+Successfully tagged agro-mig-test-543d2369489a-identity-migrate:latest
+ ---> Running in 802fc63e275b
+ ---> Running in 8cfc1804e1af
+ ---> Running in 71afe1a08d04
+ ---> Removed intermediate container 71afe1a08d04
+ ---> c5d9ab897e41
+ ---> Removed intermediate container 8cfc1804e1af
+ ---> 3e38cd125de7
+Successfully built c5d9ab897e41
+Successfully tagged agro-mig-test-543d2369489a-ai_inference-migrate:latest
+Successfully built 3e38cd125de7
+Successfully tagged agro-mig-test-543d2369489a-notification-migrate:latest
+ ---> Removed intermediate container 802fc63e275b
+ ---> c1f1cd530201
+Successfully built c1f1cd530201
+Successfully tagged agro-mig-test-543d2369489a-diagnosis-migrate:latest
+time="2026-09-30T00:12:40-05:00" level=warning msg="COMPOSE_BAKE=false is deprecated, support for internal compose builder will be removed in next release"
+ Service db-bootstrap  Building
+ Service db-bootstrap  Built
+ Service ai_inference-migrate  Building
+ Service notification-migrate  Building
+ Service identity-migrate  Building
+ Service diagnosis-migrate  Building
+ Service identity-migrate  Built
+ Service ai_inference-migrate  Built
+ Service notification-migrate  Built
+ Service diagnosis-migrate  Built
+ ai_inference-migrate  Built
+ db-bootstrap  Built
+ diagnosis-migrate  Built
+ identity-migrate  Built
+ notification-migrate  Built
+
+ Network agro-mig-test-543d2369489a_persistence  Creating
+ Network agro-mig-test-543d2369489a_persistence  Created
+ Volume agro-mig-test-543d2369489a_postgres_data  Creating
+ Volume agro-mig-test-543d2369489a_postgres_data  Created
+ Container agro-mig-test-543d2369489a-postgres-1  Creating
+ Container agro-mig-test-543d2369489a-postgres-1  Created
+ Container agro-mig-test-543d2369489a-postgres-1  Starting
+ Container agro-mig-test-543d2369489a-postgres-1  Started
+ Container agro-mig-test-543d2369489a-postgres-1  Waiting
+ Container agro-mig-test-543d2369489a-postgres-1  Healthy
+
+bootstrap_ok: four private databases and restricted roles
+
+bootstrap_ok: four private databases and restricted roles
+
+Traceback (most recent call last):
+  File "/check.py", line 37, in <module>
+    action(service, 'upgrade', 'head')
+  File "/check.py", line 31, in action
+    assert run.returncode == expected, (service, args, run.returncode, 'unexpected exit')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('identity', ('upgrade', 'head'), 1, 'unexpected exit')
+
+
+ps --all
+NAME                                    IMAGE                                                                                        COMMAND                  SERVICE    CREATED         STATUS                   PORTS
+agro-mig-test-543d2369489a-postgres-1   postgres:16-alpine@sha256:3c5c8892d184f738f4fe282d14ddaa613a38f00f4189d2d94725ebe6f2909ddb   "docker-entrypoint.s…"   postgres   7 seconds ago   Up 6 seconds (healthy)   5432/tcp
+
+logs --no-color --tail 150
+postgres-1  | The files belonging to this database system will be owned by user "postgres".
+postgres-1  | This user must also own the server process.
+postgres-1  | 
+postgres-1  | The database cluster will be initialized with locale "en_US.utf8".
+postgres-1  | The default database encoding has accordingly been set to "UTF8".
+postgres-1  | The default text search configuration will be set to "english".
+postgres-1  | 
+postgres-1  | Data page checksums are disabled.
+postgres-1  | 
+postgres-1  | fixing permissions on existing directory /var/lib/postgresql/data ... ok
+postgres-1  | creating subdirectories ... ok
+postgres-1  | selecting dynamic shared memory implementation ... posix
+postgres-1  | selecting default max_connections ... 100
+postgres-1  | selecting default shared_buffers ... 128MB
+postgres-1  | selecting default time zone ... UTC
+postgres-1  | creating configuration files ... ok
+postgres-1  | running bootstrap script ... ok
+postgres-1  | sh: locale: not found
+postgres-1  | 2026-09-30 05:12:45.011 UTC [35] WARNING:  no usable system locales were found
+postgres-1  | performing post-bootstrap initialization ... ok
+postgres-1  | syncing data to disk ... ok
+postgres-1  | 
+postgres-1  | 
+postgres-1  | Success. You can now start the database server using:
+postgres-1  | 
+postgres-1  |     pg_ctl -D /var/lib/postgresql/data -l logfile start
+postgres-1  | 
+postgres-1  | initdb: warning: enabling "trust" authentication for local connections
+postgres-1  | initdb: hint: You can change this by editing pg_hba.conf or using the option -A, or --auth-local and --auth-host, the next time you run initdb.
+postgres-1  | waiting for server to start....2026-09-30 05:12:45.436 UTC [41] LOG:  starting PostgreSQL 16.15 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+postgres-1  | 2026-09-30 05:12:45.437 UTC [41] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+postgres-1  | 2026-09-30 05:12:45.440 UTC [44] LOG:  database system was shut down at 2026-09-30 05:12:45 UTC
+postgres-1  | 2026-09-30 05:12:45.443 UTC [41] LOG:  database system is ready to accept connections
+postgres-1  |  done
+postgres-1  | server started
+postgres-1  | 
+postgres-1  | /usr/local/bin/docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d/*
+postgres-1  | 
+postgres-1  | waiting for server to shut down...2026-09-30 05:12:45.535 UTC [41] LOG:  received fast shutdown request
+postgres-1  | .2026-09-30 05:12:45.535 UTC [41] LOG:  aborting any active transactions
+postgres-1  | 2026-09-30 05:12:45.537 UTC [41] LOG:  background worker "logical replication launcher" (PID 47) exited with exit code 1
+postgres-1  | 2026-09-30 05:12:45.537 UTC [42] LOG:  shutting down
+postgres-1  | 2026-09-30 05:12:45.538 UTC [42] LOG:  checkpoint starting: shutdown immediate
+postgres-1  | 2026-09-30 05:12:45.542 UTC [42] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.001 s, total=0.006 s; sync files=2, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=0 kB; lsn=0/14F7180, redo lsn=0/14F7180
+postgres-1  | 2026-09-30 05:12:45.547 UTC [41] LOG:  database system is shut down
+postgres-1  |  done
+postgres-1  | server stopped
+postgres-1  | 
+postgres-1  | PostgreSQL init process complete; ready for start up.
+postgres-1  | 
+postgres-1  | 2026-09-30 05:12:45.651 UTC [1] LOG:  starting PostgreSQL 16.15 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+postgres-1  | 2026-09-30 05:12:45.651 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+postgres-1  | 2026-09-30 05:12:45.651 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+postgres-1  | 2026-09-30 05:12:45.652 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+postgres-1  | 2026-09-30 05:12:45.655 UTC [55] LOG:  database system was shut down at 2026-09-30 05:12:45 UTC
+postgres-1  | 2026-09-30 05:12:45.659 UTC [1] LOG:  database system is ready to accept connections
+
+ Container agro-mig-test-543d2369489a-postgres-1  Stopping
+ Container agro-mig-test-543d2369489a-postgres-1  Stopped
+ Container agro-mig-test-543d2369489a-postgres-1  Removing
+ Container agro-mig-test-543d2369489a-postgres-1  Removed
+ Image agro-mig-test-543d2369489a-identity-migrate:latest  Removing
+ Image agro-mig-test-543d2369489a-notification-migrate:latest  Removing
+ Image agro-mig-test-543d2369489a-db-bootstrap:latest  Removing
+ Image agro-mig-test-543d2369489a-diagnosis-migrate:latest  Removing
+ Image agro-mig-test-543d2369489a-ai_inference-migrate:latest  Removing
+ Volume agro-mig-test-543d2369489a_postgres_data  Removing
+ Network agro-mig-test-543d2369489a_persistence  Removing
+ Image agro-mig-test-543d2369489a-db-bootstrap:latest  Removed
+ Image agro-mig-test-543d2369489a-identity-migrate:latest  Removed
+ Image agro-mig-test-543d2369489a-ai_inference-migrate:latest  Removed
+ Image agro-mig-test-543d2369489a-diagnosis-migrate:latest  Removed
+ Image agro-mig-test-543d2369489a-notification-migrate:latest  Removed
+ Volume agro-mig-test-543d2369489a_postgres_data  Removed
+ Network agro-mig-test-543d2369489a_persistence  Removed
+

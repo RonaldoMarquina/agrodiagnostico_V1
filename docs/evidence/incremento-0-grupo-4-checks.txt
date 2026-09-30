@@ -1,0 +1,38 @@
+$ python3 scripts/check_environment.py (clean workspace copy; fresh volumes)
+Required configuration and idempotent preparation PASS
+Building locked APIs, frontend and probes...
+Integrated startup PASS seconds=17.91
+Loopback-only proxy, static page and rejected routes PASS
+Invalid API configuration exits nonzero without secrets PASS
+HTTP health/contracts PASS: healthy
+
+
+HTTP health/contracts PASS: identity
+
+
+
+HTTP health/contracts PASS: identity
+
+
+HTTP health/contracts PASS: healthy
+
+HTTP health/contracts PASS: postgres
+
+HTTP health/contracts PASS: healthy
+
+HTTP health/contracts PASS: healthy
+
+HTTP health/contracts PASS: s3
+
+HTTP health/contracts PASS: healthy
+
+Authorized S3/read-only AI/anonymous denied and confirmed durable message PASS
+
+Persisted PostgreSQL head / RabbitMQ message / private object checksum PASS
+
+HTTP health/contracts PASS: healthy
+
+Degradation/recovery and persistent data PASS; logs contain no credentials
+PASS project=agro-env-test-17f01bceea7b duration_seconds=120.69
+
+exit=0 duration_seconds=120.732

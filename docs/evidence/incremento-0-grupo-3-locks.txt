@@ -1,0 +1,87 @@
+$ bash scripts/check_service_locks.sh
+Using CPython 3.12.3 interpreter at: /usr/bin/python3.12
+Creating virtual environment at: /tmp/agro-service-locks.kHFQvOa0/identity
+Resolved 18 packages in 0.63ms
+Installed 16 packages in 6ms
+ + alembic==1.20.0
+ + annotated-doc==0.0.5
+ + annotated-types==0.8.0
+ + anyio==4.15.1
+ + fastapi==0.141.1
+ + idna==3.20
+ + mako==1.4.3
+ + markupsafe==3.0.3
+ + psycopg==3.3.6
+ + psycopg-binary==3.3.6
+ + pydantic==2.13.5
+ + pydantic-core==2.46.5
+ + sqlalchemy==2.1.1
+ + starlette==1.7.0
+ + typing-extensions==4.16.0
+ + typing-inspection==0.4.4
+imports_ok
+Using CPython 3.12.3 interpreter at: /usr/bin/python3.12
+Creating virtual environment at: /tmp/agro-service-locks.kHFQvOa0/diagnosis
+Resolved 18 packages in 0.80ms
+Installed 16 packages in 7ms
+ + alembic==1.20.0
+ + annotated-doc==0.0.5
+ + annotated-types==0.8.0
+ + anyio==4.15.1
+ + fastapi==0.141.1
+ + idna==3.20
+ + mako==1.4.3
+ + markupsafe==3.0.3
+ + psycopg==3.3.6
+ + psycopg-binary==3.3.6
+ + pydantic==2.13.5
+ + pydantic-core==2.46.5
+ + sqlalchemy==2.1.1
+ + starlette==1.7.0
+ + typing-extensions==4.16.0
+ + typing-inspection==0.4.4
+imports_ok
+Using CPython 3.12.3 interpreter at: /usr/bin/python3.12
+Creating virtual environment at: /tmp/agro-service-locks.kHFQvOa0/ai_inference
+Resolved 18 packages in 0.65ms
+Installed 16 packages in 6ms
+ + alembic==1.20.0
+ + annotated-doc==0.0.5
+ + annotated-types==0.8.0
+ + anyio==4.15.1
+ + fastapi==0.141.1
+ + idna==3.20
+ + mako==1.4.3
+ + markupsafe==3.0.3
+ + psycopg==3.3.6
+ + psycopg-binary==3.3.6
+ + pydantic==2.13.5
+ + pydantic-core==2.46.5
+ + sqlalchemy==2.1.1
+ + starlette==1.7.0
+ + typing-extensions==4.16.0
+ + typing-inspection==0.4.4
+imports_ok
+Using CPython 3.12.3 interpreter at: /usr/bin/python3.12
+Creating virtual environment at: /tmp/agro-service-locks.kHFQvOa0/notification
+Resolved 18 packages in 0.59ms
+Installed 16 packages in 6ms
+ + alembic==1.20.0
+ + annotated-doc==0.0.5
+ + annotated-types==0.8.0
+ + anyio==4.15.1
+ + fastapi==0.141.1
+ + idna==3.20
+ + mako==1.4.3
+ + markupsafe==3.0.3
+ + psycopg==3.3.6
+ + psycopg-binary==3.3.6
+ + pydantic==2.13.5
+ + pydantic-core==2.46.5
+ + sqlalchemy==2.1.1
+ + starlette==1.7.0
+ + typing-extensions==4.16.0
+ + typing-inspection==0.4.4
+imports_ok
+
+exit=0 duration_seconds=7.169

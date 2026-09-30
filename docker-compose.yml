@@ -1,0 +1,453 @@
+name: agrodiagnostico-v1
+services:
+  postgres:
+    image: postgres:16-alpine@sha256:3c5c8892d184f738f4fe282d14ddaa613a38f00f4189d2d94725ebe6f2909ddb
+    environment:
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
+    secrets:
+    - postgres_password
+    volumes:
+    - postgres_data:/var/lib/postgresql/data
+    networks:
+    - persistence
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - pg_isready -U postgres -d postgres
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  db-bootstrap:
+    build:
+      context: .
+      dockerfile: infra/docker/persistence.Dockerfile
+      args:
+        SERVICE: identity
+    user: 0:0
+    command:
+    - python
+    - /bootstrap/bootstrap.py
+    environment:
+      DB_HOST: postgres
+    volumes:
+    - ./infra/postgres/bootstrap.py:/bootstrap/bootstrap.py:ro
+    secrets:
+    - postgres_password
+    - identity_password
+    - diagnosis_password
+    - ai_inference_password
+    - notification_password
+    networks:
+    - persistence
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: 'no'
+  identity-migrate:
+    build:
+      context: .
+      dockerfile: infra/docker/persistence.Dockerfile
+      args:
+        SERVICE: identity
+    user: 0:0
+    environment:
+      DB_HOST: postgres
+      DB_PASSWORD_FILE: /run/secrets/identity_password
+    secrets:
+    - identity_password
+    networks:
+    - persistence
+    depends_on:
+      db-bootstrap:
+        condition: service_completed_successfully
+    restart: 'no'
+  identity-schema-check:
+    extends:
+      service: identity-migrate
+    command:
+    - python
+    - -m
+    - app.migrate
+    - ready
+    depends_on:
+      identity-migrate:
+        condition: service_completed_successfully
+    profiles:
+    - persistence-check
+  diagnosis-migrate:
+    build:
+      context: .
+      dockerfile: infra/docker/persistence.Dockerfile
+      args:
+        SERVICE: diagnosis
+    user: 0:0
+    environment:
+      DB_HOST: postgres
+      DB_PASSWORD_FILE: /run/secrets/diagnosis_password
+    secrets:
+    - diagnosis_password
+    networks:
+    - persistence
+    depends_on:
+      db-bootstrap:
+        condition: service_completed_successfully
+    restart: 'no'
+  diagnosis-schema-check:
+    extends:
+      service: diagnosis-migrate
+    command:
+    - python
+    - -m
+    - app.migrate
+    - ready
+    depends_on:
+      diagnosis-migrate:
+        condition: service_completed_successfully
+    profiles:
+    - persistence-check
+  ai_inference-migrate:
+    build:
+      context: .
+      dockerfile: infra/docker/persistence.Dockerfile
+      args:
+        SERVICE: ai_inference
+    user: 0:0
+    environment:
+      DB_HOST: postgres
+      DB_PASSWORD_FILE: /run/secrets/ai_inference_password
+    secrets:
+    - ai_inference_password
+    networks:
+    - persistence
+    depends_on:
+      db-bootstrap:
+        condition: service_completed_successfully
+    restart: 'no'
+  ai_inference-schema-check:
+    extends:
+      service: ai_inference-migrate
+    command:
+    - python
+    - -m
+    - app.migrate
+    - ready
+    depends_on:
+      ai_inference-migrate:
+        condition: service_completed_successfully
+    profiles:
+    - persistence-check
+  notification-migrate:
+    build:
+      context: .
+      dockerfile: infra/docker/persistence.Dockerfile
+      args:
+        SERVICE: notification
+    user: 0:0
+    environment:
+      DB_HOST: postgres
+      DB_PASSWORD_FILE: /run/secrets/notification_password
+    secrets:
+    - notification_password
+    networks:
+    - persistence
+    depends_on:
+      db-bootstrap:
+        condition: service_completed_successfully
+    restart: 'no'
+  notification-schema-check:
+    extends:
+      service: notification-migrate
+    command:
+    - python
+    - -m
+    - app.migrate
+    - ready
+    depends_on:
+      notification-migrate:
+        condition: service_completed_successfully
+    profiles:
+    - persistence-check
+  rabbitmq:
+    image: rabbitmq:4.2-alpine@sha256:1dbd5e0d7c87d44f687866d889cd86b76b5fcaddc64c2b65d367563cbcdff933
+    hostname: rabbitmq
+    entrypoint:
+    - sh
+    - /bootstrap/start.sh
+    environment:
+      RABBITMQ_DEFAULT_USER: agro_local
+      RABBITMQ_NODENAME: rabbit@rabbitmq
+    secrets:
+    - rabbit_password
+    - rabbit_cookie
+    volumes:
+    - rabbit_data:/var/lib/rabbitmq
+    - ./infra/rabbitmq/start.sh:/bootstrap/start.sh:ro
+    networks:
+    - persistence
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - export RABBITMQ_ERLANG_COOKIE="$$(cat /run/secrets/rabbit_cookie)"; rabbitmq-diagnostics
+        -q ping
+      interval: 5s
+      timeout: 5s
+      retries: 24
+  redis:
+    image: redis:8.2-alpine@sha256:b51665e66f00759be7c3152ad5ac3c66fb2f619c13ef62dea7cc1f9914524635
+    command:
+    - redis-server
+    - --save
+    - ''
+    - --appendonly
+    - 'no'
+    networks:
+    - persistence
+    healthcheck:
+      test:
+      - CMD
+      - redis-cli
+      - ping
+      interval: 5s
+      timeout: 3s
+      retries: 12
+  s3:
+    image: chrislusf/seaweedfs:4.17@sha256:186de7ef977a20343ee9a5544073f081976a29e2d29ecf8379891e7bf177fbe9
+    user: 0:0
+    working_dir: /data
+    command:
+    - server
+    - -dir=/data
+    - -ip=127.0.0.1
+    - -ip.bind=127.0.0.1
+    - -s3
+    - -s3.ip.bind=0.0.0.0
+    - -s3.config=/run/secrets/s3_config
+    - -master.volumeSizeLimitMB=64
+    - -volume.max=4
+    - -master.telemetry=false
+    secrets:
+    - s3_config
+    volumes:
+    - s3_data:/data
+    networks:
+    - persistence
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - wget -q -O /dev/null http://127.0.0.1:9333/cluster/status
+      interval: 5s
+      timeout: 3s
+      retries: 24
+  s3-bootstrap:
+    build:
+      context: .
+      dockerfile: infra/docker/integration.Dockerfile
+    environment:
+      S3_BUCKET: ${S3_BUCKET:?S3_BUCKET required; copy .env.example}
+      S3_REGION: ${S3_REGION:?S3_REGION required; copy .env.example}
+    secrets:
+    - s3_admin
+    networks:
+    - persistence
+    depends_on:
+      s3:
+        condition: service_healthy
+    restart: 'no'
+  identity:
+    build:
+      context: .
+      dockerfile: services/identity/Dockerfile
+    user: ${LOCAL_UID:-1000}:${LOCAL_GID:-1000}
+    environment:
+      APP_ENV: ${APP_ENV:?APP_ENV required; copy .env.example}
+      DB_HOST: postgres
+      DB_PASSWORD_FILE: /run/secrets/identity_password
+    secrets:
+    - identity_password
+    networks:
+    - persistence
+    - application
+    depends_on:
+      identity-migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+      - CMD
+      - python
+      - -c
+      - import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/ready',
+        timeout=12)
+      interval: 5s
+      timeout: 15s
+      retries: 24
+      start_period: 5s
+  diagnosis:
+    build:
+      context: .
+      dockerfile: services/diagnosis/Dockerfile
+    user: ${LOCAL_UID:-1000}:${LOCAL_GID:-1000}
+    environment:
+      APP_ENV: ${APP_ENV:?APP_ENV required; copy .env.example}
+      DB_HOST: postgres
+      DB_PASSWORD_FILE: /run/secrets/diagnosis_password
+      S3_BUCKET: ${S3_BUCKET:?S3_BUCKET required}
+      S3_REGION: ${S3_REGION:?S3_REGION required}
+      S3_ENDPOINT_URL: http://s3:8333
+      S3_CREDENTIALS_FILE: /run/secrets/s3_diagnosis
+    secrets:
+    - diagnosis_password
+    - s3_diagnosis
+    networks:
+    - persistence
+    - application
+    depends_on:
+      diagnosis-migrate:
+        condition: service_completed_successfully
+      s3-bootstrap:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+      - CMD
+      - python
+      - -c
+      - import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/ready',
+        timeout=12)
+      interval: 5s
+      timeout: 15s
+      retries: 24
+      start_period: 5s
+  ai_inference:
+    build:
+      context: .
+      dockerfile: services/ai_inference/Dockerfile
+    user: ${LOCAL_UID:-1000}:${LOCAL_GID:-1000}
+    environment:
+      APP_ENV: ${APP_ENV:?APP_ENV required; copy .env.example}
+      DB_HOST: postgres
+      DB_PASSWORD_FILE: /run/secrets/ai_inference_password
+    secrets:
+    - ai_inference_password
+    networks:
+    - persistence
+    - application
+    depends_on:
+      ai_inference-migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+      - CMD
+      - python
+      - -c
+      - import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/ready',
+        timeout=12)
+      interval: 5s
+      timeout: 15s
+      retries: 24
+      start_period: 5s
+  notification:
+    build:
+      context: .
+      dockerfile: services/notification/Dockerfile
+    user: ${LOCAL_UID:-1000}:${LOCAL_GID:-1000}
+    environment:
+      APP_ENV: ${APP_ENV:?APP_ENV required; copy .env.example}
+      DB_HOST: postgres
+      DB_PASSWORD_FILE: /run/secrets/notification_password
+    secrets:
+    - notification_password
+    networks:
+    - persistence
+    - application
+    depends_on:
+      notification-migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+      - CMD
+      - python
+      - -c
+      - import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/ready',
+        timeout=12)
+      interval: 5s
+      timeout: 15s
+      retries: 24
+      start_period: 5s
+  nginx:
+    build:
+      context: .
+      dockerfile: infra/docker/frontend.Dockerfile
+    ports:
+    - 127.0.0.1:${HTTP_PORT:?HTTP_PORT required; copy .env.example}:8080
+    networks:
+    - application
+    - edge
+    depends_on:
+      identity:
+        condition: service_healthy
+      diagnosis:
+        condition: service_healthy
+      ai_inference:
+        condition: service_healthy
+      notification:
+        condition: service_healthy
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - wget -q -O /dev/null http://127.0.0.1:8080/
+      interval: 5s
+      timeout: 3s
+      retries: 12
+  probe:
+    build:
+      context: .
+      dockerfile: infra/docker/integration.Dockerfile
+    profiles:
+    - test
+    environment:
+      S3_BUCKET: ${S3_BUCKET:?S3_BUCKET required}
+      S3_REGION: ${S3_REGION:?S3_REGION required}
+    secrets:
+    - identity_password
+    - s3_diagnosis
+    - s3_ai
+    - rabbit_password
+    networks:
+    - persistence
+    - application
+    command:
+    - python
+    - tests/check_runtime.py
+networks:
+  persistence:
+    internal: true
+  application:
+    internal: true
+  edge: {}
+volumes:
+  postgres_data: null
+  rabbit_data: null
+  s3_data: null
+secrets:
+  postgres_password:
+    file: ${PERSISTENCE_SECRETS_DIR:-./.local/persistence}/postgres_password
+  identity_password:
+    file: ${PERSISTENCE_SECRETS_DIR:-./.local/persistence}/identity_password
+  diagnosis_password:
+    file: ${PERSISTENCE_SECRETS_DIR:-./.local/persistence}/diagnosis_password
+  ai_inference_password:
+    file: ${PERSISTENCE_SECRETS_DIR:-./.local/persistence}/ai_inference_password
+  notification_password:
+    file: ${PERSISTENCE_SECRETS_DIR:-./.local/persistence}/notification_password
+  s3_admin:
+    file: ${PERSISTENCE_SECRETS_DIR:-./.local/persistence}/s3_admin.json
+  s3_diagnosis:
+    file: ${PERSISTENCE_SECRETS_DIR:-./.local/persistence}/s3_diagnosis.json
+  s3_ai:
+    file: ${PERSISTENCE_SECRETS_DIR:-./.local/persistence}/s3_ai.json
+  s3_config:
+    file: ${PERSISTENCE_SECRETS_DIR:-./.local/persistence}/s3_config.json
+  rabbit_password:
+    file: ${PERSISTENCE_SECRETS_DIR:-./.local/persistence}/rabbit_password
+  rabbit_cookie:
+    file: ${PERSISTENCE_SECRETS_DIR:-./.local/persistence}/rabbit_cookie

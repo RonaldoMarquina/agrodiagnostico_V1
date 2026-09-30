@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "version": "1.0.0",
+  "classes": [
+    {
+      "class_code": "POTATO_HEALTHY",
+      "crop_code": "POTATO",
+      "name": "Papa sana",
+      "status": "CANDIDATE",
+      "definition_status": "PENDING_REVIEW",
+      "definition": "Etiqueta visual sana; no demuestra ausencia de toda enfermedad/plaga.",
+      "definition_note": "La semejanza de nombres no valida etiquetas ni cobertura."
+    },
+    {
+      "class_code": "POTATO_EARLY_BLIGHT",
+      "crop_code": "POTATO",
+      "name": "Tizón temprano",
+      "status": "CANDIDATE",
+      "definition_status": "PENDING_REVIEW",
+      "definition": "Condición candidata de V1, pendiente de criterios diagnósticos y revisión experta.",
+      "definition_note": "La semejanza de nombres no valida etiquetas ni cobertura."
+    },
+    {
+      "class_code": "POTATO_LATE_BLIGHT",
+      "crop_code": "POTATO",
+      "name": "Tizón tardío o rancha",
+      "status": "CANDIDATE",
+      "definition_status": "PENDING_REVIEW",
+      "definition": "Condición candidata de V1, pendiente de criterios diagnósticos y revisión experta.",
+      "definition_note": "La semejanza de nombres no valida etiquetas ni cobertura."
+    },
+    {
+      "class_code": "MAIZE_HEALTHY",
+      "crop_code": "MAIZE",
+      "name": "Maíz sano",
+      "status": "CANDIDATE",
+      "definition_status": "PENDING_REVIEW",
+      "definition": "Etiqueta visual sana; no demuestra ausencia de toda enfermedad/plaga.",
+      "definition_note": "La semejanza de nombres no valida etiquetas ni cobertura."
+    },
+    {
+      "class_code": "MAIZE_COMMON_RUST",
+      "crop_code": "MAIZE",
+      "name": "Roya común",
+      "status": "CANDIDATE",
+      "definition_status": "PENDING_REVIEW",
+      "definition": "Condición candidata de V1, pendiente de criterios diagnósticos y revisión experta.",
+      "definition_note": "La semejanza de nombres no valida etiquetas ni cobertura."
+    },
+    {
+      "class_code": "MAIZE_LEAF_BLIGHT",
+      "crop_code": "MAIZE",
+      "name": "Tizón foliar",
+      "status": "CANDIDATE",
+      "definition_status": "PENDING_REVIEW",
+      "definition": "Condición candidata de V1, pendiente de criterios diagnósticos y revisión experta.",
+      "definition_note": "No equiparar automáticamente tizón foliar con Northern Leaf Blight; aprobar alcance antes de curar."
+    },
+    {
+      "class_code": "MAIZE_GRAY_LEAF_SPOT",
+      "crop_code": "MAIZE",
+      "name": "Mancha gris foliar",
+      "status": "CANDIDATE",
+      "definition_status": "PENDING_REVIEW",
+      "definition": "Condición candidata de V1, pendiente de criterios diagnósticos y revisión experta.",
+      "definition_note": "La semejanza de nombres no valida etiquetas ni cobertura."
+    }
+  ],
+  "retired_codes": [],
+  "code_policy": "Códigos reservados no reciclables. Conservar versiones anteriores; cambios semánticos requieren nuevo código y revisión contractual. NO_CONCLUYENTE es estado."
+}

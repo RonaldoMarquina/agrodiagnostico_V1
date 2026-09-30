@@ -1,0 +1,880 @@
+Local persistence secrets prepared; existing values preserved.
+
+
+Sending build context to Docker daemon  524.4kB
+Sending build context to Docker daemon  685.5kB
+
+Step 1/15 : FROM python:3.12-slim-bookworm@sha256:392307d22300de8b5986851a12d9176dfc0fc073e65bf6523ebd7dcbeb23564e
+ ---> 392307d22300
+Step 2/15 : ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 UV_PYTHON_DOWNLOADS=never
+ ---> Using cache
+ ---> 936ae41f86c8
+Step 3/15 : COPY tooling/uv.requirements.txt /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> c582f2708ce8
+Step 4/15 : RUN python -m pip install --no-cache-dir --require-hashes -r /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> a8ed5322db04
+Step 5/15 : ARG SERVICE
+ ---> Using cache
+ ---> 459991a36a33
+Step 6/15 : WORKDIR /service
+ ---> Using cache
+ ---> 4248873fba2e
+Step 7/15 : COPY services/${SERVICE}/pyproject.toml services/${SERVICE}/uv.lock ./
+ ---> Using cache
+ ---> d824f62f23c2
+Step 8/15 : RUN uv sync --locked --no-dev --no-install-project
+ ---> Using cache
+ ---> 6e130c1fcbb0
+Step 9/15 : COPY services/${SERVICE}/app ./app
+ ---> Using cache
+ ---> eef146169e89
+Step 10/15 : COPY services/${SERVICE}/alembic.ini ./
+ ---> Using cache
+ ---> 6885fe9cb67e
+Step 11/15 : COPY services/${SERVICE}/migrations ./migrations
+ ---> Using cache
+ ---> 95c7aba758a9
+Step 12/15 : ENV PATH="/service/.venv/bin:$PATH"
+ ---> Using cache
+ ---> b9b5129581c5
+Step 13/15 : USER 10001:10001
+ ---> Using cache
+ ---> 17489cc181c3
+Step 14/15 : CMD ["python", "-m", "app.migrate", "upgrade", "head"]
+ ---> Using cache
+ ---> bd0efc678ed7
+Step 15/15 : LABEL com.docker.compose.image.builder=classic
+ ---> Running in 19c0ef7ba534
+ ---> Removed intermediate container 19c0ef7ba534
+ ---> 21f69df5a315
+Successfully built 21f69df5a315
+Successfully tagged agro-mig-test-462e16daaf04-db-bootstrap:latest
+Sending build context to Docker daemon  524.4kB
+Sending build context to Docker daemon  524.4kB
+Sending build context to Docker daemon  524.4kB
+Sending build context to Docker daemon  524.4kB
+Sending build context to Docker daemon  685.5kB
+
+Sending build context to Docker daemon  685.5kB
+
+Sending build context to Docker daemon  685.5kB
+
+Sending build context to Docker daemon  685.5kB
+
+Step 1/15 : FROM python:3.12-slim-bookworm@sha256:392307d22300de8b5986851a12d9176dfc0fc073e65bf6523ebd7dcbeb23564e
+Step 1/15 : FROM python:3.12-slim-bookworm@sha256:392307d22300de8b5986851a12d9176dfc0fc073e65bf6523ebd7dcbeb23564e
+Step 1/15 : FROM python:3.12-slim-bookworm@sha256:392307d22300de8b5986851a12d9176dfc0fc073e65bf6523ebd7dcbeb23564e
+Step 1/15 : FROM python:3.12-slim-bookworm@sha256:392307d22300de8b5986851a12d9176dfc0fc073e65bf6523ebd7dcbeb23564e
+ ---> 392307d22300
+Step 2/15 : ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 UV_PYTHON_DOWNLOADS=never
+ ---> 392307d22300
+Step 2/15 : ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 UV_PYTHON_DOWNLOADS=never
+ ---> 392307d22300
+Step 2/15 : ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 UV_PYTHON_DOWNLOADS=never
+ ---> 392307d22300
+Step 2/15 : ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 UV_PYTHON_DOWNLOADS=never
+ ---> Using cache
+ ---> 936ae41f86c8
+Step 3/15 : COPY tooling/uv.requirements.txt /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> 936ae41f86c8
+Step 3/15 : COPY tooling/uv.requirements.txt /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> 936ae41f86c8
+Step 3/15 : COPY tooling/uv.requirements.txt /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> 936ae41f86c8
+Step 3/15 : COPY tooling/uv.requirements.txt /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> c582f2708ce8
+Step 4/15 : RUN python -m pip install --no-cache-dir --require-hashes -r /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> c582f2708ce8
+Step 4/15 : RUN python -m pip install --no-cache-dir --require-hashes -r /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> c582f2708ce8
+Step 4/15 : RUN python -m pip install --no-cache-dir --require-hashes -r /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> c582f2708ce8
+Step 4/15 : RUN python -m pip install --no-cache-dir --require-hashes -r /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> a8ed5322db04
+Step 5/15 : ARG SERVICE
+ ---> Using cache
+ ---> a8ed5322db04
+Step 5/15 : ARG SERVICE
+ ---> Using cache
+ ---> a8ed5322db04
+Step 5/15 : ARG SERVICE
+ ---> Using cache
+ ---> a8ed5322db04
+Step 5/15 : ARG SERVICE
+ ---> Using cache
+ ---> 459991a36a33
+Step 6/15 : WORKDIR /service
+ ---> Using cache
+ ---> 459991a36a33
+Step 6/15 : WORKDIR /service
+ ---> Using cache
+ ---> 459991a36a33
+Step 6/15 : WORKDIR /service
+ ---> Using cache
+ ---> 459991a36a33
+Step 6/15 : WORKDIR /service
+ ---> Using cache
+ ---> 4248873fba2e
+Step 7/15 : COPY services/${SERVICE}/pyproject.toml services/${SERVICE}/uv.lock ./
+ ---> Using cache
+ ---> 4248873fba2e
+Step 7/15 : COPY services/${SERVICE}/pyproject.toml services/${SERVICE}/uv.lock ./
+ ---> Using cache
+ ---> 4248873fba2e
+Step 7/15 : COPY services/${SERVICE}/pyproject.toml services/${SERVICE}/uv.lock ./
+ ---> Using cache
+ ---> 4248873fba2e
+Step 7/15 : COPY services/${SERVICE}/pyproject.toml services/${SERVICE}/uv.lock ./
+ ---> Using cache
+ ---> 4af45150f9c5
+Step 8/15 : RUN uv sync --locked --no-dev --no-install-project
+ ---> Using cache
+ ---> b9d5a69f0dd5
+Step 8/15 : RUN uv sync --locked --no-dev --no-install-project
+ ---> Using cache
+ ---> e600c6763837
+Step 8/15 : RUN uv sync --locked --no-dev --no-install-project
+ ---> Using cache
+ ---> d824f62f23c2
+Step 8/15 : RUN uv sync --locked --no-dev --no-install-project
+ ---> Using cache
+ ---> f68f48bf83b4
+Step 9/15 : COPY services/${SERVICE}/app ./app
+ ---> Using cache
+ ---> 400ff290642b
+Step 9/15 : COPY services/${SERVICE}/app ./app
+ ---> Using cache
+ ---> 552541d18406
+Step 9/15 : COPY services/${SERVICE}/app ./app
+ ---> Using cache
+ ---> 6e130c1fcbb0
+Step 9/15 : COPY services/${SERVICE}/app ./app
+ ---> Using cache
+ ---> f091d5bcd9fd
+Step 10/15 : COPY services/${SERVICE}/alembic.ini ./
+ ---> Using cache
+ ---> ac75c088aceb
+Step 10/15 : COPY services/${SERVICE}/alembic.ini ./
+ ---> Using cache
+ ---> 07cf7f6815cc
+Step 10/15 : COPY services/${SERVICE}/alembic.ini ./
+ ---> Using cache
+ ---> eef146169e89
+Step 10/15 : COPY services/${SERVICE}/alembic.ini ./
+ ---> Using cache
+ ---> b97c9d7db2c0
+Step 11/15 : COPY services/${SERVICE}/migrations ./migrations
+ ---> Using cache
+ ---> 22896b4372fc
+Step 11/15 : COPY services/${SERVICE}/migrations ./migrations
+ ---> Using cache
+ ---> 80a9c631cca3
+Step 11/15 : COPY services/${SERVICE}/migrations ./migrations
+ ---> Using cache
+ ---> 6885fe9cb67e
+Step 11/15 : COPY services/${SERVICE}/migrations ./migrations
+ ---> Using cache
+ ---> 924f91819871
+Step 12/15 : ENV PATH="/service/.venv/bin:$PATH"
+ ---> Using cache
+ ---> 253b8ddc190d
+Step 12/15 : ENV PATH="/service/.venv/bin:$PATH"
+ ---> Using cache
+ ---> 9bba36e7f6e5
+Step 12/15 : ENV PATH="/service/.venv/bin:$PATH"
+ ---> Using cache
+ ---> 35df58d85e99
+Step 13/15 : USER 10001:10001
+ ---> Using cache
+ ---> a01d9ade39d1
+Step 13/15 : USER 10001:10001
+ ---> Using cache
+ ---> e106e7eff731
+Step 13/15 : USER 10001:10001
+ ---> Using cache
+ ---> 95c7aba758a9
+Step 12/15 : ENV PATH="/service/.venv/bin:$PATH"
+ ---> Using cache
+ ---> 940a65497686
+Step 14/15 : CMD ["python", "-m", "app.migrate", "upgrade", "head"]
+ ---> Using cache
+ ---> e5c5c9da4a13
+Step 14/15 : CMD ["python", "-m", "app.migrate", "upgrade", "head"]
+ ---> Using cache
+ ---> dfd87ad1e4ef
+Step 14/15 : CMD ["python", "-m", "app.migrate", "upgrade", "head"]
+ ---> Using cache
+ ---> b9b5129581c5
+Step 13/15 : USER 10001:10001
+ ---> Using cache
+ ---> 9e14aef743e7
+Step 15/15 : LABEL com.docker.compose.image.builder=classic
+ ---> Using cache
+ ---> a16e6f8c700d
+Step 15/15 : LABEL com.docker.compose.image.builder=classic
+ ---> Using cache
+ ---> 04ade1875f6f
+Step 15/15 : LABEL com.docker.compose.image.builder=classic
+ ---> Using cache
+ ---> 17489cc181c3
+Step 14/15 : CMD ["python", "-m", "app.migrate", "upgrade", "head"]
+ ---> Using cache
+ ---> bd0efc678ed7
+Step 15/15 : LABEL com.docker.compose.image.builder=classic
+ ---> Using cache
+ ---> 21f69df5a315
+Successfully built 21f69df5a315
+Successfully tagged agro-mig-test-462e16daaf04-identity-migrate:latest
+ ---> Running in a7b78957ce77
+ ---> Running in e9c509649873
+ ---> Running in 49c266f440ff
+ ---> Removed intermediate container e9c509649873
+ ---> c8ced7a2dd82
+ ---> Removed intermediate container a7b78957ce77
+ ---> 3ae018286b54
+Successfully built c8ced7a2dd82
+Successfully built 3ae018286b54
+Successfully tagged agro-mig-test-462e16daaf04-notification-migrate:latest
+Successfully tagged agro-mig-test-462e16daaf04-ai_inference-migrate:latest
+ ---> Removed intermediate container 49c266f440ff
+ ---> 18fa6f06ca2f
+Successfully built 18fa6f06ca2f
+Successfully tagged agro-mig-test-462e16daaf04-diagnosis-migrate:latest
+time="2026-09-30T00:13:23-05:00" level=warning msg="COMPOSE_BAKE=false is deprecated, support for internal compose builder will be removed in next release"
+ Service db-bootstrap  Building
+ Service db-bootstrap  Built
+ Service notification-migrate  Building
+ Service diagnosis-migrate  Building
+ Service ai_inference-migrate  Building
+ Service identity-migrate  Building
+ Service identity-migrate  Built
+ Service notification-migrate  Built
+ Service ai_inference-migrate  Built
+ Service diagnosis-migrate  Built
+ ai_inference-migrate  Built
+ db-bootstrap  Built
+ diagnosis-migrate  Built
+ identity-migrate  Built
+ notification-migrate  Built
+
+ Network agro-mig-test-462e16daaf04_persistence  Creating
+ Network agro-mig-test-462e16daaf04_persistence  Created
+ Volume agro-mig-test-462e16daaf04_postgres_data  Creating
+ Volume agro-mig-test-462e16daaf04_postgres_data  Created
+ Container agro-mig-test-462e16daaf04-postgres-1  Creating
+ Container agro-mig-test-462e16daaf04-postgres-1  Created
+ Container agro-mig-test-462e16daaf04-postgres-1  Starting
+ Container agro-mig-test-462e16daaf04-postgres-1  Started
+ Container agro-mig-test-462e16daaf04-postgres-1  Waiting
+ Container agro-mig-test-462e16daaf04-postgres-1  Healthy
+
+bootstrap_ok: four private databases and restricted roles
+
+bootstrap_ok: four private databases and restricted roles
+
+{
+  "checks": [
+    "identity: upgrade/current/repeat/downgrade/upgrade/no-domain/restricted-role PASS",
+    "identity: bad-password/missing-head/wrong-head/failed-migration/no-secret PASS",
+    "diagnosis: upgrade/current/repeat/downgrade/upgrade/no-domain/restricted-role PASS",
+    "diagnosis: bad-password/missing-head/wrong-head/failed-migration/no-secret PASS",
+    "ai_inference: upgrade/current/repeat/downgrade/upgrade/no-domain/restricted-role PASS",
+    "ai_inference: bad-password/missing-head/wrong-head/failed-migration/no-secret PASS",
+    "notification: upgrade/current/repeat/downgrade/upgrade/no-domain/restricted-role PASS",
+    "notification: bad-password/missing-head/wrong-head/failed-migration/no-secret PASS"
+  ],
+  "own_connections": 4,
+  "cross_connections_denied": 12
+}
+
+Sending build context to Docker daemon  524.4kB
+Sending build context to Docker daemon  524.4kB
+Sending build context to Docker daemon  524.4kB
+Sending build context to Docker daemon  524.4kB
+Sending build context to Docker daemon  685.5kB
+
+Sending build context to Docker daemon  685.5kB
+
+Sending build context to Docker daemon  685.5kB
+
+Sending build context to Docker daemon  685.5kB
+
+Step 1/15 : FROM python:3.12-slim-bookworm@sha256:392307d22300de8b5986851a12d9176dfc0fc073e65bf6523ebd7dcbeb23564e
+Step 1/15 : FROM python:3.12-slim-bookworm@sha256:392307d22300de8b5986851a12d9176dfc0fc073e65bf6523ebd7dcbeb23564e
+Step 1/15 : FROM python:3.12-slim-bookworm@sha256:392307d22300de8b5986851a12d9176dfc0fc073e65bf6523ebd7dcbeb23564e
+Step 1/15 : FROM python:3.12-slim-bookworm@sha256:392307d22300de8b5986851a12d9176dfc0fc073e65bf6523ebd7dcbeb23564e
+ ---> 392307d22300
+Step 2/15 : ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 UV_PYTHON_DOWNLOADS=never
+ ---> 392307d22300
+Step 2/15 : ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 UV_PYTHON_DOWNLOADS=never
+ ---> 392307d22300
+Step 2/15 : ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 UV_PYTHON_DOWNLOADS=never
+ ---> 392307d22300
+Step 2/15 : ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 UV_PYTHON_DOWNLOADS=never
+ ---> Using cache
+ ---> 936ae41f86c8
+Step 3/15 : COPY tooling/uv.requirements.txt /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> 936ae41f86c8
+Step 3/15 : COPY tooling/uv.requirements.txt /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> 936ae41f86c8
+Step 3/15 : COPY tooling/uv.requirements.txt /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> 936ae41f86c8
+Step 3/15 : COPY tooling/uv.requirements.txt /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> c582f2708ce8
+Step 4/15 : RUN python -m pip install --no-cache-dir --require-hashes -r /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> c582f2708ce8
+Step 4/15 : RUN python -m pip install --no-cache-dir --require-hashes -r /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> Using cache
+ ---> c582f2708ce8
+Step 4/15 : RUN python -m pip install --no-cache-dir --require-hashes -r /tmp/uv.requirements.txt
+ ---> c582f2708ce8
+Step 4/15 : RUN python -m pip install --no-cache-dir --require-hashes -r /tmp/uv.requirements.txt
+ ---> Using cache
+ ---> a8ed5322db04
+Step 5/15 : ARG SERVICE
+ ---> Using cache
+ ---> a8ed5322db04
+Step 5/15 : ARG SERVICE
+ ---> Using cache
+ ---> a8ed5322db04
+Step 5/15 : ARG SERVICE
+ ---> Using cache
+ ---> a8ed5322db04
+Step 5/15 : ARG SERVICE
+ ---> Using cache
+ ---> 459991a36a33
+Step 6/15 : WORKDIR /service
+ ---> Using cache
+ ---> 459991a36a33
+Step 6/15 : WORKDIR /service
+ ---> Using cache
+ ---> 459991a36a33
+Step 6/15 : WORKDIR /service
+ ---> Using cache
+ ---> 459991a36a33
+Step 6/15 : WORKDIR /service
+ ---> Using cache
+ ---> 4248873fba2e
+Step 7/15 : COPY services/${SERVICE}/pyproject.toml services/${SERVICE}/uv.lock ./
+ ---> Using cache
+ ---> 4248873fba2e
+Step 7/15 : COPY services/${SERVICE}/pyproject.toml services/${SERVICE}/uv.lock ./
+ ---> Using cache
+ ---> 4248873fba2e
+Step 7/15 : COPY services/${SERVICE}/pyproject.toml services/${SERVICE}/uv.lock ./
+ ---> Using cache
+ ---> 4248873fba2e
+Step 7/15 : COPY services/${SERVICE}/pyproject.toml services/${SERVICE}/uv.lock ./
+ ---> Using cache
+ ---> b9d5a69f0dd5
+Step 8/15 : RUN uv sync --locked --no-dev --no-install-project
+ ---> Using cache
+ ---> 4af45150f9c5
+Step 8/15 : RUN uv sync --locked --no-dev --no-install-project
+ ---> Using cache
+ ---> e600c6763837
+Step 8/15 : RUN uv sync --locked --no-dev --no-install-project
+ ---> Using cache
+ ---> d824f62f23c2
+Step 8/15 : RUN uv sync --locked --no-dev --no-install-project
+ ---> Using cache
+ ---> 400ff290642b
+Step 9/15 : COPY services/${SERVICE}/app ./app
+ ---> Using cache
+ ---> f68f48bf83b4
+Step 9/15 : COPY services/${SERVICE}/app ./app
+ ---> Using cache
+ ---> 552541d18406
+Step 9/15 : COPY services/${SERVICE}/app ./app
+ ---> Using cache
+ ---> 6e130c1fcbb0
+Step 9/15 : COPY services/${SERVICE}/app ./app
+ ---> Using cache
+ ---> ac75c088aceb
+Step 10/15 : COPY services/${SERVICE}/alembic.ini ./
+ ---> Using cache
+ ---> f091d5bcd9fd
+Step 10/15 : COPY services/${SERVICE}/alembic.ini ./
+ ---> Using cache
+ ---> 07cf7f6815cc
+Step 10/15 : COPY services/${SERVICE}/alembic.ini ./
+ ---> Using cache
+ ---> eef146169e89
+Step 10/15 : COPY services/${SERVICE}/alembic.ini ./
+ ---> Using cache
+ ---> 22896b4372fc
+Step 11/15 : COPY services/${SERVICE}/migrations ./migrations
+ ---> Using cache
+ ---> b97c9d7db2c0
+Step 11/15 : COPY services/${SERVICE}/migrations ./migrations
+ ---> Using cache
+ ---> 80a9c631cca3
+Step 11/15 : COPY services/${SERVICE}/migrations ./migrations
+ ---> Using cache
+ ---> 6885fe9cb67e
+Step 11/15 : COPY services/${SERVICE}/migrations ./migrations
+ ---> Using cache
+ ---> 924f91819871
+Step 12/15 : ENV PATH="/service/.venv/bin:$PATH"
+ ---> Using cache
+ ---> 253b8ddc190d
+Step 12/15 : ENV PATH="/service/.venv/bin:$PATH"
+ ---> Using cache
+ ---> 9bba36e7f6e5
+Step 12/15 : ENV PATH="/service/.venv/bin:$PATH"
+ ---> Using cache
+ ---> 95c7aba758a9
+Step 12/15 : ENV PATH="/service/.venv/bin:$PATH"
+ ---> Using cache
+ ---> a01d9ade39d1
+Step 13/15 : USER 10001:10001
+ ---> Using cache
+ ---> 35df58d85e99
+Step 13/15 : USER 10001:10001
+ ---> Using cache
+ ---> e106e7eff731
+Step 13/15 : USER 10001:10001
+ ---> Using cache
+ ---> e5c5c9da4a13
+Step 14/15 : CMD ["python", "-m", "app.migrate", "upgrade", "head"]
+ ---> Using cache
+ ---> b9b5129581c5
+Step 13/15 : USER 10001:10001
+ ---> Using cache
+ ---> 940a65497686
+Step 14/15 : CMD ["python", "-m", "app.migrate", "upgrade", "head"]
+ ---> Using cache
+ ---> dfd87ad1e4ef
+Step 14/15 : CMD ["python", "-m", "app.migrate", "upgrade", "head"]
+ ---> Using cache
+ ---> 17489cc181c3
+Step 14/15 : CMD ["python", "-m", "app.migrate", "upgrade", "head"]
+ ---> Using cache
+ ---> 9e14aef743e7
+Step 15/15 : LABEL com.docker.compose.image.builder=classic
+ ---> Using cache
+ ---> a16e6f8c700d
+Step 15/15 : LABEL com.docker.compose.image.builder=classic
+ ---> Using cache
+ ---> 04ade1875f6f
+Step 15/15 : LABEL com.docker.compose.image.builder=classic
+ ---> Using cache
+ ---> bd0efc678ed7
+Step 15/15 : LABEL com.docker.compose.image.builder=classic
+ ---> Using cache
+ ---> 3ae018286b54
+ ---> Using cache
+ ---> 18fa6f06ca2f
+ ---> Using cache
+ ---> c8ced7a2dd82
+Successfully built 3ae018286b54
+Successfully built c8ced7a2dd82
+Successfully built 18fa6f06ca2f
+Successfully tagged agro-mig-test-462e16daaf04-ai_inference-schema-check:latest
+Successfully tagged agro-mig-test-462e16daaf04-notification-schema-check:latest
+Successfully tagged agro-mig-test-462e16daaf04-diagnosis-schema-check:latest
+ ---> Using cache
+ ---> 21f69df5a315
+Successfully built 21f69df5a315
+Successfully tagged agro-mig-test-462e16daaf04-identity-schema-check:latest
+time="2026-09-30T00:14:29-05:00" level=warning msg="COMPOSE_BAKE=false is deprecated, support for internal compose builder will be removed in next release"
+ Service diagnosis-schema-check  Building
+ Service notification-schema-check  Building
+ Service identity-schema-check  Building
+ Service ai_inference-schema-check  Building
+ Service ai_inference-schema-check  Built
+ Service notification-schema-check  Built
+ Service diagnosis-schema-check  Built
+ Service identity-schema-check  Built
+ ai_inference-schema-check  Built
+ diagnosis-schema-check  Built
+ identity-schema-check  Built
+ notification-schema-check  Built
+ Container agro-mig-test-462e16daaf04-postgres-1  Running
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Creating
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Created
+ Container agro-mig-test-462e16daaf04-notification-migrate-1  Creating
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Creating
+ Container agro-mig-test-462e16daaf04-ai_inference-migrate-1  Creating
+ Container agro-mig-test-462e16daaf04-diagnosis-migrate-1  Creating
+ Container agro-mig-test-462e16daaf04-ai_inference-migrate-1  Created
+ Container agro-mig-test-462e16daaf04-ai_inference-schema-check-1  Creating
+ Container agro-mig-test-462e16daaf04-notification-migrate-1  Created
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Created
+ Container agro-mig-test-462e16daaf04-notification-schema-check-1  Creating
+ Container agro-mig-test-462e16daaf04-identity-schema-check-1  Creating
+ Container agro-mig-test-462e16daaf04-diagnosis-migrate-1  Created
+ Container agro-mig-test-462e16daaf04-diagnosis-schema-check-1  Creating
+ Container agro-mig-test-462e16daaf04-ai_inference-schema-check-1  Created
+ Container agro-mig-test-462e16daaf04-notification-schema-check-1  Created
+ Container agro-mig-test-462e16daaf04-identity-schema-check-1  Created
+ Container agro-mig-test-462e16daaf04-diagnosis-schema-check-1  Created
+ Container agro-mig-test-462e16daaf04-postgres-1  Waiting
+ Container agro-mig-test-462e16daaf04-postgres-1  Healthy
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Starting
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Started
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Waiting
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Waiting
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Waiting
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Waiting
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Exited
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Exited
+ Container agro-mig-test-462e16daaf04-notification-migrate-1  Starting
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Starting
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Exited
+ Container agro-mig-test-462e16daaf04-ai_inference-migrate-1  Starting
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Exited
+ Container agro-mig-test-462e16daaf04-diagnosis-migrate-1  Starting
+ Container agro-mig-test-462e16daaf04-diagnosis-migrate-1  Started
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Waiting
+ Container agro-mig-test-462e16daaf04-diagnosis-migrate-1  Waiting
+ Container agro-mig-test-462e16daaf04-notification-migrate-1  Started
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Waiting
+ Container agro-mig-test-462e16daaf04-notification-migrate-1  Waiting
+ Container agro-mig-test-462e16daaf04-ai_inference-migrate-1  Started
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Waiting
+ Container agro-mig-test-462e16daaf04-ai_inference-migrate-1  Waiting
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Started
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Waiting
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Waiting
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Exited
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Exited
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Exited
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Exited
+ Container agro-mig-test-462e16daaf04-diagnosis-migrate-1  Exited
+ Container agro-mig-test-462e16daaf04-diagnosis-schema-check-1  Starting
+ Container agro-mig-test-462e16daaf04-notification-migrate-1  Exited
+ Container agro-mig-test-462e16daaf04-notification-schema-check-1  Starting
+ Container agro-mig-test-462e16daaf04-ai_inference-migrate-1  Exited
+ Container agro-mig-test-462e16daaf04-ai_inference-schema-check-1  Starting
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Exited
+ Container agro-mig-test-462e16daaf04-identity-schema-check-1  Starting
+ Container agro-mig-test-462e16daaf04-notification-schema-check-1  Started
+ Container agro-mig-test-462e16daaf04-diagnosis-schema-check-1  Started
+ Container agro-mig-test-462e16daaf04-ai_inference-schema-check-1  Started
+ Container agro-mig-test-462e16daaf04-identity-schema-check-1  Started
+
+container "6864f0a10b36bc92fad40a747e3844599aaef8de183dc797750a580d7e3aa51e" exited with status code 0
+container "94de743ad6119dd8280c2818183119107641f6dcc794820883d18def6b727b07" exited with status code 0
+container "1d429a506bc6a0cdf86d139f14962b9dfc334bc684e2caf2ecd97e33d845f904" exited with status code 0
+container "e3aa4d95cc5e834b8c1f5ea02f2a11925d250abd465aa47eaceb0c6199ecba21" exited with status code 0
+
+ Container agro-mig-test-462e16daaf04-identity-schema-check-1  Stopping
+ Container agro-mig-test-462e16daaf04-ai_inference-schema-check-1  Stopping
+ Container agro-mig-test-462e16daaf04-diagnosis-schema-check-1  Stopping
+ Container agro-mig-test-462e16daaf04-notification-schema-check-1  Stopping
+ Container agro-mig-test-462e16daaf04-diagnosis-schema-check-1  Stopped
+ Container agro-mig-test-462e16daaf04-diagnosis-schema-check-1  Removing
+ Container agro-mig-test-462e16daaf04-identity-schema-check-1  Stopped
+ Container agro-mig-test-462e16daaf04-identity-schema-check-1  Removing
+ Container agro-mig-test-462e16daaf04-notification-schema-check-1  Stopped
+ Container agro-mig-test-462e16daaf04-notification-schema-check-1  Removing
+ Container agro-mig-test-462e16daaf04-ai_inference-schema-check-1  Stopped
+ Container agro-mig-test-462e16daaf04-ai_inference-schema-check-1  Removing
+ Container agro-mig-test-462e16daaf04-diagnosis-schema-check-1  Removed
+ Container agro-mig-test-462e16daaf04-diagnosis-migrate-1  Stopping
+ Container agro-mig-test-462e16daaf04-diagnosis-migrate-1  Stopped
+ Container agro-mig-test-462e16daaf04-diagnosis-migrate-1  Removing
+ Container agro-mig-test-462e16daaf04-notification-schema-check-1  Removed
+ Container agro-mig-test-462e16daaf04-ai_inference-schema-check-1  Removed
+ Container agro-mig-test-462e16daaf04-ai_inference-migrate-1  Stopping
+ Container agro-mig-test-462e16daaf04-notification-migrate-1  Stopping
+ Container agro-mig-test-462e16daaf04-notification-migrate-1  Stopped
+ Container agro-mig-test-462e16daaf04-ai_inference-migrate-1  Stopped
+ Container agro-mig-test-462e16daaf04-ai_inference-migrate-1  Removing
+ Container agro-mig-test-462e16daaf04-notification-migrate-1  Removing
+ Container agro-mig-test-462e16daaf04-identity-schema-check-1  Removed
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Stopping
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Stopped
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Removing
+ Container agro-mig-test-462e16daaf04-diagnosis-migrate-1  Removed
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Removed
+ Container agro-mig-test-462e16daaf04-notification-migrate-1  Removed
+ Container agro-mig-test-462e16daaf04-ai_inference-migrate-1  Removed
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Stopping
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Stopped
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Removing
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Removed
+ Container agro-mig-test-462e16daaf04-postgres-1  Stopping
+ Container agro-mig-test-462e16daaf04-postgres-1  Stopped
+ Container agro-mig-test-462e16daaf04-postgres-1  Removing
+ Container agro-mig-test-462e16daaf04-postgres-1  Removed
+ Network agro-mig-test-462e16daaf04_persistence  Removing
+ Network agro-mig-test-462e16daaf04_persistence  Removed
+
+ Network agro-mig-test-462e16daaf04_persistence  Creating
+ Network agro-mig-test-462e16daaf04_persistence  Created
+ Container agro-mig-test-462e16daaf04-postgres-1  Creating
+ Container agro-mig-test-462e16daaf04-postgres-1  Created
+ Container agro-mig-test-462e16daaf04-postgres-1  Starting
+ Container agro-mig-test-462e16daaf04-postgres-1  Started
+ Container agro-mig-test-462e16daaf04-postgres-1  Waiting
+ Container agro-mig-test-462e16daaf04-postgres-1  Healthy
+
+schema_ready
+
+schema_ready
+
+schema_ready
+
+schema_ready
+
+ Container agro-mig-test-462e16daaf04-postgres-1  Running
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Creating
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Created
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Creating
+ Container agro-mig-test-462e16daaf04-diagnosis-migrate-1  Creating
+ Container agro-mig-test-462e16daaf04-notification-migrate-1  Creating
+ Container agro-mig-test-462e16daaf04-ai_inference-migrate-1  Creating
+ Container agro-mig-test-462e16daaf04-notification-migrate-1  Created
+ Container agro-mig-test-462e16daaf04-notification-schema-check-1  Creating
+ Container agro-mig-test-462e16daaf04-ai_inference-migrate-1  Created
+ Container agro-mig-test-462e16daaf04-ai_inference-schema-check-1  Creating
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Created
+ Container agro-mig-test-462e16daaf04-identity-schema-check-1  Creating
+ Container agro-mig-test-462e16daaf04-diagnosis-migrate-1  Created
+ Container agro-mig-test-462e16daaf04-diagnosis-schema-check-1  Creating
+ Container agro-mig-test-462e16daaf04-ai_inference-schema-check-1  Created
+ Container agro-mig-test-462e16daaf04-notification-schema-check-1  Created
+ Container agro-mig-test-462e16daaf04-identity-schema-check-1  Created
+ Container agro-mig-test-462e16daaf04-diagnosis-schema-check-1  Created
+ Container agro-mig-test-462e16daaf04-postgres-1  Waiting
+ Container agro-mig-test-462e16daaf04-postgres-1  Healthy
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Starting
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Started
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Waiting
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Waiting
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Waiting
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Waiting
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Exited
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Exited
+ Container agro-mig-test-462e16daaf04-notification-migrate-1  Starting
+ Container agro-mig-test-462e16daaf04-ai_inference-migrate-1  Starting
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Exited
+ Container agro-mig-test-462e16daaf04-diagnosis-migrate-1  Starting
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Exited
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Starting
+ Container agro-mig-test-462e16daaf04-ai_inference-migrate-1  Started
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Waiting
+ Container agro-mig-test-462e16daaf04-ai_inference-migrate-1  Waiting
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Started
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Waiting
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Waiting
+ Container agro-mig-test-462e16daaf04-notification-migrate-1  Started
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Waiting
+ Container agro-mig-test-462e16daaf04-notification-migrate-1  Waiting
+ Container agro-mig-test-462e16daaf04-diagnosis-migrate-1  Started
+ Container agro-mig-test-462e16daaf04-diagnosis-migrate-1  Waiting
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Waiting
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Exited
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Exited
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Exited
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Exited
+ Container agro-mig-test-462e16daaf04-ai_inference-migrate-1  Exited
+ Container agro-mig-test-462e16daaf04-ai_inference-schema-check-1  Starting
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Exited
+ Container agro-mig-test-462e16daaf04-identity-schema-check-1  Starting
+ Container agro-mig-test-462e16daaf04-notification-migrate-1  Exited
+ Container agro-mig-test-462e16daaf04-notification-schema-check-1  Starting
+ Container agro-mig-test-462e16daaf04-diagnosis-migrate-1  Exited
+ Container agro-mig-test-462e16daaf04-diagnosis-schema-check-1  Starting
+ Container agro-mig-test-462e16daaf04-ai_inference-schema-check-1  Started
+ Container agro-mig-test-462e16daaf04-notification-schema-check-1  Started
+ Container agro-mig-test-462e16daaf04-identity-schema-check-1  Started
+ Container agro-mig-test-462e16daaf04-diagnosis-schema-check-1  Started
+
+container "8f9ccaf3fb6aee7e4ad6b8a16d1cb1d645394bb2a5b2384bca1150b1856efd01" exited with status code 0
+container "d18d22b9bfe0c25ffcb570f05d3574b5c0350693e9230a97a9e5463d1303a9e5" exited with status code 0
+container "d86c5d5bf11447b2ac0f0d33a8bd90e1a67fa46d0eb4af29a43b23268b209c62" exited with status code 0
+container "f4af8cc97bc41be3dfb4a5c42cef64cd3195028ee4939050c2fca834c94d186f" exited with status code 0
+
+Going to remove agro-mig-test-462e16daaf04-identity-schema-check-1, agro-mig-test-462e16daaf04-identity-migrate-1
+ Container agro-mig-test-462e16daaf04-identity-schema-check-1  Stopping
+ Container agro-mig-test-462e16daaf04-identity-schema-check-1  Stopped
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Stopping
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Stopped
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Removing
+ Container agro-mig-test-462e16daaf04-identity-schema-check-1  Removing
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Removed
+ Container agro-mig-test-462e16daaf04-identity-schema-check-1  Removed
+
+ Container agro-mig-test-462e16daaf04-postgres-1  Running
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Creating
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Created
+ Container agro-mig-test-462e16daaf04-identity-schema-check-1  Creating
+ Container agro-mig-test-462e16daaf04-identity-schema-check-1  Created
+ Container agro-mig-test-462e16daaf04-postgres-1  Waiting
+ Container agro-mig-test-462e16daaf04-postgres-1  Healthy
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Starting
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Started
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Waiting
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Exited
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Starting
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Started
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Waiting
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Waiting
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Exited
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  service "identity-migrate" didn't complete successfully: exit 1
+service "identity-migrate" didn't complete successfully: exit 1
+
+{"Command":"\"python -m app.migra…\"","CreatedAt":"2026-09-30 00:14:47 -0500 -05","ExitCode":0,"Health":"","ID":"b781e20da9e7","Image":"agro-mig-test-462e16daaf04-identity-schema-check","Labels":"com.docker.compose.image.builder=classic,com.docker.compose.project.config_files=/tmp/agro-ci-regression-c0qqfcj0/repo/docker-compose.yml,/tmp/agro-migrations-7_3v7c46/failure.json,com.docker.compose.project.working_dir=/tmp/agro-ci-regression-c0qqfcj0/repo,com.docker.compose.service=identity-schema-check,com.docker.compose.version=2.40.3,com.docker.compose.config-hash=e8847f0e2cb2fef203cf3b5a18f888b056e89dcaefacad8fe082018dae954f9b,com.docker.compose.image=sha256:21f69df5a31584d8ffc435438237d3d69f7661e2709e89ee8dfa79a360ff1655,com.docker.compose.oneoff=False,com.docker.compose.project=agro-mig-test-462e16daaf04,com.docker.compose.container-number=1,com.docker.compose.depends_on=identity-migrate:service_completed_successfully:false,db-bootstrap:service_completed_successfully:false","LocalVolumes":"0","Mounts":"/tmp/agro-migr…","Name":"agro-mig-test-462e16daaf04-identity-schema-check-1","Names":"agro-mig-test-462e16daaf04-identity-schema-check-1","Networks":"agro-mig-test-462e16daaf04_persistence","Ports":"","Project":"agro-mig-test-462e16daaf04","Publishers":[],"RunningFor":"3 seconds ago","Service":"identity-schema-check","Size":"0B","State":"created","Status":"Created"}
+
+Going to remove agro-mig-test-462e16daaf04-identity-schema-check-1, agro-mig-test-462e16daaf04-identity-migrate-1
+ Container agro-mig-test-462e16daaf04-identity-schema-check-1  Stopping
+ Container agro-mig-test-462e16daaf04-identity-schema-check-1  Stopped
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Stopping
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Stopped
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Removing
+ Container agro-mig-test-462e16daaf04-identity-schema-check-1  Removing
+ Container agro-mig-test-462e16daaf04-identity-schema-check-1  Removed
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Removed
+
+ Container agro-mig-test-462e16daaf04-postgres-1  Running
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Creating
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Created
+ Container agro-mig-test-462e16daaf04-identity-schema-check-1  Creating
+ Container agro-mig-test-462e16daaf04-identity-schema-check-1  Created
+ Container agro-mig-test-462e16daaf04-postgres-1  Waiting
+ Container agro-mig-test-462e16daaf04-postgres-1  Healthy
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Starting
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Started
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Waiting
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Exited
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Starting
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Started
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Waiting
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Waiting
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Exited
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Exited
+ Container agro-mig-test-462e16daaf04-identity-schema-check-1  Starting
+ Container agro-mig-test-462e16daaf04-identity-schema-check-1  Started
+
+container "2c3c625b1b944a05013f9bcc3d95ef29af729f8379ced863dfaf5aabf588a962" exited with status code 0
+
+notification-schema-check-1  | schema_ready
+postgres-1                   | 
+db-bootstrap-1               | bootstrap_ok: four private databases and restricted roles
+db-bootstrap-1               | bootstrap_ok: four private databases and restricted roles
+db-bootstrap-1               | bootstrap_ok: four private databases and restricted roles
+postgres-1                   | PostgreSQL Database directory appears to contain a database; Skipping initialization
+postgres-1                   | 
+postgres-1                   | 2026-09-30 05:14:35.072 UTC [1] LOG:  starting PostgreSQL 16.15 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+postgres-1                   | 2026-09-30 05:14:35.072 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+postgres-1                   | 2026-09-30 05:14:35.072 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+postgres-1                   | 2026-09-30 05:14:35.073 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+postgres-1                   | 2026-09-30 05:14:35.076 UTC [29] LOG:  database system was shut down at 2026-09-30 05:14:34 UTC
+postgres-1                   | 2026-09-30 05:14:35.081 UTC [1] LOG:  database system is ready to accept connections
+ai_inference-schema-check-1  | schema_ready
+diagnosis-schema-check-1     | schema_ready
+identity-schema-check-1      | schema_ready
+
+ps --all
+NAME                                                     IMAGE                                                                                        COMMAND                  SERVICE                     CREATED          STATUS                              PORTS
+agro-mig-test-462e16daaf04-ai_inference-migrate-1        agro-mig-test-462e16daaf04-ai_inference-migrate                                              "python -m app.migra…"   ai_inference-migrate        11 seconds ago   Exited (0) 8 seconds ago            
+agro-mig-test-462e16daaf04-ai_inference-schema-check-1   agro-mig-test-462e16daaf04-ai_inference-schema-check                                         "python -m app.migra…"   ai_inference-schema-check   11 seconds ago   Exited (0) 7 seconds ago            
+agro-mig-test-462e16daaf04-db-bootstrap-1                agro-mig-test-462e16daaf04-db-bootstrap                                                      "python /bootstrap/b…"   db-bootstrap                11 seconds ago   Exited (0) 2 seconds ago            
+agro-mig-test-462e16daaf04-diagnosis-migrate-1           agro-mig-test-462e16daaf04-diagnosis-migrate                                                 "python -m app.migra…"   diagnosis-migrate           11 seconds ago   Exited (0) 8 seconds ago            
+agro-mig-test-462e16daaf04-diagnosis-schema-check-1      agro-mig-test-462e16daaf04-diagnosis-schema-check                                            "python -m app.migra…"   diagnosis-schema-check      11 seconds ago   Exited (0) 7 seconds ago            
+agro-mig-test-462e16daaf04-identity-migrate-1            agro-mig-test-462e16daaf04-identity-migrate                                                  "python -m app.migra…"   identity-migrate            4 seconds ago    Exited (0) 1 second ago             
+agro-mig-test-462e16daaf04-identity-schema-check-1       agro-mig-test-462e16daaf04-identity-schema-check                                             "python -m app.migra…"   identity-schema-check       4 seconds ago    Exited (0) Less than a second ago   
+agro-mig-test-462e16daaf04-notification-migrate-1        agro-mig-test-462e16daaf04-notification-migrate                                              "python -m app.migra…"   notification-migrate        11 seconds ago   Exited (0) 8 seconds ago            
+agro-mig-test-462e16daaf04-notification-schema-check-1   agro-mig-test-462e16daaf04-notification-schema-check                                         "python -m app.migra…"   notification-schema-check   11 seconds ago   Exited (0) 7 seconds ago            
+agro-mig-test-462e16daaf04-postgres-1                    postgres:16-alpine@sha256:3c5c8892d184f738f4fe282d14ddaa613a38f00f4189d2d94725ebe6f2909ddb   "docker-entrypoint.s…"   postgres                    20 seconds ago   Up 19 seconds (healthy)             5432/tcp
+
+logs --no-color --tail 150
+ai_inference-schema-check-1  | schema_ready
+postgres-1                   | 
+postgres-1                   | PostgreSQL Database directory appears to contain a database; Skipping initialization
+postgres-1                   | 
+notification-schema-check-1  | schema_ready
+diagnosis-schema-check-1     | schema_ready
+postgres-1                   | 2026-09-30 05:14:35.072 UTC [1] LOG:  starting PostgreSQL 16.15 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+postgres-1                   | 2026-09-30 05:14:35.072 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+postgres-1                   | 2026-09-30 05:14:35.072 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+postgres-1                   | 2026-09-30 05:14:35.073 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+db-bootstrap-1               | bootstrap_ok: four private databases and restricted roles
+db-bootstrap-1               | bootstrap_ok: four private databases and restricted roles
+db-bootstrap-1               | bootstrap_ok: four private databases and restricted roles
+identity-schema-check-1      | schema_ready
+postgres-1                   | 2026-09-30 05:14:35.076 UTC [29] LOG:  database system was shut down at 2026-09-30 05:14:34 UTC
+postgres-1                   | 2026-09-30 05:14:35.081 UTC [1] LOG:  database system is ready to accept connections
+
+ Container agro-mig-test-462e16daaf04-ai_inference-schema-check-1  Stopping
+ Container agro-mig-test-462e16daaf04-notification-schema-check-1  Stopping
+ Container agro-mig-test-462e16daaf04-identity-schema-check-1  Stopping
+ Container agro-mig-test-462e16daaf04-diagnosis-schema-check-1  Stopping
+ Container agro-mig-test-462e16daaf04-ai_inference-schema-check-1  Stopped
+ Container agro-mig-test-462e16daaf04-ai_inference-schema-check-1  Removing
+ Container agro-mig-test-462e16daaf04-identity-schema-check-1  Stopped
+ Container agro-mig-test-462e16daaf04-identity-schema-check-1  Removing
+ Container agro-mig-test-462e16daaf04-diagnosis-schema-check-1  Stopped
+ Container agro-mig-test-462e16daaf04-diagnosis-schema-check-1  Removing
+ Container agro-mig-test-462e16daaf04-notification-schema-check-1  Stopped
+ Container agro-mig-test-462e16daaf04-notification-schema-check-1  Removing
+ Container agro-mig-test-462e16daaf04-ai_inference-schema-check-1  Removed
+ Container agro-mig-test-462e16daaf04-ai_inference-migrate-1  Stopping
+ Container agro-mig-test-462e16daaf04-ai_inference-migrate-1  Stopped
+ Container agro-mig-test-462e16daaf04-ai_inference-migrate-1  Removing
+ Container agro-mig-test-462e16daaf04-identity-schema-check-1  Removed
+ Container agro-mig-test-462e16daaf04-notification-schema-check-1  Removed
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Stopping
+ Container agro-mig-test-462e16daaf04-notification-migrate-1  Stopping
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Stopped
+ Container agro-mig-test-462e16daaf04-notification-migrate-1  Stopped
+ Container agro-mig-test-462e16daaf04-notification-migrate-1  Removing
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Removing
+ Container agro-mig-test-462e16daaf04-diagnosis-schema-check-1  Removed
+ Container agro-mig-test-462e16daaf04-diagnosis-migrate-1  Stopping
+ Container agro-mig-test-462e16daaf04-diagnosis-migrate-1  Stopped
+ Container agro-mig-test-462e16daaf04-diagnosis-migrate-1  Removing
+ Container agro-mig-test-462e16daaf04-ai_inference-migrate-1  Removed
+ Container agro-mig-test-462e16daaf04-notification-migrate-1  Removed
+ Container agro-mig-test-462e16daaf04-diagnosis-migrate-1  Removed
+ Container agro-mig-test-462e16daaf04-identity-migrate-1  Removed
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Stopping
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Stopped
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Removing
+ Container agro-mig-test-462e16daaf04-db-bootstrap-1  Removed
+ Container agro-mig-test-462e16daaf04-postgres-1  Stopping
+ Container agro-mig-test-462e16daaf04-postgres-1  Stopped
+ Container agro-mig-test-462e16daaf04-postgres-1  Removing
+ Container agro-mig-test-462e16daaf04-postgres-1  Removed
+ Image agro-mig-test-462e16daaf04-ai_inference-migrate:latest  Removing
+ Image agro-mig-test-462e16daaf04-ai_inference-schema-check:latest  Removing
+ Image agro-mig-test-462e16daaf04-notification-schema-check:latest  Removing
+ Image agro-mig-test-462e16daaf04-diagnosis-migrate:latest  Removing
+ Image agro-mig-test-462e16daaf04-identity-schema-check:latest  Removing
+ Image agro-mig-test-462e16daaf04-identity-migrate:latest  Removing
+ Image agro-mig-test-462e16daaf04-diagnosis-schema-check:latest  Removing
+ Image agro-mig-test-462e16daaf04-db-bootstrap:latest  Removing
+ Image agro-mig-test-462e16daaf04-notification-migrate:latest  Removing
+ Volume agro-mig-test-462e16daaf04_postgres_data  Removing
+ Network agro-mig-test-462e16daaf04_persistence  Removing
+ Image agro-mig-test-462e16daaf04-diagnosis-migrate:latest  Removed
+ Image agro-mig-test-462e16daaf04-notification-migrate:latest  Removed
+ Image agro-mig-test-462e16daaf04-db-bootstrap:latest  Removed
+ Image agro-mig-test-462e16daaf04-identity-schema-check:latest  Removed
+ Image agro-mig-test-462e16daaf04-diagnosis-schema-check:latest  Removed
+ Image agro-mig-test-462e16daaf04-notification-schema-check:latest  Removed
+ Image agro-mig-test-462e16daaf04-ai_inference-schema-check:latest  Removed
+ Image agro-mig-test-462e16daaf04-identity-migrate:latest  Removed
+ Image agro-mig-test-462e16daaf04-ai_inference-migrate:latest  Removed
+ Volume agro-mig-test-462e16daaf04_postgres_data  Removed
+ Network agro-mig-test-462e16daaf04_persistence  Removed
+

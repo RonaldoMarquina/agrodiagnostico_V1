@@ -1,0 +1,11 @@
+{
+  ".gitignore": "5b79e08ab6dab34bca274c4076912536499e60f399d88c397992fbfaad96f12b",
+  "README.md": "51ad440412a25264d6e9088e040212e5dba22cd78ef9a37baf9bbec1dd55bea4",
+  "docs/Incrementos.md": "beac0467eff45fcfd6acb381630841a21a1b5112663b81f75c6c875c0dcfddad",
+  "docs/TESTING.md": "d692c9c3a6b01261b7af6ac4716d35231f922dc7a184879ed4f3576a29a5c94b",
+  "docs/adr/0001-incremento-0-base-tecnica.md": "b428dc49d3aaaae6937325aae2348704144f629b1074220f2c655ee1c6ac1ac9",
+  "docs/adr/0002-interfaces-y-eventos-v1.md": "9bc0636d8a2bc75a17366991005d7dd0352207473a9d3ed4d4335aac2d085441",
+  "openspec/changes/incremento-0-base-integrada/design.md": "378fe6dc4458212f6c0c50fdefedd7719e2e04d583ee1846cef3e75948614271",
+  "openspec/changes/incremento-0-base-integrada/proposal.md": "6eff1a86ca1e887169e4c8e92d18eb9c793758a7745d015346800ab0f8fd6292",
+  "openspec/changes/incremento-0-base-integrada/tasks.md": "ab228216b70c5d6e23a91ba7c4d7d3a2ac5123f75bb98854170a0e47ff15b70e"
+}

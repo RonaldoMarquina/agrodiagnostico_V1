@@ -1,0 +1,57 @@
+{
+  "checked_at_utc": "2026-09-30",
+  "scope": "tooling/ci only, npm isolated 12.1.0; not production dependencies",
+  "counts": {
+    "info": 0,
+    "low": 0,
+    "moderate": 1,
+    "high": 2,
+    "critical": 0,
+    "total": 3
+  },
+  "findings": [
+    {
+      "package": "brace-expansion",
+      "severity": "high",
+      "nodes": [
+        "node_modules/npm/node_modules/brace-expansion"
+      ],
+      "advisories": [
+        "https://github.com/advisories/GHSA-q2hr-2g5m-vwhr",
+        "https://github.com/advisories/GHSA-qhr7-859c-m2p7",
+        "https://github.com/advisories/GHSA-6j4f-fj2g-mc7p"
+      ],
+      "bundled_by": "npm@12.1.0",
+      "status": "upstream bundled dependency; remains reported after npm update, not silently waived"
+    },
+    {
+      "package": "ip-address",
+      "severity": "moderate",
+      "nodes": [
+        "node_modules/npm/node_modules/ip-address"
+      ],
+      "advisories": [
+        "https://github.com/advisories/GHSA-rpw4-54j3-4h4q",
+        "https://github.com/advisories/GHSA-2vr4-cq9g-pvrc",
+        "https://github.com/advisories/GHSA-j6r3-76f7-8jcv",
+        "https://github.com/advisories/GHSA-h3mg-xc3c-68pw"
+      ],
+      "bundled_by": "npm@12.1.0",
+      "status": "upstream bundled dependency; remains reported after npm update, not silently waived"
+    },
+    {
+      "package": "undici",
+      "severity": "high",
+      "nodes": [
+        "node_modules/npm/node_modules/undici"
+      ],
+      "advisories": [
+        "https://github.com/advisories/GHSA-3wwx-pv8p-q78v",
+        "https://github.com/advisories/GHSA-r53p-7pc4-xj5r",
+        "https://github.com/advisories/GHSA-rfgv-xxqx-mfg5"
+      ],
+      "bundled_by": "npm@12.1.0",
+      "status": "upstream bundled dependency; remains reported after npm update, not silently waived"
+    }
+  ]
+}

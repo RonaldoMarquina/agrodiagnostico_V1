@@ -1,0 +1,11 @@
+npm notice run agrodiagnostico-frontend@0.1.0 test
+npm notice run vitest run
+
+ RUN  v5.0.2 /tmp/agro-ci-regression-p34fd9t4/repo/frontend
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  00:17:51
+   Duration  655ms (environment 68%, tests 16%, import 12%, transform 3%)
+

@@ -1,0 +1,298 @@
+[
+  {
+    "id": "idempotency-same",
+    "operation_id": "diagnosis_create",
+    "status": 202,
+    "precondition": "Mismo propietario/operación/clave/bytes; la fila original sigue PENDIENTE.",
+    "runtime_verified": false,
+    "expected": "same-id-current-status",
+    "elapsed_seconds": 86399,
+    "body": {
+      "id": "11111111-1111-4111-8111-111111111111",
+      "status": "PENDIENTE",
+      "created_at": "2026-09-28T12:00:00Z"
+    }
+  },
+  {
+    "id": "idempotency-changed",
+    "operation_id": "diagnosis_create",
+    "status": 409,
+    "precondition": "Mismo namespace, distintos bytes.",
+    "runtime_verified": false,
+    "expected": 409,
+    "elapsed_seconds": 1,
+    "body": {
+      "code": "IDEMPOTENCY_CONFLICT",
+      "message": "Respuesta sintética de aceptación.",
+      "correlation_id": "11111111-1111-4111-8111-111111111111"
+    }
+  },
+  {
+    "id": "idempotency-owner",
+    "operation_id": "diagnosis_create",
+    "status": 202,
+    "precondition": "Misma clave y bytes, otro propietario; crea su propio ID, nunca devuelve el ajeno.",
+    "runtime_verified": false,
+    "expected": "independent",
+    "elapsed_seconds": 1,
+    "body": {
+      "id": "33333333-3333-4333-8333-333333333333",
+      "status": "PENDIENTE",
+      "created_at": "2026-09-28T12:00:00Z"
+    }
+  },
+  {
+    "id": "idempotency-expired",
+    "operation_id": "diagnosis_create",
+    "status": 202,
+    "precondition": "Mismo namespace al vencer; nuevo ID, retención no deslizante.",
+    "runtime_verified": false,
+    "expected": "new-request",
+    "elapsed_seconds": 86400,
+    "body": {
+      "id": "44444444-4444-4444-8444-444444444444",
+      "status": "PENDIENTE",
+      "created_at": "2026-09-29T12:00:00Z"
+    }
+  },
+  {
+    "id": "idempotency-deleted",
+    "operation_id": "diagnosis_create",
+    "status": 409,
+    "precondition": "Recurso borrado lógicamente durante retención; no resucita.",
+    "runtime_verified": false,
+    "expected": 409,
+    "elapsed_seconds": 1,
+    "body": {
+      "code": "IDEMPOTENCY_RESOURCE_DELETED",
+      "message": "Respuesta sintética de aceptación.",
+      "correlation_id": "11111111-1111-4111-8111-111111111111"
+    }
+  },
+  {
+    "id": "idempotency-in-progress",
+    "operation_id": "diagnosis_create",
+    "status": 409,
+    "precondition": "Primera aceptación aún no confirmada.",
+    "runtime_verified": false,
+    "expected": 409,
+    "elapsed_seconds": 1,
+    "body": {
+      "code": "IDEMPOTENCY_IN_PROGRESS",
+      "message": "Respuesta sintética de aceptación.",
+      "correlation_id": "11111111-1111-4111-8111-111111111111"
+    }
+  },
+  {
+    "id": "anonymous",
+    "operation_id": "diagnosis_create",
+    "status": 401,
+    "precondition": "Sin identidad.",
+    "runtime_verified": false,
+    "body": {
+      "code": "UNAUTHORIZED",
+      "message": "Respuesta sintética de aceptación.",
+      "correlation_id": "11111111-1111-4111-8111-111111111111"
+    }
+  },
+  {
+    "id": "foreign-resource",
+    "operation_id": "diagnosis_detail",
+    "status": 404,
+    "precondition": "Recurso pertenece a B, actor A.",
+    "runtime_verified": false,
+    "body": {
+      "code": "NOT_FOUND",
+      "message": "Respuesta sintética de aceptación.",
+      "correlation_id": "11111111-1111-4111-8111-111111111111"
+    }
+  },
+  {
+    "id": "missing-resource",
+    "operation_id": "diagnosis_detail",
+    "status": 404,
+    "precondition": "ID inexistente.",
+    "runtime_verified": false,
+    "body": {
+      "code": "NOT_FOUND",
+      "message": "Respuesta sintética de aceptación.",
+      "correlation_id": "11111111-1111-4111-8111-111111111111"
+    }
+  },
+  {
+    "id": "over-bytes",
+    "operation_id": "diagnosis_create",
+    "status": 413,
+    "precondition": "10485761 bytes.",
+    "runtime_verified": false,
+    "body": {
+      "code": "IMAGE_TOO_LARGE",
+      "message": "Respuesta sintética de aceptación.",
+      "correlation_id": "11111111-1111-4111-8111-111111111111"
+    }
+  },
+  {
+    "id": "over-pixels",
+    "operation_id": "diagnosis_create",
+    "status": 413,
+    "precondition": "24000001 píxeles.",
+    "runtime_verified": false,
+    "body": {
+      "code": "IMAGE_TOO_LARGE",
+      "message": "Respuesta sintética de aceptación.",
+      "correlation_id": "11111111-1111-4111-8111-111111111111"
+    }
+  },
+  {
+    "id": "corrupt-image",
+    "operation_id": "diagnosis_create",
+    "status": 400,
+    "precondition": "No decodifica aunque extensión sea .jpg.",
+    "runtime_verified": false,
+    "body": {
+      "code": "INVALID_REQUEST",
+      "message": "Respuesta sintética de aceptación.",
+      "correlation_id": "11111111-1111-4111-8111-111111111111"
+    }
+  },
+  {
+    "id": "unsupported-image",
+    "operation_id": "diagnosis_create",
+    "status": 415,
+    "precondition": "HEIC/HEIF antes de conversor y E2E.",
+    "runtime_verified": false,
+    "body": {
+      "code": "UNSUPPORTED_MEDIA_TYPE",
+      "message": "Respuesta sintética de aceptación.",
+      "correlation_id": "11111111-1111-4111-8111-111111111111"
+    }
+  },
+  {
+    "id": "cancel-after-claim",
+    "operation_id": "diagnosis_cancel",
+    "status": 409,
+    "precondition": "Estado PROCESANDO.",
+    "runtime_verified": false,
+    "body": {
+      "code": "CONFLICT",
+      "message": "Respuesta sintética de aceptación.",
+      "correlation_id": "11111111-1111-4111-8111-111111111111"
+    }
+  },
+  {
+    "id": "stale-renew",
+    "operation_id": "diagnosis_renew",
+    "status": 409,
+    "precondition": "Lease vencido/token anterior/owner distinto.",
+    "runtime_verified": false,
+    "body": {
+      "code": "STALE_LEASE",
+      "message": "Respuesta sintética de aceptación.",
+      "correlation_id": "11111111-1111-4111-8111-111111111111"
+    }
+  },
+  {
+    "id": "stale-image",
+    "operation_id": "diagnosis_internal_image",
+    "status": 409,
+    "precondition": "Lease no vigente.",
+    "runtime_verified": false,
+    "body": {
+      "code": "STALE_LEASE",
+      "message": "Respuesta sintética de aceptación.",
+      "correlation_id": "11111111-1111-4111-8111-111111111111"
+    }
+  },
+  {
+    "id": "user-as-service",
+    "operation_id": "diagnosis_claim",
+    "status": 403,
+    "precondition": "Token de usuario no autoriza identidad AI.",
+    "runtime_verified": false,
+    "body": {
+      "code": "FORBIDDEN",
+      "message": "Respuesta sintética de aceptación.",
+      "correlation_id": "11111111-1111-4111-8111-111111111111"
+    }
+  },
+  {
+    "id": "lease-without-service",
+    "operation_id": "diagnosis_internal_image",
+    "status": 401,
+    "precondition": "Conoce lease_token pero no tiene identidad de servicio.",
+    "runtime_verified": false,
+    "body": {
+      "code": "UNAUTHORIZED",
+      "message": "Respuesta sintética de aceptación.",
+      "correlation_id": "11111111-1111-4111-8111-111111111111"
+    }
+  },
+  {
+    "id": "csrf-invalid",
+    "operation_id": "identity_refresh",
+    "status": 403,
+    "precondition": "Cookie válida, CSRF erróneo.",
+    "runtime_verified": false,
+    "body": {
+      "code": "FORBIDDEN",
+      "message": "Respuesta sintética de aceptación.",
+      "correlation_id": "11111111-1111-4111-8111-111111111111"
+    }
+  },
+  {
+    "id": "origin-invalid",
+    "operation_id": "identity_login",
+    "status": 403,
+    "precondition": "Origin ausente/no permitido.",
+    "runtime_verified": false,
+    "body": {
+      "code": "FORBIDDEN",
+      "message": "Respuesta sintética de aceptación.",
+      "correlation_id": "11111111-1111-4111-8111-111111111111"
+    }
+  },
+  {
+    "id": "revoked-refresh",
+    "operation_id": "identity_refresh",
+    "status": 401,
+    "precondition": "Refresh expirado/revocado/reutilizado.",
+    "runtime_verified": false,
+    "body": {
+      "code": "UNAUTHORIZED",
+      "message": "Respuesta sintética de aceptación.",
+      "correlation_id": "11111111-1111-4111-8111-111111111111"
+    }
+  },
+  {
+    "id": "valid-renew",
+    "operation_id": "diagnosis_renew",
+    "status": 200,
+    "precondition": "Servicio/owner/token vigente, now < expires_at.",
+    "runtime_verified": false,
+    "body": {
+      "lease_owner": "ai-worker-example",
+      "lease_token": "22222222-2222-4222-8222-222222222222",
+      "expires_at": "2026-09-28T12:01:00Z"
+    }
+  },
+  {
+    "id": "cancel-pending",
+    "operation_id": "diagnosis_cancel",
+    "status": 200,
+    "precondition": "Cancelación gana actualización atómica.",
+    "runtime_verified": false,
+    "body": {
+      "id": "11111111-1111-4111-8111-111111111111",
+      "status": "CANCELADO",
+      "created_at": "2026-09-28T12:00:00Z",
+      "updated_at": "2026-09-28T12:00:00Z"
+    }
+  },
+  {
+    "id": "delete-repeated",
+    "operation_id": "diagnosis_delete",
+    "status": 204,
+    "precondition": "Tombstone propio; segunda eliminación sin efectos.",
+    "runtime_verified": false
+  }
+]

@@ -1,0 +1,408 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DiagnosisAnalyzed v1",
+  "allOf": [
+    {
+      "$ref": "envelope.schema.json"
+    },
+    {
+      "properties": {
+        "event_type": {
+          "const": "DiagnosisAnalyzed"
+        },
+        "payload": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "diagnosis_id": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "lease_token": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID",
+                  "description": "Fencing UUID sin autoridad de autenticación."
+                },
+                "crop_code": {
+                  "type": "string",
+                  "enum": [
+                    "POTATO",
+                    "MAIZE"
+                  ]
+                },
+                "outcome": {
+                  "const": "PREDICTION"
+                },
+                "model_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "model_version": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "dataset_version": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "inference_ms": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "class_code": {
+                  "type": "string",
+                  "enum": [
+                    "POTATO_HEALTHY",
+                    "POTATO_EARLY_BLIGHT",
+                    "POTATO_LATE_BLIGHT",
+                    "MAIZE_HEALTHY",
+                    "MAIZE_COMMON_RUST",
+                    "MAIZE_LEAF_BLIGHT",
+                    "MAIZE_GRAY_LEAF_SPOT"
+                  ]
+                },
+                "raw_score": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              },
+              "required": [
+                "diagnosis_id",
+                "lease_token",
+                "crop_code",
+                "outcome",
+                "model_id",
+                "model_version",
+                "dataset_version",
+                "inference_ms",
+                "class_code",
+                "raw_score"
+              ],
+              "additionalProperties": false,
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "crop_code": {
+                        "const": "POTATO"
+                      }
+                    }
+                  },
+                  "then": {
+                    "properties": {
+                      "class_code": {
+                        "type": "string",
+                        "enum": [
+                          "POTATO_HEALTHY",
+                          "POTATO_EARLY_BLIGHT",
+                          "POTATO_LATE_BLIGHT"
+                        ]
+                      }
+                    }
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "crop_code": {
+                        "const": "MAIZE"
+                      }
+                    }
+                  },
+                  "then": {
+                    "properties": {
+                      "class_code": {
+                        "type": "string",
+                        "enum": [
+                          "MAIZE_HEALTHY",
+                          "MAIZE_COMMON_RUST",
+                          "MAIZE_LEAF_BLIGHT",
+                          "MAIZE_GRAY_LEAF_SPOT"
+                        ]
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "diagnosis_id": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "lease_token": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID",
+                  "description": "Fencing UUID sin autoridad de autenticación."
+                },
+                "crop_code": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "enum": [
+                    "POTATO",
+                    "MAIZE",
+                    null
+                  ]
+                },
+                "outcome": {
+                  "const": "ABSTENTION"
+                },
+                "model_id": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "model_version": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "dataset_version": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "inference_ms": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "reason_code": {
+                  "type": "string",
+                  "enum": [
+                    "LOW_CONFIDENCE",
+                    "UNSUPPORTED_CROP",
+                    "BAD_IMAGE",
+                    "UNSUPPORTED_CLASS"
+                  ]
+                }
+              },
+              "required": [
+                "diagnosis_id",
+                "lease_token",
+                "crop_code",
+                "outcome",
+                "model_id",
+                "model_version",
+                "dataset_version",
+                "inference_ms",
+                "reason_code"
+              ],
+              "additionalProperties": false,
+              "oneOf": [
+                {
+                  "properties": {
+                    "model_id": {
+                      "type": "null"
+                    },
+                    "model_version": {
+                      "type": "null"
+                    },
+                    "dataset_version": {
+                      "type": "null"
+                    },
+                    "inference_ms": {
+                      "type": "null"
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "model_id": {
+                      "not": {
+                        "type": "null"
+                      }
+                    },
+                    "model_version": {
+                      "not": {
+                        "type": "null"
+                      }
+                    },
+                    "dataset_version": {
+                      "not": {
+                        "type": "null"
+                      }
+                    },
+                    "inference_ms": {
+                      "not": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "diagnosis_id": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "lease_token": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID",
+                  "description": "Fencing UUID sin autoridad de autenticación."
+                },
+                "crop_code": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "enum": [
+                    "POTATO",
+                    "MAIZE",
+                    null
+                  ]
+                },
+                "outcome": {
+                  "const": "FAILURE"
+                },
+                "model_id": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "model_version": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "dataset_version": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "inference_ms": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "reason_code": {
+                  "type": "string",
+                  "enum": [
+                    "INFERENCE_ERROR",
+                    "RETRIES_EXHAUSTED",
+                    "IMAGE_UNAVAILABLE",
+                    "PROCESSING_TIMEOUT"
+                  ]
+                }
+              },
+              "required": [
+                "diagnosis_id",
+                "lease_token",
+                "crop_code",
+                "outcome",
+                "model_id",
+                "model_version",
+                "dataset_version",
+                "inference_ms",
+                "reason_code"
+              ],
+              "additionalProperties": false,
+              "oneOf": [
+                {
+                  "properties": {
+                    "model_id": {
+                      "type": "null"
+                    },
+                    "model_version": {
+                      "type": "null"
+                    },
+                    "dataset_version": {
+                      "type": "null"
+                    },
+                    "inference_ms": {
+                      "type": "null"
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "model_id": {
+                      "not": {
+                        "type": "null"
+                      }
+                    },
+                    "model_version": {
+                      "not": {
+                        "type": "null"
+                      }
+                    },
+                    "dataset_version": {
+                      "not": {
+                        "type": "null"
+                      }
+                    },
+                    "inference_ms": {
+                      "not": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

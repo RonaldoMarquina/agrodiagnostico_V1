@@ -1,0 +1,7 @@
+{
+  "command": "git ls-remote origin",
+  "exit_code": 0,
+  "references": [],
+  "workflow": "workflow remoto no ejecutado",
+  "run_id": null
+}

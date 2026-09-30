@@ -1,0 +1,17 @@
+{"embedded_examples": 330, "openapi": 4, "operations": 27, "schemas": 5}
+test_broken_reference_fixture_rejected (test_contracts.Contracts.test_broken_reference_fixture_rejected) ... ok
+test_cli_fails_for_broken_reference_in_actual_operation (test_contracts.Contracts.test_cli_fails_for_broken_reference_in_actual_operation) ... ok
+test_deferred_inventory_has_owner_before_consumers (test_contracts.Contracts.test_deferred_inventory_has_owner_before_consumers) ... ok
+test_event_routing_and_future_guarantees (test_contracts.Contracts.test_event_routing_and_future_guarantees) ... ok
+test_health_status_per_service (test_contracts.Contracts.test_health_status_per_service) ... ok
+test_package_and_all_embedded_examples (test_contracts.Contracts.test_package_and_all_embedded_examples) ... ok
+test_pagination_bounds_and_invalid_cursors (test_contracts.Contracts.test_pagination_bounds_and_invalid_cursors) ... ok
+test_positive_and_negative_fixtures (test_contracts.Contracts.test_positive_and_negative_fixtures) ... ok
+test_reference_boundaries (test_contracts.Contracts.test_reference_boundaries) ... ok
+test_security_matrix (test_contracts.Contracts.test_security_matrix) ... ok
+test_upload_contract_and_idempotency_examples (test_contracts.Contracts.test_upload_contract_and_idempotency_examples) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 6.572s
+
+OK

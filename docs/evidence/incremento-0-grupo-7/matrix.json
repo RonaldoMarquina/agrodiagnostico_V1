@@ -1,0 +1,138 @@
+[
+  {
+    "requirement": "ENV-01",
+    "verification": "Configuración ausente rechazada, build y página técnica; arranque limpio",
+    "command": "python3 scripts/check_environment.py",
+    "exit_code": 0,
+    "artifact": "positive/environment.log",
+    "result": "verificado dentro del alcance del Incremento 0"
+  },
+  {
+    "requirement": "ENV-02",
+    "verification": "Salud de cuatro APIs; DB/S3 degradados y recuperados; Redis prescindible",
+    "command": "python3 scripts/check_environment.py",
+    "exit_code": 0,
+    "artifact": "positive/environment.log",
+    "result": "verificado dentro del alcance del Incremento 0"
+  },
+  {
+    "requirement": "ENV-03",
+    "verification": "Solo proxy loopback, rutas internas rechazadas, S3 privado y AI sin escritura",
+    "command": "python3 scripts/check_environment.py",
+    "exit_code": 0,
+    "artifact": "positive/environment.log",
+    "result": "verificado dentro del alcance del Incremento 0"
+  },
+  {
+    "requirement": "ENV-04",
+    "verification": "Recreación conserva head, mensaje confirmado y objeto/checksum",
+    "command": "python3 scripts/check_environment.py",
+    "exit_code": 0,
+    "artifact": "positive/environment.log",
+    "result": "verificado dentro del alcance del Incremento 0"
+  },
+  {
+    "requirement": "CTR-01",
+    "verification": "Cuatro OpenAPI, inventario, referencias y ejemplos; salud real en environment",
+    "command": "bash scripts/check_contracts.sh",
+    "exit_code": 0,
+    "artifact": "positive/contracts.log",
+    "result": "verificado dentro del alcance del Incremento 0"
+  },
+  {
+    "requirement": "CTR-02",
+    "verification": "Casos contractuales de acceso, errores, idempotencia y seguridad; runtime de negocio pendiente",
+    "command": "bash scripts/check_contracts.sh",
+    "exit_code": 0,
+    "artifact": "positive/contracts.log",
+    "result": "verificado dentro del alcance del Incremento 0"
+  },
+  {
+    "requirement": "CTR-03",
+    "verification": "Tres eventos v1, variantes y rechazo de campos/estados prohibidos",
+    "command": "bash scripts/check_contracts.sh",
+    "exit_code": 0,
+    "artifact": "positive/contracts.log",
+    "result": "verificado dentro del alcance del Incremento 0"
+  },
+  {
+    "requirement": "CTR-04",
+    "verification": "Routing y matrices de entrega revisados; ejecución de outbox/inbox/lease pendiente del incremento 3",
+    "command": "bash scripts/check_contracts.sh",
+    "exit_code": 0,
+    "artifact": "positive/contracts.log",
+    "result": "verificado dentro del alcance del Incremento 0"
+  },
+  {
+    "requirement": "MIG-01",
+    "verification": "Cuatro historiales; upgrade/current/repetición/downgrade/upgrade sin dominio",
+    "command": "python3 scripts/check_persistence.py",
+    "exit_code": 0,
+    "artifact": "positive/persistence.log",
+    "result": "verificado dentro del alcance del Incremento 0"
+  },
+  {
+    "requirement": "MIG-02",
+    "verification": "Cuatro conexiones propias, doce cruzadas rechazadas y roles restringidos",
+    "command": "python3 scripts/check_persistence.py",
+    "exit_code": 0,
+    "artifact": "positive/persistence.log",
+    "result": "verificado dentro del alcance del Incremento 0"
+  },
+  {
+    "requirement": "MIG-03",
+    "verification": "Revisión/credencial inválidas fallan; job dependiente bloqueado; readiness en environment",
+    "command": "python3 scripts/check_persistence.py",
+    "exit_code": 0,
+    "artifact": "positive/persistence.log",
+    "result": "verificado dentro del alcance del Incremento 0"
+  },
+  {
+    "requirement": "DATA-01",
+    "verification": "Fuentes, licencia/elegibilidad pendiente y cantidades desconocidas explícitas",
+    "command": "bash scripts/check_dataset.sh",
+    "exit_code": 0,
+    "artifact": "positive/dataset.log",
+    "result": "verificado dentro del alcance del Incremento 0"
+  },
+  {
+    "requirement": "DATA-02",
+    "verification": "Siete clases candidatas y manifiesto de diez campos; fixtures positivos/negativos",
+    "command": "bash scripts/check_dataset.sh",
+    "exit_code": 0,
+    "artifact": "positive/dataset.log",
+    "result": "verificado dentro del alcance del Incremento 0"
+  },
+  {
+    "requirement": "DATA-03",
+    "verification": "Rechazo de fugas por hash/grupo entre particiones; sin mutación ni datos privados",
+    "command": "bash scripts/check_dataset.sh",
+    "exit_code": 0,
+    "artifact": "positive/dataset.log",
+    "result": "verificado dentro del alcance del Incremento 0"
+  },
+  {
+    "requirement": "CI-01",
+    "verification": "14 etapas locales aprobadas; regresiones verificadas en grupo 6; ejecución remota pendiente",
+    "command": "python3 scripts/check_ci_workflow.py",
+    "exit_code": 0,
+    "artifact": "positive/workflow.log",
+    "result": "parcial: remoto pendiente"
+  },
+  {
+    "requirement": "CI-02",
+    "verification": "Timeout, redacción y limpieza; cinco regresiones del grupo 6 y limpieza real de esta ejecución",
+    "command": "python3 scripts/check_ci_tests.py",
+    "exit_code": 0,
+    "artifact": "positive/ci-tests.log",
+    "result": "verificado dentro del alcance del Incremento 0"
+  },
+  {
+    "requirement": "CI-03",
+    "verification": "Trazabilidad, límites y revisión documental; validación estricta final adjunta",
+    "command": "openspec validate --all --strict --no-interactive",
+    "exit_code": 0,
+    "artifact": "positive/openspec.log",
+    "result": "verificado dentro del alcance del Incremento 0"
+  }
+]

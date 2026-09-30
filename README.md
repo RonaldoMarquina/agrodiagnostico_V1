@@ -1,0 +1,97 @@
+# AgroDiagnóstico V1
+
+Plataforma web de apoyo para analizar fotografías de papa y maíz. Muestra una condición visual probable solo cuando la clase está validada y la evidencia es suficiente. En los demás casos devuelve **NO_CONCLUYENTE** y orienta al usuario para repetir la fotografía. No reemplaza una evaluación profesional.
+
+> Estado: documentación inicial para desarrollo incremental. La presencia de una carpeta o un componente en la arquitectura no significa que ya esté implementado.
+
+## Alcance comprometido
+
+| Cultivo | Clases candidatas para V1 |
+| --- | --- |
+| Papa | Sana, tizón temprano, tizón tardío o rancha |
+| Maíz | Sano, roya común, tizón foliar, mancha gris foliar |
+
+Son siete clases previstas, sujetas a evaluación. La interfaz declarará como soportadas únicamente las clases que superen los criterios acordados con el docente. Gemini, voz, PWA y detección de plagas quedan como extensiones posteriores.
+
+## Arquitectura prevista
+
+- React + TypeScript para la interfaz de usuario y administración.
+- FastAPI, SQLAlchemy y Alembic para los servicios Identity, Diagnosis, AI Inference y Notification.
+- PostgreSQL para datos transaccionales, RabbitMQ para eventos, Redis para caché y almacenamiento compatible con S3 para imágenes privadas.
+- PyTorch para el modelo versionado; Docker Compose y Nginx para integración local.
+- Dominio real, Cloudflare, HTTPS con TLS hasta el origen y CDN para recursos estáticos en producción.
+
+## Organización
+
+```text
+agrodiagnostico_V1/
+├── AGENTS.md                 # instrucciones para agentes de desarrollo
+├── README.md                 # entrada al proyecto
+├── CONTRIBUTING.md           # colaboración y revisión
+├── docs/                     # diseño y procedimientos
+├── openspec/                 # requisitos vigentes y propuestas de cambio
+├── contracts/                # OpenAPI y esquemas de eventos versionados
+├── frontend/                 # aplicación React
+├── services/                 # identity, diagnosis, ai_inference, notification
+├── ml/                       # manifiestos, entrenamiento, evaluación y modelos
+├── infra/                    # proxy, contenedores, Cloudflare y observabilidad
+└── tests/                    # integración, E2E, seguridad, fallos y carga
+```
+
+Las carpetas opcionales pueden existir desde el inicio sin cargarse en el entorno principal. Los documentos de este paquete describen el diseño previsto; se actualizarán cuando el código y las pruebas lo confirmen.
+
+## Desarrollo por incrementos
+
+0. Repositorio, entorno, contratos, CI e inventario de datos.
+1. Identidad, sesiones y autorización.
+2. Carga privada, diagnóstico, catálogo, estados e historial.
+3. Cola, outbox, worker provisional e idempotencia con prueba integral.
+4. Dataset, entrenamiento, evaluación y sustitución por modelo validado.
+5. Notificaciones, interfaz completa, observabilidad, pruebas, recuperación y despliegue con dominio, HTTPS y CDN.
+
+El worker provisional **no produce diagnósticos reales**. Los comandos comprobados del entorno técnico están en [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
+
+## Documentación
+
+| Documento | Tema |
+| --- | --- |
+| [AGENTS.md](AGENTS.md) | Reglas de trabajo para Codex y otros agentes |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Responsabilidades, datos y flujo asíncrono |
+| [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) | Incrementos y entorno de desarrollo |
+| [docs/TESTING.md](docs/TESTING.md) | Matriz de aceptación y medición |
+| [docs/SECURITY.md](docs/SECURITY.md) | Control de acceso, imágenes, secretos |
+| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Dominio, Cloudflare, TLS, CDN y operación |
+| [docs/AI_MODEL.md](docs/AI_MODEL.md) | Dataset, evaluación, abstención y versiones |
+| [docs/API_CONTRACTS.md](docs/API_CONTRACTS.md) | Inventario de contratos HTTP y eventos |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Flujo de propuestas, revisión y cierre |
+
+Los requisitos de comportamiento aceptados residirán en `openspec/specs/`; los cambios en curso, en `openspec/changes/`. Hasta poblar OpenSpec, la fuente V1 entregada es [Definición Base del Proyecto – AgroDiagnóstico V1](docs/reference/Definicion_Base_AgroDiagnostico_V1_Limpia.docx), identificada por revisión y hash en la [reconciliación documental](docs/reference/RECONCILIACION-V1.md). Si hay discrepancias, detener el cambio y registrar la decisión antes de actualizar especificaciones, contratos y código.
+
+## Estado documental actual
+
+Los grupos 1–6 del [Incremento 0](openspec/changes/incremento-0-base-integrada/tasks.md) están cerrados: fuente reconciliada, ADR y [contratos verificables](contracts/README.md), 37/38 tareas. Ocho operaciones de salud están implementadas y diecinueve de negocio siguen contract-only. Compose integra las cuatro APIs técnicas, página React/Nginx, PostgreSQL, RabbitMQ, Redis y S3 privado. El inventario inicial y la CI de aplicación están verificados localmente; workflow remoto no ejecutado. Las funciones de usuario y la verificación remota de 7.3 siguen pendientes. Véanse [incrementos](docs/Incrementos.md), [ADR de base](docs/adr/0001-incremento-0-base-tecnica.md), [ADR de interfaces](docs/adr/0002-interfaces-y-eventos-v1.md) y [evidencia documental](docs/evidence/INCREMENTO-0-GRUPO-1.md).
+
+La [versión legible de la fuente](docs/reference/Definicion_Base_AgroDiagnostico_V1_Limpia.md) conserva el documento de origen. Sus ejemplos, alternativas y diferencias se interpretan mediante la reconciliación; no prueban capacidades implementadas.
+
+Validación de contratos: `bash scripts/check_contracts.sh` (Python 3.12, venv efímero y lock con hashes). [Evidencia del grupo 2](docs/evidence/INCREMENTO-0-GRUPO-2.md).
+
+Persistencia local: [operación y límites](docs/PERSISTENCE.md). Aceptación: `python3 scripts/check_persistence.py`. [Evidencia del grupo 3](docs/evidence/INCREMENTO-0-GRUPO-3.md).
+
+
+## Entorno técnico local
+
+```bash
+test -f .env || cp .env.example .env
+python3 scripts/prepare_local.py
+docker compose config --quiet
+docker compose build
+docker compose up -d --wait --wait-timeout 180
+```
+
+Abrir `http://127.0.0.1:8080`. Solo se ofrece la página técnica, sin carga o diagnósticos. Verifica LOCAL_UID/GID y configuración en [DEVELOPMENT](docs/DEVELOPMENT.md). Parada conservando datos: `docker compose down`. Aceptación aislada: `python3 scripts/check_environment.py`. [Evidencia del grupo4](docs/evidence/INCREMENTO-0-GRUPO-4.md).
+
+Inventario del dataset: [fuentes, cantidades, taxonomía y límites](ml/manifests/README.md). Verificación: `bash scripts/check_dataset.sh`. Fuentes pendientes de admisión, sin imágenes descargadas ni entrenamiento.
+
+CI de aplicación: [workflow y reproducción local](docs/CI.md), con `bash scripts/prepare_ci.sh` y `python3 scripts/run_ci.py`. [Evidencia del grupo 6](docs/evidence/INCREMENTO-0-GRUPO-6.md).
+
+Aceptación integrada local del grupo 7: 7.1, 7.2 y 7.4 verificadas; 7.3 pendiente de ejecución remota. [Evidencia](docs/evidence/INCREMENTO-0-GRUPO-7.md). No se sincroniza ni archiva el cambio.

@@ -1,0 +1,278 @@
+{
+  "timestamp": "2026-09-29T00:01:51.321301+00:00",
+  "root": "/home/ronaldo/Documentos/agrodiagnostico_V1",
+  "checks": [
+    {
+      "name": "OS",
+      "command": "cat /etc/os-release",
+      "cwd": "/home/ronaldo/Documentos/agrodiagnostico_V1",
+      "exit_code": 0,
+      "status": "LISTO",
+      "output": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n"
+    },
+    {
+      "name": "Kernel",
+      "command": "uname -a",
+      "cwd": "/home/ronaldo/Documentos/agrodiagnostico_V1",
+      "exit_code": 0,
+      "status": "LISTO",
+      "output": "Linux RonaldoPCsystem 7.0.0-31-generic #31~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Mon Aug 10 09:38:02 UTC 2 x86_64 x86_64 x86_64 GNU/Linux\n"
+    },
+    {
+      "name": "Disk",
+      "command": "df -h .",
+      "cwd": "/home/ronaldo/Documentos/agrodiagnostico_V1",
+      "exit_code": 0,
+      "status": "LISTO",
+      "output": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/nvme1n1p1  468G   35G  410G   8% /\n"
+    },
+    {
+      "name": "RAM",
+      "command": "free -h",
+      "cwd": "/home/ronaldo/Documentos/agrodiagnostico_V1",
+      "exit_code": 0,
+      "status": "LISTO",
+      "output": "               total        used        free      shared  buff/cache   available\nMem:            31Gi       7.5Gi        16Gi       170Mi       6.9Gi        23Gi\nSwap:          8.0Gi          0B       8.0Gi\n"
+    },
+    {
+      "name": "CPU",
+      "command": "lscpu",
+      "cwd": "/home/ronaldo/Documentos/agrodiagnostico_V1",
+      "exit_code": 0,
+      "status": "LISTO",
+      "output": "Architecture:                            x86_64\nCPU op-mode(s):                          32-bit, 64-bit\nAddress sizes:                           48 bits physical, 48 bits virtual\nByte Order:                              Little Endian\nCPU(s):                                  16\nOn-line CPU(s) list:                     0-15\nVendor ID:                               AuthenticAMD\nModel name:                              AMD Ryzen 7 5800XT 8-Core Processor\nCPU family:                              25\nModel:                                   33\nThread(s) per core:                      2\nCore(s) per socket:                      8\nSocket(s):                               1\nStepping:                                2\nFrequency boost:                         enabled\nCPU(s) scaling MHz:                      80%\nCPU max MHz:                             4968.2368\nCPU min MHz:                             568.6540\nBogoMIPS:                                7600.21\nFlags:                                   fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap\nVirtualization:                          AMD-V\nL1d cache:                               256 KiB (8 instances)\nL1i cache:                               256 KiB (8 instances)\nL2 cache:                                4 MiB (8 instances)\nL3 cache:                                32 MiB (1 instance)\nNUMA node(s):                            1\nNUMA node0 CPU(s):                       0-15\nVulnerability Gather data sampling:      Not affected\nVulnerability Ghostwrite:                Not affected\nVulnerability Indirect target selection: Not affected\nVulnerability Itlb multihit:             Not affected\nVulnerability L1tf:                      Not affected\nVulnerability Mds:                       Not affected\nVulnerability Meltdown:                  Not affected\nVulnerability Mmio stale data:           Not affected\nVulnerability Old microcode:             Not affected\nVulnerability Reg file data sampling:    Not affected\nVulnerability Retbleed:                  Not affected\nVulnerability Spec rstack overflow:      Mitigation; Safe RET\nVulnerability Spec store bypass:         Mitigation; Speculative Store Bypass disabled via prctl\nVulnerability Spectre v1:                Mitigation; usercopy/swapgs barriers and __user pointer sanitization\nVulnerability Spectre v2:                Mitigation; Retpolines; IBPB conditional; IBRS_FW; STIBP always-on; RSB filling; PBRSB-eIBRS Not affected; BHI Not affected\nVulnerability Srbds:                     Not affected\nVulnerability Tsa:                       Mitigation; Clear CPU buffers\nVulnerability Tsx async abort:           Not affected\nVulnerability Vmscape:                   Mitigation; IBPB before exit to userspace\n"
+    },
+    {
+      "name": "Git",
+      "command": "git --version",
+      "cwd": "/home/ronaldo/Documentos/agrodiagnostico_V1",
+      "exit_code": 0,
+      "status": "LISTO",
+      "output": "git version 2.43.0\n"
+    },
+    {
+      "name": "Git repository",
+      "command": "git rev-parse --show-toplevel",
+      "cwd": "/home/ronaldo/Documentos/agrodiagnostico_V1",
+      "exit_code": 128,
+      "status": "BLOQUEADO",
+      "output": "fatal: not a git repository (or any of the parent directories): .git\n"
+    },
+    {
+      "name": "Python",
+      "command": "python3 --version",
+      "cwd": "/home/ronaldo/Documentos/agrodiagnostico_V1",
+      "exit_code": 0,
+      "status": "LISTO",
+      "output": "Python 3.12.3\n"
+    },
+    {
+      "name": "Node",
+      "command": "node -p 'JSON.stringify({version:process.version,lts:process.release.lts})'",
+      "cwd": "/home/ronaldo/Documentos/agrodiagnostico_V1",
+      "exit_code": 0,
+      "status": "LISTO",
+      "output": "{\"version\":\"v24.21.0\",\"lts\":\"Krypton\"}\n"
+    },
+    {
+      "name": "npm",
+      "command": "npm --version",
+      "cwd": "/home/ronaldo/Documentos/agrodiagnostico_V1",
+      "exit_code": 0,
+      "status": "LISTO",
+      "output": "11.19.0\n"
+    },
+    {
+      "name": "Docker daemon",
+      "command": "docker version",
+      "cwd": "/home/ronaldo/Documentos/agrodiagnostico_V1",
+      "exit_code": 0,
+      "status": "LISTO",
+      "output": "Client:\n Version:           29.1.3\n API version:       1.52\n Go version:        go1.24.4\n Git commit:        29.1.3-0ubuntu3~24.04.2\n Built:             Wed Apr 29 16:41:06 2026\n OS/Arch:           linux/amd64\n Context:           default\n\nServer:\n Engine:\n  Version:          29.1.3\n  API version:      1.52 (minimum version 1.44)\n  Go version:       go1.24.4\n  Git commit:       29.1.3-0ubuntu3~24.04.2\n  Built:            Wed Apr 29 16:41:06 2026\n  OS/Arch:          linux/amd64\n  Experimental:     false\n containerd:\n  Version:          2.2.1\n  GitCommit:        \n runc:\n  Version:          1.3.4-0ubuntu1~24.04.1\n  GitCommit:        \n docker-init:\n  Version:          0.19.0\n  GitCommit:        \n"
+    },
+    {
+      "name": "Docker startup",
+      "command": "systemctl is-enabled docker",
+      "cwd": "/home/ronaldo/Documentos/agrodiagnostico_V1",
+      "exit_code": 0,
+      "status": "LISTO",
+      "output": "enabled\n"
+    },
+    {
+      "name": "Docker active",
+      "command": "systemctl is-active docker",
+      "cwd": "/home/ronaldo/Documentos/agrodiagnostico_V1",
+      "exit_code": 0,
+      "status": "LISTO",
+      "output": "active\n"
+    },
+    {
+      "name": "Compose",
+      "command": "docker compose version",
+      "cwd": "/home/ronaldo/Documentos/agrodiagnostico_V1",
+      "exit_code": 0,
+      "status": "LISTO",
+      "output": "Docker Compose version 2.40.3+ds1-0ubuntu1~24.04.1\n"
+    },
+    {
+      "name": "Docker smoke",
+      "command": "docker run --rm --network none hello-world:latest",
+      "cwd": "/home/ronaldo/Documentos/agrodiagnostico_V1",
+      "exit_code": 0,
+      "status": "LISTO",
+      "output": "Unable to find image 'hello-world:latest' locally\nlatest: Pulling from library/hello-world\n4f55086f7dd0: Pulling fs layer\n4f55086f7dd0: Download complete\n4f55086f7dd0: Pull complete\nd5e71e642bf5: Download complete\nDigest: sha256:5e23090353324d887c48ad5e5c56d294eab81588df9605b07d1afe895f9cc8f8\nStatus: Downloaded newer image for hello-world:latest\n\nHello from Docker!\nThis message shows that your installation appears to be working correctly.\n\nTo generate this message, Docker took the following steps:\n 1. The Docker client contacted the Docker daemon.\n 2. The Docker daemon pulled the \"hello-world\" image from the Docker Hub.\n    (amd64)\n 3. The Docker daemon created a new container from that image which runs the\n    executable that produces the output you are currently reading.\n 4. The Docker daemon streamed that output to the Docker client, which sent it\n    to your terminal.\n\nTo try something more ambitious, you can run an Ubuntu container with:\n $ docker run -it ubuntu bash\n\nShare images, automate workflows, and more with a free Docker ID:\n https://hub.docker.com/\n\nFor more examples and ideas, visit:\n https://docs.docker.com/get-started/\n\n"
+    },
+    {
+      "name": "Docker image digest",
+      "command": "docker image inspect hello-world:latest --format '{{json .RepoDigests}}'",
+      "cwd": "/home/ronaldo/Documentos/agrodiagnostico_V1",
+      "exit_code": 0,
+      "status": "LISTO",
+      "output": "[\"hello-world@sha256:5e23090353324d887c48ad5e5c56d294eab81588df9605b07d1afe895f9cc8f8\"]\n"
+    },
+    {
+      "name": "OpenSpec version",
+      "command": "openspec --version",
+      "cwd": "/home/ronaldo/Documentos/agrodiagnostico_V1",
+      "exit_code": 0,
+      "status": "LISTO",
+      "output": "1.13.2\n"
+    },
+    {
+      "name": "OpenSpec changes",
+      "command": "openspec list --json",
+      "cwd": "/home/ronaldo/Documentos/agrodiagnostico_V1",
+      "exit_code": 0,
+      "status": "LISTO",
+      "output": "{\n  \"changes\": [],\n  \"root\": {\n    \"path\": \"/home/ronaldo/Documentos/agrodiagnostico_V1\",\n    \"source\": \"nearest\"\n  }\n}\n"
+    },
+    {
+      "name": "OpenSpec specs",
+      "command": "openspec list --specs --json",
+      "cwd": "/home/ronaldo/Documentos/agrodiagnostico_V1",
+      "exit_code": 0,
+      "status": "LISTO",
+      "output": "{\n  \"specs\": [],\n  \"root\": {\n    \"path\": \"/home/ronaldo/Documentos/agrodiagnostico_V1\",\n    \"source\": \"nearest\"\n  }\n}\n"
+    },
+    {
+      "name": "OpenSpec doctor",
+      "command": "openspec doctor --json",
+      "cwd": "/home/ronaldo/Documentos/agrodiagnostico_V1",
+      "exit_code": 0,
+      "status": "LISTO",
+      "output": "{\n  \"root\": {\n    \"path\": \"/home/ronaldo/Documentos/agrodiagnostico_V1\",\n    \"source\": \"nearest\",\n    \"healthy\": true,\n    \"status\": []\n  },\n  \"store\": null,\n  \"references\": [],\n  \"status\": []\n}\n"
+    },
+    {
+      "name": "OpenSpec schema",
+      "command": "openspec schema validate spec-driven",
+      "cwd": "/home/ronaldo/Documentos/agrodiagnostico_V1",
+      "exit_code": 0,
+      "status": "LISTO",
+      "output": "Note: Schema commands are experimental and may change.\n✓ Schema 'spec-driven' is valid\n"
+    },
+    {
+      "name": "OpenSpec templates",
+      "command": "openspec templates --json",
+      "cwd": "/home/ronaldo/Documentos/agrodiagnostico_V1",
+      "exit_code": 0,
+      "status": "LISTO",
+      "output": "{\n  \"proposal\": {\n    \"path\": \"/home/ronaldo/.nvm/versions/node/v24.21.0/lib/node_modules/@fission-ai/openspec/schemas/spec-driven/templates/proposal.md\",\n    \"source\": \"package\"\n  },\n  \"specs\": {\n    \"path\": \"/home/ronaldo/.nvm/versions/node/v24.21.0/lib/node_modules/@fission-ai/openspec/schemas/spec-driven/templates/spec.md\",\n    \"source\": \"package\"\n  },\n  \"design\": {\n    \"path\": \"/home/ronaldo/.nvm/versions/node/v24.21.0/lib/node_modules/@fission-ai/openspec/schemas/spec-driven/templates/design.md\",\n    \"source\": \"package\"\n  },\n  \"tasks\": {\n    \"path\": \"/home/ronaldo/.nvm/versions/node/v24.21.0/lib/node_modules/@fission-ai/openspec/schemas/spec-driven/templates/tasks.md\",\n    \"source\": \"package\"\n  }\n}\n"
+    },
+    {
+      "name": "OpenSpec artifacts",
+      "command": "openspec validate --all --strict --no-interactive --json",
+      "cwd": "/home/ronaldo/Documentos/agrodiagnostico_V1",
+      "exit_code": 0,
+      "status": "LISTO",
+      "output": "{\n  \"items\": [],\n  \"summary\": {\n    \"totals\": {\n      \"items\": 0,\n      \"passed\": 0,\n      \"failed\": 0\n    },\n    \"byType\": {\n      \"change\": {\n        \"items\": 0,\n        \"passed\": 0,\n        \"failed\": 0\n      },\n      \"spec\": {\n        \"items\": 0,\n        \"passed\": 0,\n        \"failed\": 0\n      }\n    }\n  },\n  \"version\": \"1.0\",\n  \"root\": {\n    \"path\": \"/home/ronaldo/Documentos/agrodiagnostico_V1\",\n    \"source\": \"nearest\"\n  }\n}\n"
+    },
+    {
+      "name": "GPU PCI",
+      "command": "lspci -nnk",
+      "cwd": "/home/ronaldo/Documentos/agrodiagnostico_V1",
+      "exit_code": 0,
+      "status": "LISTO",
+      "output": "00:00.0 Host bridge [0600]: Advanced Micro Devices, Inc. [AMD] Starship/Matisse Root Complex [1022:1480]\n\tSubsystem: ASUSTeK Computer Inc. Starship/Matisse Root Complex [1043:8808]\n00:00.2 IOMMU [0806]: Advanced Micro Devices, Inc. [AMD] Starship/Matisse IOMMU [1022:1481]\n\tSubsystem: ASUSTeK Computer Inc. Starship/Matisse IOMMU [1043:8808]\n00:01.0 Host bridge [0600]: Advanced Micro Devices, Inc. [AMD] Starship/Matisse PCIe Dummy Host Bridge [1022:1482]\n00:01.1 PCI bridge [0604]: Advanced Micro Devices, Inc. [AMD] Starship/Matisse GPP Bridge [1022:1483]\n\tSubsystem: ASUSTeK Computer Inc. Starship/Matisse GPP Bridge [1043:8808]\n\tKernel driver in use: pcieport\n\tKernel modules: shpchp\n00:01.2 PCI bridge [0604]: Advanced Micro Devices, Inc. [AMD] Starship/Matisse GPP Bridge [1022:1483]\n\tSubsystem: ASUSTeK Computer Inc. Starship/Matisse GPP Bridge [1043:8808]\n\tKernel driver in use: pcieport\n\tKernel modules: shpchp\n00:02.0 Host bridge [0600]: Advanced Micro Devices, Inc. [AMD] Starship/Matisse PCIe Dummy Host Bridge [1022:1482]\n\tDeviceName:  Onboard IGD\n00:03.0 Host bridge [0600]: Advanced Micro Devices, Inc. [AMD] Starship/Matisse PCIe Dummy Host Bridge [1022:1482]\n00:03.1 PCI bridge [0604]: Advanced Micro Devices, Inc. [AMD] Starship/Matisse GPP Bridge [1022:1483]\n\tSubsystem: ASUSTeK Computer Inc. Starship/Matisse GPP Bridge [1043:8808]\n\tKernel driver in use: pcieport\n\tKernel modules: shpchp\n00:04.0 Host bridge [0600]: Advanced Micro Devices, Inc. [AMD] Starship/Matisse PCIe Dummy Host Bridge [1022:1482]\n00:05.0 Host bridge [0600]: Advanced Micro Devices, Inc. [AMD] Starship/Matisse PCIe Dummy Host Bridge [1022:1482]\n00:07.0 Host bridge [0600]: Advanced Micro Devices, Inc. [AMD] Starship/Matisse PCIe Dummy Host Bridge [1022:1482]\n00:07.1 PCI bridge [0604]: Advanced Micro Devices, Inc. [AMD] Starship/Matisse Internal PCIe GPP Bridge 0 to bus[E:B] [1022:1484]\n\tSubsystem: ASUSTeK Computer Inc. Starship/Matisse Internal PCIe GPP Bridge 0 to bus[E:B] [1043:8808]\n\tKernel driver in use: pcieport\n\tKernel modules: shpchp\n00:08.0 Host bridge [0600]: Advanced Micro Devices, Inc. [AMD] Starship/Matisse PCIe Dummy Host Bridge [1022:1482]\n00:08.1 PCI bridge [0604]: Advanced Micro Devices, Inc. [AMD] Starship/Matisse Internal PCIe GPP Bridge 0 to bus[E:B] [1022:1484]\n\tSubsystem: ASUSTeK Computer Inc. Starship/Matisse Internal PCIe GPP Bridge 0 to bus[E:B] [1043:8808]\n\tKernel driver in use: pcieport\n\tKernel modules: shpchp\n00:14.0 SMBus [0c05]: Advanced Micro Devices, Inc. [AMD] FCH SMBus Controller [1022:790b] (rev 61)\n\tSubsystem: ASUSTeK Computer Inc. FCH SMBus Controller [1043:87c0]\n\tKernel driver in use: piix4_smbus\n\tKernel modules: i2c_piix4, sp5100_tco\n00:14.3 ISA bridge [0601]: Advanced Micro Devices, Inc. [AMD] FCH LPC Bridge [1022:790e] (rev 51)\n\tSubsystem: ASUSTeK Computer Inc. FCH LPC Bridge [1043:87c0]\n00:18.0 Host bridge [0600]: Advanced Micro Devices, Inc. [AMD] Matisse/Vermeer Data Fabric: Device 18h; Function 0 [1022:1440]\n00:18.1 Host bridge [0600]: Advanced Micro Devices, Inc. [AMD] Matisse/Vermeer Data Fabric: Device 18h; Function 1 [1022:1441]\n00:18.2 Host bridge [0600]: Advanced Micro Devices, Inc. [AMD] Matisse/Vermeer Data Fabric: Device 18h; Function 2 [1022:1442]\n00:18.3 Host bridge [0600]: Advanced Micro Devices, Inc. [AMD] Matisse/Vermeer Data Fabric: Device 18h; Function 3 [1022:1443]\n\tKernel driver in use: k10temp\n\tKernel modules: k10temp\n00:18.4 Host bridge [0600]: Advanced Micro Devices, Inc. [AMD] Matisse/Vermeer Data Fabric: Device 18h; Function 4 [1022:1444]\n00:18.5 Host bridge [0600]: Advanced Micro Devices, Inc. [AMD] Matisse/Vermeer Data Fabric: Device 18h; Function 5 [1022:1445]\n00:18.6 Host bridge [0600]: Advanced Micro Devices, Inc. [AMD] Matisse/Vermeer Data Fabric: Device 18h; Function 6 [1022:1446]\n00:18.7 Host bridge [0600]: Advanced Micro Devices, Inc. [AMD] Matisse/Vermeer Data Fabric: Device 18h; Function 7 [1022:1447]\n01:00.0 Non-Volatile memory controller [0108]: Samsung Electronics Co Ltd NVMe SSD Controller PM9C1a [144d:a80d]\n\tSubsystem: Samsung Electronics Co Ltd NVMe SSD Controller PM9C1a [144d:a801]\n\tKernel driver in use: nvme\n\tKernel modules: nvme\n02:00.0 USB controller [0c03]: Advanced Micro Devices, Inc. [AMD] 500 Series Chipset USB 3.1 XHCI Controller [1022:43ee]\n\tSubsystem: ASMedia Technology Inc. ASM1042A USB 3.0 Host Controller [1b21:1142]\n\tKernel driver in use: xhci_hcd\n\tKernel modules: xhci_pci\n02:00.1 SATA controller [0106]: Advanced Micro Devices, Inc. [AMD] 500 Series Chipset SATA Controller [1022:43eb]\n\tSubsystem: ASMedia Technology Inc. ASM1062 Serial ATA Controller [1b21:1062]\n\tKernel driver in use: ahci\n\tKernel modules: ahci\n02:00.2 PCI bridge [0604]: Advanced Micro Devices, Inc. [AMD] 500 Series Chipset Switch Upstream Port [1022:43e9]\n\tSubsystem: ASMedia Technology Inc. 500 Series Chipset Switch Upstream Port [1b21:0201]\n\tKernel driver in use: pcieport\n\tKernel modules: shpchp\n03:00.0 PCI bridge [0604]: Advanced Micro Devices, Inc. [AMD] Device [1022:43ea]\n\tSubsystem: ASMedia Technology Inc. Device [1b21:3308]\n\tKernel driver in use: pcieport\n\tKernel modules: shpchp\n03:04.0 PCI bridge [0604]: Advanced Micro Devices, Inc. [AMD] Device [1022:43ea]\n\tSubsystem: ASMedia Technology Inc. Device [1b21:3308]\n\tKernel driver in use: pcieport\n\tKernel modules: shpchp\n03:08.0 PCI bridge [0604]: Advanced Micro Devices, Inc. [AMD] Device [1022:43ea]\n\tSubsystem: ASMedia Technology Inc. Device [1b21:3308]\n\tKernel driver in use: pcieport\n\tKernel modules: shpchp\n03:09.0 PCI bridge [0604]: Advanced Micro Devices, Inc. [AMD] Device [1022:43ea]\n\tSubsystem: ASMedia Technology Inc. Device [1b21:3308]\n\tKernel driver in use: pcieport\n\tKernel modules: shpchp\n05:00.0 Non-Volatile memory controller [0108]: Sandisk Corp SanDisk Ultra 3D / WD Blue SN550 NVMe SSD [15b7:5009] (rev 01)\n\tSubsystem: Sandisk Corp WD Blue SN550 NVMe SSD [15b7:5009]\n\tKernel driver in use: nvme\n\tKernel modules: nvme\n06:00.0 Network controller [0280]: MEDIATEK Corp. MT7922 802.11ax PCI Express Wireless Network Adapter [14c3:0616]\n\tSubsystem: Foxconn International, Inc. MT7922 802.11ax PCI Express Wireless Network Adapter [105b:e0cd]\n\tKernel driver in use: mt7921e\n\tKernel modules: mt7921e\n07:00.0 Ethernet controller [0200]: Intel Corporation Ethernet Controller I226-V [8086:125c] (rev 06)\n\tSubsystem: ASUSTeK Computer Inc. Ethernet Controller I226-V [1043:8867]\n\tKernel driver in use: igc\n\tKernel modules: igc\n08:00.0 PCI bridge [0604]: Advanced Micro Devices, Inc. [AMD/ATI] Navi 10 XL Upstream Port of PCI Express Switch [1002:1478] (rev c1)\n\tKernel driver in use: pcieport\n\tKernel modules: shpchp\n09:00.0 PCI bridge [0604]: Advanced Micro Devices, Inc. [AMD/ATI] Navi 10 XL Downstream Port of PCI Express Switch [1002:1479]\n\tSubsystem: Advanced Micro Devices, Inc. [AMD/ATI] Navi 10 XL Downstream Port of PCI Express Switch [1002:1479]\n\tKernel driver in use: pcieport\n\tKernel modules: shpchp\n0a:00.0 VGA compatible controller [0300]: Advanced Micro Devices, Inc. [AMD/ATI] Navi 22 [Radeon RX 6700/6700 XT/6750 XT / 6800M/6850M XT] [1002:73df] (rev c1)\n\tSubsystem: ASUSTeK Computer Inc. Navi 22 [Radeon RX 6700/6700 XT/6750 XT / 6800M/6850M XT] [1043:05c9]\n\tKernel driver in use: amdgpu\n\tKernel modules: amdgpu\n0a:00.1 Audio device [0403]: Advanced Micro Devices, Inc. [AMD/ATI] Navi 21/23 HDMI/DP Audio Controller [1002:ab28]\n\tSubsystem: Advanced Micro Devices, Inc. [AMD/ATI] Navi 21/23 HDMI/DP Audio Controller [1002:ab28]\n\tKernel driver in use: snd_hda_intel\n\tKernel modules: snd_hda_intel\n0b:00.0 Non-Essential Instrumentation [1300]: Advanced Micro Devices, Inc. [AMD] Starship/Matisse PCIe Dummy Function [1022:148a]\n\tSubsystem: ASUSTeK Computer Inc. Starship/Matisse PCIe Dummy Function [1043:8808]\n0c:00.0 Non-Essential Instrumentation [1300]: Advanced Micro Devices, Inc. [AMD] Starship/Matisse Reserved SPP [1022:1485]\n\tSubsystem: ASUSTeK Computer Inc. Starship/Matisse Reserved SPP [1043:8808]\n0c:00.1 Encryption controller [1080]: Advanced Micro Devices, Inc. [AMD] Starship/Matisse Cryptographic Coprocessor PSPCPP [1022:1486]\n\tSubsystem: ASUSTeK Computer Inc. Starship/Matisse Cryptographic Coprocessor PSPCPP [1043:8808]\n\tKernel driver in use: ccp\n\tKernel modules: ccp\n0c:00.3 USB controller [0c03]: Advanced Micro Devices, Inc. [AMD] Matisse USB 3.0 Host Controller [1022:149c]\n\tSubsystem: ASUSTeK Computer Inc. Matisse USB 3.0 Host Controller [1043:87c0]\n\tKernel driver in use: xhci_hcd\n\tKernel modules: xhci_pci\n0c:00.4 Audio device [0403]: Advanced Micro Devices, Inc. [AMD] Starship/Matisse HD Audio Controller [1022:1487]\n\tSubsystem: ASUSTeK Computer Inc. Starship/Matisse HD Audio Controller [1043:87c5]\n\tKernel driver in use: snd_hda_intel\n\tKernel modules: snd_hda_intel\n"
+    },
+    {
+      "name": "Python venv",
+      "command": "python3 -m venv /tmp/agro-acceptance-1py0rd63/venv",
+      "cwd": "/home/ronaldo/Documentos/agrodiagnostico_V1",
+      "exit_code": 0,
+      "status": "LISTO",
+      "output": ""
+    },
+    {
+      "name": "Python package install",
+      "command": "/tmp/agro-acceptance-1py0rd63/venv/bin/python -m pip install --index-url https://pypi.org/simple packaging==25.0 PyYAML==6.0.3",
+      "cwd": "/home/ronaldo/Documentos/agrodiagnostico_V1",
+      "exit_code": 0,
+      "status": "LISTO",
+      "output": "Collecting packaging==25.0\n  Downloading packaging-25.0-py3-none-any.whl.metadata (3.3 kB)\nCollecting PyYAML==6.0.3\n  Using cached pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)\nDownloading packaging-25.0-py3-none-any.whl (66 kB)\n   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 66.5/66.5 kB 3.9 MB/s eta 0:00:00\nUsing cached pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (807 kB)\nInstalling collected packages: PyYAML, packaging\nSuccessfully installed PyYAML-6.0.3 packaging-25.0\n"
+    },
+    {
+      "name": "Python import",
+      "command": "/tmp/agro-acceptance-1py0rd63/venv/bin/python -c 'import packaging; from packaging.version import Version; assert Version('\"'\"'1.2'\"'\"') < Version('\"'\"'2.0'\"'\"'); print(packaging.__version__)'",
+      "cwd": "/home/ronaldo/Documentos/agrodiagnostico_V1",
+      "exit_code": 0,
+      "status": "LISTO",
+      "output": "25.0\n"
+    },
+    {
+      "name": "OpenSpec config YAML",
+      "command": "/tmp/agro-acceptance-1py0rd63/venv/bin/python -c 'import yaml; from pathlib import Path; c=yaml.safe_load(Path('\"'\"'openspec/config.yaml'\"'\"').read_text()); assert c['\"'\"'schema'\"'\"']=='\"'\"'spec-driven'\"'\"'; assert isinstance(c['\"'\"'context'\"'\"'],str); print('\"'\"'Valid YAML; spec-driven; context present'\"'\"')'",
+      "cwd": "/home/ronaldo/Documentos/agrodiagnostico_V1",
+      "exit_code": 0,
+      "status": "LISTO",
+      "output": "Valid YAML; spec-driven; context present\n"
+    },
+    {
+      "name": "PyTorch CPU install",
+      "command": "/tmp/agro-acceptance-1py0rd63/venv/bin/python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.9.1+cpu",
+      "cwd": "/home/ronaldo/Documentos/agrodiagnostico_V1",
+      "exit_code": 0,
+      "status": "LISTO",
+      "output": "Looking in indexes: https://download.pytorch.org/whl/cpu\nCollecting torch==2.9.1+cpu\n  Downloading https://download-r2.pytorch.org/whl/cpu/torch-2.9.1%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl.metadata (29 kB)\nCollecting filelock (from torch==2.9.1+cpu)\n  Downloading filelock-3.32.3-py3-none-any.whl.metadata (2.0 kB)\nCollecting typing-extensions>=4.10.0 (from torch==2.9.1+cpu)\n  Using cached typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)\nCollecting setuptools (from torch==2.9.1+cpu)\n  Downloading https://download.pytorch.org/whl/setuptools-78.1.0-py3-none-any.whl.metadata (6.6 kB)\nCollecting sympy>=1.13.3 (from torch==2.9.1+cpu)\n  Downloading sympy-1.14.0-py3-none-any.whl.metadata (12 kB)\nCollecting networkx>=2.5.1 (from torch==2.9.1+cpu)\n  Downloading networkx-3.6.1-py3-none-any.whl.metadata (6.8 kB)\nCollecting jinja2 (from torch==2.9.1+cpu)\n  Downloading https://download.pytorch.org/whl/jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)\nCollecting fsspec>=0.8.5 (from torch==2.9.1+cpu)\n  Downloading fsspec-2026.7.0-py3-none-any.whl.metadata (10 kB)\nCollecting mpmath<1.4,>=1.1.0 (from sympy>=1.13.3->torch==2.9.1+cpu)\n  Downloading mpmath-1.3.0-py3-none-any.whl.metadata (8.6 kB)\nCollecting MarkupSafe>=2.0 (from jinja2->torch==2.9.1+cpu)\n  Downloading https://download.pytorch.org/whl/markupsafe-3.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.7 kB)\nDownloading https://download-r2.pytorch.org/whl/cpu/torch-2.9.1%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl (184.4 MB)\n   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 184.4/184.4 MB 22.3 MB/s eta 0:00:00\nDownloading fsspec-2026.7.0-py3-none-any.whl (206 kB)\n   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 206.6/206.6 kB 8.4 MB/s eta 0:00:00\nDownloading networkx-3.6.1-py3-none-any.whl (2.1 MB)\n   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.1/2.1 MB 57.4 MB/s eta 0:00:00\nDownloading sympy-1.14.0-py3-none-any.whl (6.3 MB)\n   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.3/6.3 MB 102.2 MB/s eta 0:00:00\nUsing cached typing_extensions-4.16.0-py3-none-any.whl (45 kB)\nDownloading filelock-3.32.3-py3-none-any.whl (98 kB)\n   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 98.9/98.9 kB 37.9 MB/s eta 0:00:00\nDownloading https://download.pytorch.org/whl/jinja2-3.1.6-py3-none-any.whl (134 kB)\n   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 134.9/134.9 kB 40.2 MB/s eta 0:00:00\nDownloading https://download.pytorch.org/whl/setuptools-78.1.0-py3-none-any.whl (1.3 MB)\n   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 53.0 MB/s eta 0:00:00\nDownloading https://download.pytorch.org/whl/markupsafe-3.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (22 kB)\nDownloading mpmath-1.3.0-py3-none-any.whl (536 kB)\n   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 536.2/536.2 kB 78.6 MB/s eta 0:00:00\nInstalling collected packages: mpmath, typing-extensions, sympy, setuptools, networkx, MarkupSafe, fsspec, filelock, jinja2, torch\nSuccessfully installed MarkupSafe-3.0.3 filelock-3.32.3 fsspec-2026.7.0 jinja2-3.1.6 mpmath-1.3.0 networkx-3.6.1 setuptools-78.1.0 sympy-1.14.0 torch-2.9.1+cpu typing-extensions-4.16.0\n"
+    },
+    {
+      "name": "PyTorch CPU tensor and autograd",
+      "command": "/tmp/agro-acceptance-1py0rd63/venv/bin/python -c 'import torch; x=torch.tensor([2.0],requires_grad=True); (x*x).sum().backward(); assert x.grad.item()==4.0; assert x.device.type=='\"'\"'cpu'\"'\"'; print({'\"'\"'torch'\"'\"':torch.__version__,'\"'\"'device'\"'\"':str(x.device),'\"'\"'gradient'\"'\"':x.grad.item(),'\"'\"'hip'\"'\"':torch.version.hip})'",
+      "cwd": "/home/ronaldo/Documentos/agrodiagnostico_V1",
+      "exit_code": 0,
+      "status": "LISTO",
+      "output": "/tmp/agro-acceptance-1py0rd63/venv/lib/python3.12/site-packages/torch/_subclasses/functional_tensor.py:279: UserWarning: Failed to initialize NumPy: No module named 'numpy' (Triggered internally at /pytorch/torch/csrc/utils/tensor_numpy.cpp:84.)\n  cpu = _conversion_method_template(device=torch.device(\"cpu\"))\n{'torch': '2.9.1+cpu', 'device': 'cpu', 'gradient': 4.0, 'hip': None}\n"
+    },
+    {
+      "name": "Temporary Python dependencies",
+      "command": "/tmp/agro-acceptance-1py0rd63/venv/bin/python -m pip freeze",
+      "cwd": "/home/ronaldo/Documentos/agrodiagnostico_V1",
+      "exit_code": 0,
+      "status": "LISTO",
+      "output": "filelock==3.32.3\nfsspec==2026.7.0\nJinja2==3.1.6\nMarkupSafe==3.0.3\nmpmath==1.3.0\nnetworkx==3.6.1\npackaging==25.0\nPyYAML==6.0.3\nsetuptools==78.1.0\nsympy==1.14.0\ntorch==2.9.1+cpu\ntyping_extensions==4.16.0\n"
+    },
+    {
+      "name": "npm execution",
+      "command": "npm run check",
+      "cwd": "/tmp/agro-acceptance-1py0rd63",
+      "exit_code": 0,
+      "status": "LISTO",
+      "output": "\n> check\n> node check.cjs\n\nNode/npm OK\n"
+    },
+    {
+      "name": "npm registry",
+      "command": "npm view @fission-ai/openspec@1.13.2 version engines --json --registry=https://registry.npmjs.org",
+      "cwd": "/tmp/agro-acceptance-1py0rd63",
+      "exit_code": 0,
+      "status": "LISTO",
+      "output": "{\n  \"version\": \"1.13.2\",\n  \"engines\": {\n    \"node\": \">=20.19.0\"\n  }\n}\n"
+    },
+    {
+      "name": "Compose smoke",
+      "command": "docker compose -p agro-env-56635 -f /tmp/agro-acceptance-1py0rd63/compose.yaml run --rm --no-deps smoke",
+      "cwd": "/home/ronaldo/Documentos/agrodiagnostico_V1",
+      "exit_code": 0,
+      "status": "LISTO",
+      "output": "\nHello from Docker!\nThis message shows that your installation appears to be working correctly.\n\nTo generate this message, Docker took the following steps:\n 1. The Docker client contacted the Docker daemon.\n 2. The Docker daemon pulled the \"hello-world\" image from the Docker Hub.\n    (amd64)\n 3. The Docker daemon created a new container from that image which runs the\n    executable that produces the output you are currently reading.\n 4. The Docker daemon streamed that output to the Docker client, which sent it\n    to your terminal.\n\nTo try something more ambitious, you can run an Ubuntu container with:\n $ docker run -it ubuntu bash\n\nShare images, automate workflows, and more with a free Docker ID:\n https://hub.docker.com/\n\nFor more examples and ideas, visit:\n https://docs.docker.com/get-started/\n\n"
+    }
+  ]
+}

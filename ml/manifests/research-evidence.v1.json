@@ -1,0 +1,94 @@
+{
+  "consulted_at": "2026-09-29",
+  "sources": [
+    {
+      "source": "plantvillage",
+      "commit": "7f7ecc7e1eaca78107e3affe7cb5abd9427e139a",
+      "reference": "https://github.com/spMohanty/PlantVillage-Dataset/blob/7f7ecc7e1eaca78107e3affe7cb5abd9427e139a/README.md",
+      "metadata_sha256": "eaefcb33e310bd1867964510900ab92a1f8a0e4163b8ea131facd54066d2ba9f",
+      "note": "Hash de respuesta de investigación, no checksum de imágenes; árboles recursivos PlantVillage truncados NO usados para conteos."
+    },
+    {
+      "source": "plantdoc",
+      "commit": "5467f6012d78d1c446145d5f582da6096f852ae8",
+      "reference": "https://github.com/pratikkayal/PlantDoc-Dataset/blob/5467f6012d78d1c446145d5f582da6096f852ae8/README.md",
+      "metadata_sha256": "9d0b56f89f3bb0335675b660eb4a1cd00e65e084f4cb0b714da5a9aceafca590",
+      "note": "Hash de respuesta de investigación, no checksum de imágenes; árboles recursivos PlantVillage truncados NO usados para conteos."
+    },
+    {
+      "source": "plantseg",
+      "commit": "1a3dd4d9224bcc97a5850af7dd1c423abc24eae0",
+      "reference": "https://github.com/tqwei05/PlantSeg/blob/1a3dd4d9224bcc97a5850af7dd1c423abc24eae0/README.md",
+      "metadata_sha256": "b8202a7b1bbb5642f660fe5f4472b31e9992268bb48a23ae956f81ed773a052e",
+      "note": "Hash de respuesta de investigación, no checksum de imágenes; árboles recursivos PlantVillage truncados NO usados para conteos."
+    }
+  ],
+  "plantvillage_class_trees": [
+    {
+      "label": "Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot",
+      "url": "https://api.github.com/repos/spMohanty/PlantVillage-Dataset/git/trees/8cc6b2d2ac32539c02a9bd0e39e21062a9536fcc",
+      "truncated": false,
+      "count": 513
+    },
+    {
+      "label": "Corn_(maize)___Common_rust_",
+      "url": "https://api.github.com/repos/spMohanty/PlantVillage-Dataset/git/trees/4b67a1bb45178cf251153251f911037505bf57a0",
+      "truncated": false,
+      "count": 1192
+    },
+    {
+      "label": "Corn_(maize)___Northern_Leaf_Blight",
+      "url": "https://api.github.com/repos/spMohanty/PlantVillage-Dataset/git/trees/d9b2c8be02be845df7989102b54124c8034eea3c",
+      "truncated": false,
+      "count": 985
+    },
+    {
+      "label": "Corn_(maize)___healthy",
+      "url": "https://api.github.com/repos/spMohanty/PlantVillage-Dataset/git/trees/08567ffe34691947d9604c6587d6d777dffa7c4f",
+      "truncated": false,
+      "count": 1162
+    },
+    {
+      "label": "Potato___Early_blight",
+      "url": "https://api.github.com/repos/spMohanty/PlantVillage-Dataset/git/trees/6a05d8fce92f7436da5bca72704ba5596a544e96",
+      "truncated": false,
+      "count": 1000
+    },
+    {
+      "label": "Potato___Late_blight",
+      "url": "https://api.github.com/repos/spMohanty/PlantVillage-Dataset/git/trees/32d92d88e9c267a3a3d92e2167a96148d5197e73",
+      "truncated": false,
+      "count": 1000
+    },
+    {
+      "label": "Potato___healthy",
+      "url": "https://api.github.com/repos/spMohanty/PlantVillage-Dataset/git/trees/9e73447b5d9bea5bcfd5748ae32fb9b0e9babbf0",
+      "truncated": false,
+      "count": 152
+    }
+  ],
+  "plantdoc": {
+    "commit": "5467f6012d78d1c446145d5f582da6096f852ae8",
+    "truncated": false,
+    "target_counts": {
+      "Corn Gray leaf spot": 68,
+      "Corn leaf blight": 192,
+      "Corn rust leaf": 116,
+      "Potato leaf early blight": 117,
+      "Potato leaf late blight": 105
+    }
+  },
+  "plantseg_versions": [
+    {
+      "record": "14935094",
+      "license": "cc-by-4.0",
+      "reference": "https://zenodo.org/api/records/14935094"
+    },
+    {
+      "record": "17719108",
+      "license": "cc-by-nc-4.0",
+      "reference": "https://zenodo.org/api/records/17719108"
+    }
+  ],
+  "note": "Solo metadatos. Sin imágenes, rutas de usuarios ni coordenadas."
+}

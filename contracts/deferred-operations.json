@@ -1,0 +1,124 @@
+[
+  {
+    "capability": "password-confirmation",
+    "owner": "identity",
+    "increment": 1,
+    "status": "pending-contract",
+    "before_consumer": true,
+    "conceptual_routes": [
+      "POST /api/v1/auth/password/reset"
+    ],
+    "authorization": "one-time-recovery-token",
+    "note": "Rutas conceptuales de la fuente; forma final/payload/errores pendientes antes de integrar consumidores. No publicadas ni aliases exigidos."
+  },
+  {
+    "capability": "password-change",
+    "owner": "identity",
+    "increment": 1,
+    "status": "pending-contract",
+    "before_consumer": true,
+    "conceptual_routes": [
+      "PUT /api/v1/users/me/password"
+    ],
+    "authorization": "USER-own",
+    "note": "Rutas conceptuales de la fuente; forma final/payload/errores pendientes antes de integrar consumidores. No publicadas ni aliases exigidos."
+  },
+  {
+    "capability": "feedback",
+    "owner": "diagnosis",
+    "increment": 2,
+    "status": "pending-contract",
+    "before_consumer": true,
+    "conceptual_routes": [],
+    "authorization": "USER-own",
+    "note": "Rutas conceptuales de la fuente; forma final/payload/errores pendientes antes de integrar consumidores. No publicadas ni aliases exigidos."
+  },
+  {
+    "capability": "notification-read",
+    "owner": "notification",
+    "increment": 5,
+    "status": "pending-contract",
+    "before_consumer": true,
+    "conceptual_routes": [
+      "PATCH /api/v1/notifications/{id}/read"
+    ],
+    "authorization": "USER-own",
+    "note": "Rutas conceptuales de la fuente; forma final/payload/errores pendientes antes de integrar consumidores. No publicadas ni aliases exigidos."
+  },
+  {
+    "capability": "admin-users",
+    "owner": "identity",
+    "increment": 1,
+    "status": "pending-contract",
+    "before_consumer": true,
+    "conceptual_routes": [
+      "GET /api/v1/admin/users",
+      "PATCH /api/v1/admin/users/{id}/block",
+      "PATCH /api/v1/admin/users/{id}/activate"
+    ],
+    "authorization": "ADMIN",
+    "note": "Rutas conceptuales de la fuente; forma final/payload/errores pendientes antes de integrar consumidores. No publicadas ni aliases exigidos."
+  },
+  {
+    "capability": "admin-catalog",
+    "owner": "diagnosis",
+    "increment": 2,
+    "status": "pending-contract",
+    "before_consumer": true,
+    "conceptual_routes": [
+      "GET /api/v1/admin/crops",
+      "POST /api/v1/admin/crops",
+      "GET /api/v1/admin/problems",
+      "POST /api/v1/admin/problems",
+      "GET /api/v1/admin/recommendations",
+      "POST /api/v1/admin/recommendations",
+      "PATCH /api/v1/admin/crops/{id}",
+      "PATCH /api/v1/admin/problems/{id}",
+      "PATCH /api/v1/admin/recommendations/{id}"
+    ],
+    "authorization": "ADMIN",
+    "note": "Rutas conceptuales de la fuente; forma final/payload/errores pendientes antes de integrar consumidores. No publicadas ni aliases exigidos."
+  },
+  {
+    "capability": "admin-diagnoses",
+    "owner": "diagnosis",
+    "increment": 2,
+    "status": "pending-contract",
+    "before_consumer": true,
+    "conceptual_routes": [
+      "GET /api/v1/admin/diagnoses"
+    ],
+    "authorization": "ADMIN",
+    "note": "Rutas conceptuales de la fuente; forma final/payload/errores pendientes antes de integrar consumidores. No publicadas ni aliases exigidos."
+  },
+  {
+    "capability": "audit",
+    "owner": "identity/diagnosis/notification",
+    "increment": 5,
+    "status": "pending-contract",
+    "before_consumer": true,
+    "conceptual_routes": [],
+    "authorization": "ADMIN",
+    "note": "Rutas conceptuales de la fuente; forma final/payload/errores pendientes antes de integrar consumidores. No publicadas ni aliases exigidos."
+  },
+  {
+    "capability": "metrics",
+    "owner": "diagnosis/infra",
+    "increment": 5,
+    "status": "pending-contract",
+    "before_consumer": true,
+    "conceptual_routes": [],
+    "authorization": "ADMIN",
+    "note": "Rutas conceptuales de la fuente; forma final/payload/errores pendientes antes de integrar consumidores. No publicadas ni aliases exigidos."
+  },
+  {
+    "capability": "model-info",
+    "owner": "diagnosis (AI interno)",
+    "increment": 5,
+    "status": "pending-contract",
+    "before_consumer": true,
+    "conceptual_routes": [],
+    "authorization": "ADMIN",
+    "note": "Rutas conceptuales de la fuente; forma final/payload/errores pendientes antes de integrar consumidores. No publicadas ni aliases exigidos."
+  }
+]

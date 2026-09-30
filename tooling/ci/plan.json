@@ -1,0 +1,141 @@
+{
+  "steps": [
+    {
+      "id": "workflow",
+      "command": [
+        "python3",
+        "scripts/check_ci_workflow.py"
+      ],
+      "timeout_seconds": 60
+    },
+    {
+      "id": "python-lint",
+      "command": [
+        "tooling/ci/.venv/bin/ruff",
+        "check",
+        "--select",
+        "E9,F63,F7,F82",
+        "scripts",
+        "services",
+        "tests",
+        "infra"
+      ],
+      "timeout_seconds": 60
+    },
+    {
+      "id": "ci-tests",
+      "command": [
+        "python3",
+        "scripts/check_ci_tests.py"
+      ],
+      "timeout_seconds": 60
+    },
+    {
+      "id": "contracts",
+      "command": [
+        "bash",
+        "scripts/check_contracts.sh"
+      ],
+      "timeout_seconds": 300
+    },
+    {
+      "id": "dataset",
+      "command": [
+        "bash",
+        "scripts/check_dataset.sh"
+      ],
+      "timeout_seconds": 300
+    },
+    {
+      "id": "backend",
+      "command": [
+        "bash",
+        "scripts/check_service_locks.sh"
+      ],
+      "timeout_seconds": 600
+    },
+    {
+      "id": "frontend-install",
+      "command": [
+        "npm",
+        "--prefix",
+        "frontend",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund"
+      ],
+      "timeout_seconds": 300
+    },
+    {
+      "id": "frontend-lint",
+      "command": [
+        "npm",
+        "--prefix",
+        "frontend",
+        "run",
+        "lint"
+      ],
+      "timeout_seconds": 300
+    },
+    {
+      "id": "frontend-types",
+      "command": [
+        "npm",
+        "--prefix",
+        "frontend",
+        "run",
+        "typecheck"
+      ],
+      "timeout_seconds": 300
+    },
+    {
+      "id": "frontend-tests",
+      "command": [
+        "npm",
+        "--prefix",
+        "frontend",
+        "test"
+      ],
+      "timeout_seconds": 300
+    },
+    {
+      "id": "frontend-build",
+      "command": [
+        "npm",
+        "--prefix",
+        "frontend",
+        "run",
+        "build"
+      ],
+      "timeout_seconds": 300
+    },
+    {
+      "id": "openspec",
+      "command": [
+        "openspec",
+        "validate",
+        "--all",
+        "--strict",
+        "--no-interactive"
+      ],
+      "timeout_seconds": 120
+    },
+    {
+      "id": "persistence",
+      "command": [
+        "python3",
+        "scripts/check_persistence.py"
+      ],
+      "timeout_seconds": 1200
+    },
+    {
+      "id": "environment",
+      "command": [
+        "python3",
+        "scripts/check_environment.py"
+      ],
+      "timeout_seconds": 1800
+    }
+  ]
+}

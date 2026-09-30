@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AgroDiagnóstico manifiesto CSV v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "image_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "crop_code": {
+      "enum": [
+        "POTATO",
+        "MAIZE"
+      ]
+    },
+    "class_code": {
+      "enum": [
+        "POTATO_HEALTHY",
+        "POTATO_EARLY_BLIGHT",
+        "POTATO_LATE_BLIGHT",
+        "MAIZE_HEALTHY",
+        "MAIZE_COMMON_RUST",
+        "MAIZE_LEAF_BLIGHT",
+        "MAIZE_GRAY_LEAF_SPOT"
+      ]
+    },
+    "source": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "license": {
+      "type": "string",
+      "minLength": 1
+    },
+    "capture_context": {
+      "enum": [
+        "CONTROLLED_LEAF",
+        "WEB_FIELD_MIXED",
+        "FIELD",
+        "SYNTHETIC"
+      ]
+    },
+    "label_quality": {
+      "enum": [
+        "REVIEWED",
+        "SOURCE_ONLY",
+        "SYNTHETIC"
+      ]
+    },
+    "split_group": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "split": {
+      "enum": [
+        "TRAIN",
+        "VAL",
+        "TEST",
+        "EXTERNAL"
+      ]
+    }
+  },
+  "required": [
+    "image_id",
+    "sha256",
+    "crop_code",
+    "class_code",
+    "source",
+    "license",
+    "capture_context",
+    "label_quality",
+    "split_group",
+    "split"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "crop_code": {
+            "const": "POTATO"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "class_code": {
+            "enum": [
+              "POTATO_HEALTHY",
+              "POTATO_EARLY_BLIGHT",
+              "POTATO_LATE_BLIGHT"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "crop_code": {
+            "const": "MAIZE"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "class_code": {
+            "enum": [
+              "MAIZE_HEALTHY",
+              "MAIZE_COMMON_RUST",
+              "MAIZE_LEAF_BLIGHT",
+              "MAIZE_GRAY_LEAF_SPOT"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

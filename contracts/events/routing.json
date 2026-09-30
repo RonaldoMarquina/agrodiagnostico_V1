@@ -1,0 +1,112 @@
+{
+  "exchange": "agrodiagnostico.events",
+  "exchange_type": "topic",
+  "durable": true,
+  "persistent_messages": true,
+  "mandatory_publish": true,
+  "outbox_mark_sent": "after-publisher-confirm-and-no-return",
+  "deduplicate_by": [
+    "consumer",
+    "event_id"
+  ],
+  "max_attempts": 3,
+  "retry": "initial + 2 delayed retries only for transient failures; increment 3 fixes delays/time budget",
+  "compatibility": "strict v1, unknown version quarantined; incompatible/additional fields require new version and coordinated rollout",
+  "events": [
+    {
+      "event_type": "DiagnosisRequested",
+      "schema_version": 1,
+      "schema": "DiagnosisRequested.v1.schema.json",
+      "producer": "diagnosis",
+      "consumer": "ai_inference",
+      "routing_key": "diagnosis.requested.v1",
+      "queue": "ai_inference.diagnosis-requested.v1",
+      "durable_queue": true,
+      "dlq": "ai_inference.diagnosis-requested.v1.dlq",
+      "ack": "after-local-commit",
+      "implementation_increment": 3
+    },
+    {
+      "event_type": "DiagnosisAnalyzed",
+      "schema_version": 1,
+      "schema": "DiagnosisAnalyzed.v1.schema.json",
+      "producer": "ai_inference",
+      "consumer": "diagnosis",
+      "routing_key": "diagnosis.analyzed.v1",
+      "queue": "diagnosis.diagnosis-analyzed.v1",
+      "durable_queue": true,
+      "dlq": "diagnosis.diagnosis-analyzed.v1.dlq",
+      "ack": "after-local-commit",
+      "implementation_increment": 3
+    },
+    {
+      "event_type": "DiagnosisFinished",
+      "schema_version": 1,
+      "schema": "DiagnosisFinished.v1.schema.json",
+      "producer": "diagnosis",
+      "consumer": "notification",
+      "routing_key": "diagnosis.finished.v1",
+      "queue": "notification.diagnosis-finished.v1",
+      "durable_queue": true,
+      "dlq": "notification.diagnosis-finished.v1.dlq",
+      "ack": "after-local-commit",
+      "implementation_increment": 5
+    }
+  ],
+  "future_scenarios": [
+    {
+      "id": "duplicate",
+      "expected": "Inbox consumer/event_id único; ACK sin repetir efecto lógico.",
+      "increment": 3,
+      "status": "pending-runtime"
+    },
+    {
+      "id": "stale-lease",
+      "expected": "Ignorar y auditar; no escribir resultado ni emitir Finished.",
+      "increment": 3,
+      "status": "pending-runtime"
+    },
+    {
+      "id": "publish-crash",
+      "expected": "Caída tras confirm y antes de marcar outbox produce redelivery tolerado.",
+      "increment": 3,
+      "status": "pending-runtime"
+    },
+    {
+      "id": "commit-crash",
+      "expected": "Caída antes de commit: no ACK; después de commit/antes de ACK: dedupe al redelivery.",
+      "increment": 3,
+      "status": "pending-runtime"
+    },
+    {
+      "id": "unknown-version",
+      "expected": "Aislar/DLQ con motivo seguro; sin efectos de negocio.",
+      "increment": 3,
+      "status": "pending-runtime"
+    },
+    {
+      "id": "terminal-replay",
+      "expected": "Nunca revierte terminal ni infiere un CANCELADO; replay autorizado y auditado.",
+      "increment": 3,
+      "status": "pending-runtime"
+    },
+    {
+      "id": "email-down",
+      "expected": "Aviso persiste; correo independiente no revierte diagnóstico.",
+      "increment": 5,
+      "status": "pending-runtime"
+    },
+    {
+      "id": "redis-down",
+      "expected": "Caché derivada; no pierde diagnóstico/outbox.",
+      "increment": 3,
+      "status": "pending-runtime"
+    },
+    {
+      "id": "unroutable",
+      "expected": "mandatory return o nack no marca enviado; outbox conserva y alerta.",
+      "increment": 3,
+      "status": "pending-runtime"
+    }
+  ]
+}

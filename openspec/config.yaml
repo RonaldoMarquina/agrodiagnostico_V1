@@ -1,0 +1,46 @@
+schema: spec-driven
+githubCopilot:
+  cloudAgent: true
+
+# Project context (optional)
+# This is shown to AI when creating artifacts.
+# Add your tech stack, conventions, style guides, domain knowledge, etc.
+# Example:
+#   context: |
+#     Tech stack: TypeScript, React, Node.js
+#     We use conventional commits
+#     Domain: e-commerce platform
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+# Example:
+#   rules:
+#     proposal:
+#       - Keep proposals under 500 words
+#       - Always include a "Non-goals" section
+#     tasks:
+#       - Break tasks into chunks of max 2 hours
+
+# Per-operation guidance (optional)
+# Add advisory guidance for how apply and archive work should be conducted.
+# This is separate from artifact rules above.
+# Example:
+#   operations:
+#     apply:
+#       guidance:
+#         - Keep test summaries concise
+#     archive:
+#       guidance:
+#         - Summarize the archive outcome before finishing
+
+context: |
+  AgroDiagnóstico V1 analiza imágenes de cultivos de papa y maíz mediante IA.
+  OpenSpec es la fuente de verdad para requisitos; el desarrollo será incremental.
+  Stack: React, TypeScript, Python, FastAPI, SQLAlchemy, Alembic, PostgreSQL,
+  Redis, RabbitMQ, PyTorch, almacenamiento compatible con S3, Nginx,
+  Docker Compose, GitHub Actions, Prometheus, Grafana y OpenTelemetry.
+  Despliegue obligatorio: dominio real, Cloudflare, SSL/TLS y CDN.
+  Contratos HTTP: contracts/openapi/. Eventos: contracts/events/.
+  Diagramas C4: docs/c4/. ADR: docs/adr/. Evidencia: docs/evidence/.
+  services/optional/ está fuera del MVP obligatorio.
+  Estado inicial: solo estructura; sin lógica de negocio, entrenamiento ni servicios externos reales.

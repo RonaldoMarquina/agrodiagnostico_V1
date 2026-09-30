@@ -1,0 +1,63 @@
+{
+  "remote": {
+    "command": [
+      "git",
+      "remote",
+      "-v"
+    ],
+    "exit_code": 0,
+    "stdout": "origin\thttps://github.com/RonaldoMarquina/agrodiagnostico_V1.git (fetch)\norigin\thttps://github.com/RonaldoMarquina/agrodiagnostico_V1.git (push)\n",
+    "stderr": ""
+  },
+  "git": {
+    "command": [
+      "git",
+      "status",
+      "--short"
+    ],
+    "exit_code": 0,
+    "stdout": "?? .agents/\n?? .env.example\n?? .github/\n?? .gitignore\n?? .nvmrc\n?? AGENTS.md\n?? CONTRIBUTING.md\n?? README.md\n?? contracts/\n?? docker-compose.yml\n?? docs/\n?? frontend/\n?? infra/\n?? ml/\n?? openspec/\n?? scripts/\n?? services/\n?? tests/\n",
+    "stderr": ""
+  },
+  "containers": {
+    "command": [
+      "docker",
+      "ps",
+      "-a",
+      "--filter",
+      "ancestor=hello-world",
+      "--format",
+      "{{.ID}} {{.Status}}"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "rocm_packages": {
+    "command": [
+      "dpkg-query",
+      "-W",
+      "rocm*",
+      "hip-runtime*"
+    ],
+    "exit_code": 1,
+    "stdout": "",
+    "stderr": "dpkg-query: no packages found matching rocm*\ndpkg-query: no packages found matching hip-runtime*\n"
+  },
+  "libpq": {
+    "command": [
+      "dpkg-query",
+      "-W",
+      "libpq-dev"
+    ],
+    "exit_code": 1,
+    "stdout": "",
+    "stderr": "dpkg-query: no packages found matching libpq-dev\n"
+  },
+  "gpu_access": {
+    "kfd_read": false,
+    "kfd_write": false,
+    "render_read": true,
+    "render_write": true
+  }
+}
