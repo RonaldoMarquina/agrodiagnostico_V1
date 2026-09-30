@@ -133,6 +133,70 @@
     "rule": "Sin bearer; rate limit. Login exige Origin permitido."
   },
   {
+    "operation_id": "identity_change_password",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      401
+    ],
+    "runtime_verified": false,
+    "rule": "Identidad de usuario válida, cuenta activa. Revoca refresh sessions."
+  },
+  {
+    "operation_id": "identity_confirm_recovery",
+    "security": [],
+    "negative_statuses": [],
+    "runtime_verified": false,
+    "rule": "Sin bearer; rate limit. Valida hash de token de recuperación."
+  },
+  {
+    "operation_id": "identity_admin_list_users",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      401,
+      403
+    ],
+    "runtime_verified": false,
+    "rule": "Requiere rol ADMIN. Token de usuario normal es rechazado con 403."
+  },
+  {
+    "operation_id": "identity_admin_block_user",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      401,
+      403,
+      404
+    ],
+    "runtime_verified": false,
+    "rule": "Requiere rol ADMIN. Revoca sesiones activas e inserta auditoría."
+  },
+  {
+    "operation_id": "identity_admin_activate_user",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      401,
+      403,
+      404
+    ],
+    "runtime_verified": false,
+    "rule": "Requiere rol ADMIN. Reactiva cuenta e inserta auditoría."
+  },
+  {
     "operation_id": "diagnosis_create",
     "security": [
       {

@@ -6,10 +6,11 @@
     "status": "pending-contract",
     "before_consumer": true,
     "conceptual_routes": [
-      "POST /api/v1/auth/password/reset"
+      "POST /api/v1/auth/password/reset",
+      "POST /api/v1/auth/password-recovery/confirm"
     ],
     "authorization": "one-time-recovery-token",
-    "note": "Rutas conceptuales de la fuente; forma final/payload/errores pendientes antes de integrar consumidores. No publicadas ni aliases exigidos."
+    "note": "Confirmación segura con token temporal hasheado SHA-256; nueva contraseña Argon2id; revoca todas las sesiones activas en PostgreSQL y audita."
   },
   {
     "capability": "password-change",
@@ -18,10 +19,11 @@
     "status": "pending-contract",
     "before_consumer": true,
     "conceptual_routes": [
-      "PUT /api/v1/users/me/password"
+      "PUT /api/v1/users/me/password",
+      "PUT /api/v1/profile/password"
     ],
     "authorization": "USER-own",
-    "note": "Rutas conceptuales de la fuente; forma final/payload/errores pendientes antes de integrar consumidores. No publicadas ni aliases exigidos."
+    "note": "Cambio autenticado con contraseña actual y nueva contraseña Argon2id; revoca todas las sesiones activas en PostgreSQL y audita."
   },
   {
     "capability": "feedback",
@@ -57,7 +59,7 @@
       "PATCH /api/v1/admin/users/{id}/activate"
     ],
     "authorization": "ADMIN",
-    "note": "Rutas conceptuales de la fuente; forma final/payload/errores pendientes antes de integrar consumidores. No publicadas ni aliases exigidos."
+    "note": "Gestión administrativa con RBAC y auditoría; el bloqueo revoca inmediatamente todas las refresh sessions activas en PostgreSQL."
   },
   {
     "capability": "admin-catalog",

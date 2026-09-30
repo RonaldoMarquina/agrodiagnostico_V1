@@ -76,7 +76,7 @@
     "method": "POST",
     "path": "/api/v1/auth/register",
     "operation_id": "identity_register",
-    "status": "contract-only",
+    "status": "implemented",
     "increment": 1,
     "authorization": "public"
   },
@@ -85,7 +85,7 @@
     "method": "POST",
     "path": "/api/v1/auth/login",
     "operation_id": "identity_login",
-    "status": "contract-only",
+    "status": "implemented",
     "increment": 1,
     "authorization": "public"
   },
@@ -94,7 +94,7 @@
     "method": "POST",
     "path": "/api/v1/auth/refresh",
     "operation_id": "identity_refresh",
-    "status": "contract-only",
+    "status": "implemented",
     "increment": 1,
     "authorization": "cookie"
   },
@@ -103,7 +103,7 @@
     "method": "POST",
     "path": "/api/v1/auth/logout",
     "operation_id": "identity_logout",
-    "status": "contract-only",
+    "status": "implemented",
     "increment": 1,
     "authorization": "cookie"
   },
@@ -112,7 +112,7 @@
     "method": "GET",
     "path": "/api/v1/profile",
     "operation_id": "identity_get_profile",
-    "status": "contract-only",
+    "status": "implemented",
     "increment": 1,
     "authorization": "user"
   },
@@ -121,7 +121,7 @@
     "method": "PATCH",
     "path": "/api/v1/profile",
     "operation_id": "identity_patch_profile",
-    "status": "contract-only",
+    "status": "implemented",
     "increment": 1,
     "authorization": "user"
   },
@@ -130,9 +130,54 @@
     "method": "POST",
     "path": "/api/v1/auth/password-recovery",
     "operation_id": "identity_start_recovery",
-    "status": "contract-only",
+    "status": "implemented",
     "increment": 1,
     "authorization": "public"
+  },
+  {
+    "service": "identity",
+    "method": "PUT",
+    "path": "/api/v1/profile/password",
+    "operation_id": "identity_change_password",
+    "status": "implemented",
+    "increment": 1,
+    "authorization": "user"
+  },
+  {
+    "service": "identity",
+    "method": "POST",
+    "path": "/api/v1/auth/password-recovery/confirm",
+    "operation_id": "identity_confirm_recovery",
+    "status": "implemented",
+    "increment": 1,
+    "authorization": "public"
+  },
+  {
+    "service": "identity",
+    "method": "GET",
+    "path": "/api/v1/admin/users",
+    "operation_id": "identity_admin_list_users",
+    "status": "implemented",
+    "increment": 1,
+    "authorization": "admin"
+  },
+  {
+    "service": "identity",
+    "method": "PATCH",
+    "path": "/api/v1/admin/users/{id}/block",
+    "operation_id": "identity_admin_block_user",
+    "status": "implemented",
+    "increment": 1,
+    "authorization": "admin"
+  },
+  {
+    "service": "identity",
+    "method": "PATCH",
+    "path": "/api/v1/admin/users/{id}/activate",
+    "operation_id": "identity_admin_activate_user",
+    "status": "implemented",
+    "increment": 1,
+    "authorization": "admin"
   },
   {
     "service": "diagnosis",

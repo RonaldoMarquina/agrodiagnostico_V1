@@ -181,6 +181,120 @@
       ],
       "additionalProperties": false
     },
+    "PasswordChange": {
+      "type": "object",
+      "properties": {
+        "current_password": {
+          "$ref": "#/$defs/Password"
+        },
+        "new_password": {
+          "$ref": "#/$defs/Password"
+        }
+      },
+      "required": [
+        "current_password",
+        "new_password"
+      ],
+      "additionalProperties": false
+    },
+    "RecoveryConfirm": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 256,
+          "writeOnly": true
+        },
+        "new_password": {
+          "$ref": "#/$defs/Password"
+        }
+      },
+      "required": [
+        "token",
+        "new_password"
+      ],
+      "additionalProperties": false
+    },
+    "Message": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        }
+      },
+      "required": [
+        "message"
+      ],
+      "additionalProperties": false
+    },
+    "AdminUser": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "email": {
+          "$ref": "#/$defs/Email"
+        },
+        "display_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "USER",
+            "ADMIN"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "ACTIVE",
+            "BLOCKED"
+          ]
+        },
+        "created_at": {
+          "$ref": "#/$defs/UTC"
+        }
+      },
+      "required": [
+        "id",
+        "email",
+        "display_name",
+        "role",
+        "status",
+        "created_at"
+      ],
+      "additionalProperties": false
+    },
+    "AdminUserPage": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AdminUser"
+          }
+        },
+        "next_cursor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 2048
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor"
+      ],
+      "additionalProperties": false
+    },
     "Session": {
       "type": "object",
       "properties": {

@@ -5,7 +5,7 @@ Estado actual: estructura y auditoría del equipo disponibles; grupos 1–7 del 
 | Incremento | Resultado previsto | Estado |
 | --- | --- | --- |
 | 0 | Entorno Compose, contratos HTTP/eventos, migraciones base, CI e inventario de datos | Verificado: grupos 1–7 terminados; 8 operaciones de salud implementadas; 19 contract-only |
-| 1 | Registro, sesiones, roles, perfil, cambio y recuperación de contraseña, autorización | Pendiente |
+| 1 | Registro, sesiones, roles, perfil, cambio y recuperación de contraseña, autorización | Verificado: grupos 1–7 terminados; 12 operaciones de identidad implementadas; Ed25519 asimétrico, PostgreSQL compartido, rotación atómica y auditoría inmutable |
 | 2 | Imágenes privadas, validación y formatos, diagnósticos, catálogo, historial, feedback | Pendiente |
 | 3 | RabbitMQ, outbox/inbox, lease, worker provisional e idempotencia | Pendiente; resultados simulados, no diagnósticos reales |
 | 4 | Dataset autorizado, cultivo automático, entrenamiento, evaluación y modelo validado | Pendiente; siete clases candidatas |
@@ -17,8 +17,4 @@ La [fuente V1](reference/Definicion_Base_AgroDiagnostico_V1_Limpia.docx) se inte
 
 Aceptación integrada local del grupo 7: 7.1–7.4 verificadas, incluida CI remota. [Evidencia](evidence/INCREMENTO-0-GRUPO-7.md). Los cinco deltas están sincronizados en `openspec/specs/` y el cambio está archivado.
 
-Historial de corrección: [primera ejecución fallida 36743640034](https://github.com/RonaldoMarquina/agrodiagnostico_V1/actions/runs/36743640034). [Evidencia](evidence/INCREMENTO-0-GRUPO-7-REMOTO.md).
-
-Estado final del Incremento 0: [Application CI 36749372314 aprobada](https://github.com/RonaldoMarquina/agrodiagnostico_V1/actions/runs/36749372314) sobre `97472b1`. [Evidencia](evidence/INCREMENTO-0-GRUPO-7-REMOTO.md).
-
-Specs vigentes del Incremento 0: `openspec/specs/` (17 requisitos en cinco capacidades). [Cambio archivado](../openspec/changes/archive/2026-09-30-incremento-0-base-integrada/tasks.md). Los incrementos 1–5 permanecen pendientes.
+Estado final del Incremento 1: Grupos 1–7 concluidos y verificados (38/38 pruebas de identidad, contratos OpenAPI y pruebas multi-instancia contra PostgreSQL). [Evidencia](evidence/INCREMENTO-1-AUDIT.md). Las 12 operaciones de negocio del servicio identity han sido implementadas; los tres deltas están sincronizados en `openspec/specs/` y el cambio está archivado en [tasks.md](../openspec/changes/archive/2026-09-30-incremento-1-identidad-y-autorizacion/tasks.md). Los incrementos 2–5 permanecen pendientes.

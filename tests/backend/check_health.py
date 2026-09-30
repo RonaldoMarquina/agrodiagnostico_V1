@@ -28,7 +28,18 @@ class HealthTests(unittest.TestCase):
                 self.assertEqual(main.ready().status_code, 503)
 
     def test_openapi_contains_only_technical_operations(self):
-        self.assertEqual(set(main.app.openapi()['paths']), {'/health/live', '/health/ready'})
+        if getattr(main, 'SERVICE', None) == 'identity':
+            expected_paths = {
+                '/health/live', '/health/ready',
+                '/api/v1/auth/register', '/api/v1/auth/login',
+                '/api/v1/auth/refresh', '/api/v1/auth/logout',
+                '/api/v1/auth/password-recovery', '/api/v1/auth/password-recovery/confirm',
+                '/api/v1/profile', '/api/v1/profile/password',
+                '/api/v1/admin/users', '/api/v1/admin/users/{id}/block', '/api/v1/admin/users/{id}/activate',
+            }
+            self.assertEqual(set(main.app.openapi()['paths']), expected_paths)
+        else:
+            self.assertEqual(set(main.app.openapi()['paths']), {'/health/live', '/health/ready'})
 
 
 if __name__ == '__main__':

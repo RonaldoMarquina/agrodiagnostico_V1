@@ -309,7 +309,7 @@
             }
           }
         },
-        "x-status": "contract-only",
+        "x-status": "implemented",
         "x-owner": "identity",
         "x-increment": 1,
         "requestBody": {
@@ -523,7 +523,7 @@
             }
           }
         },
-        "x-status": "contract-only",
+        "x-status": "implemented",
         "x-owner": "identity",
         "x-increment": 1,
         "requestBody": {
@@ -741,7 +741,7 @@
             }
           }
         },
-        "x-status": "contract-only",
+        "x-status": "implemented",
         "x-owner": "identity",
         "x-increment": 1
       }
@@ -901,7 +901,7 @@
             }
           }
         },
-        "x-status": "contract-only",
+        "x-status": "implemented",
         "x-owner": "identity",
         "x-increment": 1
       }
@@ -1025,7 +1025,7 @@
             }
           }
         },
-        "x-status": "contract-only",
+        "x-status": "implemented",
         "x-owner": "identity",
         "x-increment": 1
       },
@@ -1147,7 +1147,7 @@
             }
           }
         },
-        "x-status": "contract-only",
+        "x-status": "implemented",
         "x-owner": "identity",
         "x-increment": 1,
         "requestBody": {
@@ -1276,7 +1276,7 @@
             }
           }
         },
-        "x-status": "contract-only",
+        "x-status": "implemented",
         "x-owner": "identity",
         "x-increment": 1,
         "requestBody": {
@@ -1293,6 +1293,850 @@
           }
         }
       }
+    },
+    "/api/v1/profile/password": {
+      "put": {
+        "operationId": "identity_change_password",
+        "summary": "Cambio autenticado de contraseña",
+        "description": "Requiere contraseña actual y nueva contraseña (12-128 caracteres). Valida hash Argon2id, revoca todas las refresh sessions activas en PostgreSQL y registra en audit_logs.",
+        "security": [
+          {
+            "UserBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "11111111-1111-4111-8111-111111111111",
+            "description": "UUID de correlación."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "../schemas/common.schema.json#/$defs/PasswordChange"
+              },
+              "example": {
+                "current_password": "SINTETICO_ACTUAL_123",
+                "new_password": "SINTETICO_NUEVA_123"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Contraseña cambiada exitosamente.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Message"
+                },
+                "example": {
+                  "message": "Contraseña actualizada exitosamente."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitud inválida o política de contraseña no satisfecha.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "INVALID_REQUEST",
+                  "message": "La nueva contraseña no cumple con la política mínima.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Contraseña actual incorrecta o token inválido.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "INVALID_CREDENTIALS",
+                  "message": "Credenciales inválidas.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          }
+        },
+        "x-status": "implemented",
+        "x-owner": "identity",
+        "x-increment": 1,
+        "x-visibility": "user"
+      }
+    },
+    "/api/v1/auth/password-recovery/confirm": {
+      "post": {
+        "operationId": "identity_confirm_recovery",
+        "summary": "Confirmación de recuperación con token temporal",
+        "description": "Valida SHA-256(token) contra base de datos, vigencia (máx 30 min) y no reutilización. Actualiza hash con Argon2id, revoca todas las refresh sessions activas en PostgreSQL y registra en audit_logs.",
+        "security": [],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "11111111-1111-4111-8111-111111111111",
+            "description": "UUID de correlación."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "../schemas/common.schema.json#/$defs/RecoveryConfirm"
+              },
+              "example": {
+                "token": "tok_sintetico_recovery_12345678",
+                "new_password": "SINTETICO_RECOVER_123"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Contraseña restablecida exitosamente.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Message"
+                },
+                "example": {
+                  "message": "Contraseña restablecida exitosamente."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Token inválido, expirado o ya consumido.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "INVALID_TOKEN",
+                  "message": "El token de recuperación es inválido o ha expirado.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Demasiadas solicitudes.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "RATE_LIMITED",
+                  "message": "Demasiadas solicitudes.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          }
+        },
+        "x-status": "implemented",
+        "x-owner": "identity",
+        "x-increment": 1,
+        "x-visibility": "public"
+      }
+    },
+    "/api/v1/admin/users": {
+      "get": {
+        "operationId": "identity_admin_list_users",
+        "summary": "Listado administrativo de cuentas de usuario",
+        "description": "Solo rol ADMIN. Retorna página de usuarios con cursor y límite (1..100, default 20).",
+        "security": [
+          {
+            "UserBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "11111111-1111-4111-8111-111111111111",
+            "description": "UUID de correlación."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            },
+            "example": 20
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 2048
+            },
+            "example": "eyJjcmVhdGVkX2F0IjoiMjAyNi0wOS0yOFQxMjowMDowMFoiLCJpZCI6IjExMTExMTExLTExMTEtNDExMS04MTExLTExMTExMTExMTExMSJ9"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Página de usuarios.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/AdminUserPage"
+                },
+                "example": {
+                  "items": [
+                    {
+                      "id": "11111111-1111-4111-8111-111111111111",
+                      "email": "usuario@example.test",
+                      "display_name": "Usuario de prueba",
+                      "role": "USER",
+                      "status": "ACTIVE",
+                      "created_at": "2026-09-28T12:00:00Z"
+                    }
+                  ],
+                  "next_cursor": null
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Parámetros de paginación inválidos.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "INVALID_REQUEST",
+                  "message": "Parámetros de paginación inválidos.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado o token inválido.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "Identidad no válida o expirada.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permiso denegado; requiere rol ADMIN.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "Requiere rol de administrador.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          }
+        },
+        "x-status": "implemented",
+        "x-owner": "identity",
+        "x-increment": 1,
+        "x-visibility": "admin"
+      }
+    },
+    "/api/v1/admin/users/{id}/block": {
+      "patch": {
+        "operationId": "identity_admin_block_user",
+        "summary": "Bloqueo administrativo de cuenta",
+        "description": "Solo rol ADMIN. Actualiza status a BLOCKED, revoca inmediatamente todas las refresh sessions activas en PostgreSQL e inserta registro en audit_logs.",
+        "security": [
+          {
+            "UserBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "11111111-1111-4111-8111-111111111111",
+            "description": "UUID de correlación."
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "11111111-1111-4111-8111-111111111111"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cuenta bloqueada y sesiones revocadas.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/AdminUser"
+                },
+                "example": {
+                  "id": "11111111-1111-4111-8111-111111111111",
+                  "email": "usuario@example.test",
+                  "display_name": "Usuario Bloqueado",
+                  "role": "USER",
+                  "status": "BLOCKED",
+                  "created_at": "2026-09-28T12:00:00Z"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Identificador de usuario inválido.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "INVALID_REQUEST",
+                  "message": "Identificador inválido.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado o token inválido.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "Identidad no válida o expirada.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permiso denegado; requiere rol ADMIN.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "Requiere rol de administrador.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuario no encontrado.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "NOT_FOUND",
+                  "message": "Usuario no encontrado.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          }
+        },
+        "x-status": "implemented",
+        "x-owner": "identity",
+        "x-increment": 1,
+        "x-visibility": "admin"
+      }
+    },
+    "/api/v1/admin/users/{id}/activate": {
+      "patch": {
+        "operationId": "identity_admin_activate_user",
+        "summary": "Reactivación administrativa de cuenta",
+        "description": "Solo rol ADMIN. Actualiza status a ACTIVE e inserta registro en audit_logs.",
+        "security": [
+          {
+            "UserBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "11111111-1111-4111-8111-111111111111",
+            "description": "UUID de correlación."
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "11111111-1111-4111-8111-111111111111"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cuenta reactivada exitosamente.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/AdminUser"
+                },
+                "example": {
+                  "id": "11111111-1111-4111-8111-111111111111",
+                  "email": "usuario@example.test",
+                  "display_name": "Usuario Activo",
+                  "role": "USER",
+                  "status": "ACTIVE",
+                  "created_at": "2026-09-28T12:00:00Z"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Identificador de usuario inválido.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "INVALID_REQUEST",
+                  "message": "Identificador inválido.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado o token inválido.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "Identidad no válida o expirada.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permiso denegado; requiere rol ADMIN.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "Requiere rol de administrador.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuario no encontrado.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "NOT_FOUND",
+                  "message": "Usuario no encontrado.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          }
+        },
+        "x-status": "implemented",
+        "x-owner": "identity",
+        "x-increment": 1,
+        "x-visibility": "admin"
+      }
     }
   },
   "components": {
@@ -1301,7 +2145,7 @@
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT",
-        "description": "Firma, issuer, audience, expiry, revocación/estado de cuenta. Solo identidad de usuario."
+        "description": "Firma asimétrica Ed25519 (algoritmo EdDSA), issuer (agrodiagnostico-identity), audience (agrodiagnostico-api), expiry (15 min), sub, role, iat, jti. Solo identidad de usuario. Ver ADR-0004."
       },
       "ServiceBearer": {
         "type": "http",
@@ -1313,7 +2157,7 @@
         "type": "apiKey",
         "in": "cookie",
         "name": "__Secure-agro_refresh",
-        "description": "Cookie HttpOnly; Secure; SameSite=Lax; Path=/api/v1/auth; sin Domain. Rotación y revocación."
+        "description": "Cookie HttpOnly; Secure; SameSite=Lax; Path=/api/v1/auth; sin Domain. Almacenada como SHA-256 en PostgreSQL compartido. Rotación atómica con bloqueo pesimista y revocación familiar en detección de reuso."
       },
       "CsrfHeader": {
         "type": "apiKey",

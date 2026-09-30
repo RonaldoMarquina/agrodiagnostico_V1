@@ -12,7 +12,7 @@ Una cuenta autenticada es obligatoria para crear y leer diagnósticos. `USER` ge
 - El bloqueo de cuenta invalida o impide el uso posterior de sesiones según la política implementada, con prueba de regresión.
 - Evita mensajes de autenticación y recuperación que enumeren cuentas; mantén trazas operativas sin revelar credenciales.
 
-La selección de algoritmo de firma, expiraciones y mecanismos exactos se registra en un ADR y configuración segura antes del despliegue; no se fijan aquí valores sin validar.
+La selección de algoritmo de firma (Ed25519/EdDSA), expiraciones (access 15 min, refresh 7 días), persistencia compartida de RefreshSession en PostgreSQL y rotación atómica con detección de reuso se define normativamente en [ADR-0004](adr/0004-seguridad-identidad-y-autorizacion.md).
 
 ## Fotografías y objetos
 
