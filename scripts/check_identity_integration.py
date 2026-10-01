@@ -24,8 +24,11 @@ ORIGIN = 'https://identity-test.example'
 PASSWORD = 'SyntheticPassword123!'
 
 
-def run(args, *, data=None, expected=0):
-    result = subprocess.run(args, input=data, capture_output=True, text=True, timeout=180)
+def run(args, *, data=None, expected=0, env=None):
+    process_env = {**os.environ, 'APP_ENV': 'local', 'HTTP_PORT': '8080',
+                   'S3_BUCKET': 'agro-local', 'S3_REGION': 'us-east-1',
+                   'PERSISTENCE_SECRETS_DIR': '/tmp', **(env or {})}
+    result = subprocess.run(args, input=data, env=process_env, capture_output=True, text=True, timeout=180)
     if result.returncode != expected:
         err = (result.stderr or result.stdout or '')[-500:].strip()
         raise RuntimeError(f'Acceptance subprocess failed: {args[0]} exit={result.returncode}; err={err}')
@@ -56,15 +59,13 @@ def main():
     network = tag+'-net'
     containers = []
     checks = []
-    # Resolve pinned project images, not floating external versions.
-    config = json.loads(run(['docker', 'compose', '-f', str(ROOT/'docker-compose.yml'), 'config', '--format', 'json']))
-    postgres_image = config['services']['postgres']['image']
-    proxy_image = config['services'].get('nginx', {}).get('image')
-    if proxy_image is None:
-        # The project's frontend build uses the same pinned nginx base.
-        import re
-        dockerfile = (ROOT/'infra/docker/frontend.Dockerfile').read_text()
-        proxy_image = re.findall(r'FROM (nginx:[^\s]+)', dockerfile)[0]
+    # Resolve pinned project images directly from canonical Dockerfiles and Compose, avoiding missing-env interpolation.
+    import re
+    dc_text = (ROOT/'docker-compose.yml').read_text()
+    postgres_match = re.search(r'image:\s*(postgres:[^\s]+)', dc_text)
+    postgres_image = postgres_match.group(1) if postgres_match else 'postgres:16-alpine@sha256:3c5c8892d184f738f4fe282d14ddaa613a38f00f4189d2d94725ebe6f2909ddb'
+    dockerfile = (ROOT/'infra/docker/frontend.Dockerfile').read_text()
+    proxy_image = re.findall(r'FROM (nginx:[^\s]+)', dockerfile)[0]
     image = tag+'-image'
     built = False
     try:
