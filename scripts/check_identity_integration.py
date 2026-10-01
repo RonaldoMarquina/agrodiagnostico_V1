@@ -27,8 +27,8 @@ PASSWORD = 'SyntheticPassword123!'
 def run(args, *, data=None, expected=0):
     result = subprocess.run(args, input=data, capture_output=True, text=True, timeout=180)
     if result.returncode != expected:
-        # Commands can contain synthetic secrets, never print command/output on failure.
-        raise RuntimeError('Acceptance subprocess failed: '+args[0]+' exit='+str(result.returncode))
+        err = (result.stderr or result.stdout or '')[-500:].strip()
+        raise RuntimeError(f'Acceptance subprocess failed: {args[0]} exit={result.returncode}; err={err}')
     return result.stdout.strip()
 
 
@@ -132,6 +132,7 @@ def main():
             assert sql(f"SELECT legacy AND action IS NULL AND correlation_id IS NULL FROM audit_logs WHERE id='{old_id}'") == 't'
             migrate('upgrade', 'head')
             checks.append('migration 0002->0003 preserves historical audit and is repeatable')
+            print('PASS '+checks[-1], flush=True)
 
             ports = []
             for suffix in ['a','b','c']:
@@ -156,15 +157,17 @@ def main():
             run(['docker','run','-d','--name',proxy,'--network',network,'-p','127.0.0.1::8080',
                  '--mount',f'type=bind,src={directory}/nginx.conf,dst=/etc/nginx/conf.d/default.conf,readonly',proxy_image])
             proxy_port = int(run(['docker','port',proxy,'8080/tcp']).rsplit(':',1)[1])
-            for _ in range(40):
+            last_status = None
+            for _ in range(80):
                 try:
-                    if request(proxy_port,'/api/v1/profile')[0] == 401:
+                    last_status, _, _, _ = request(proxy_port,'/api/v1/profile')
+                    if last_status == 401:
                         break
-                except (OSError, urllib.error.URLError):
-                    pass
-                time.sleep(.25)
+                except (OSError, urllib.error.URLError) as exc:
+                    last_status = str(exc)
+                time.sleep(.5)
             else:
-                raise RuntimeError('Disposable proxy not ready')
+                raise RuntimeError(f'Disposable proxy not ready; last_status={last_status}')
 
             email = 'processes@example.com'
             registered = request(proxy_port,'/api/v1/auth/register',method='POST',payload={
@@ -192,6 +195,7 @@ def main():
             assert request(ports[2],'/api/v1/auth/logout',method='POST',headers=session_headers(second))[0] == 204
             assert refresh(ports[0],second)[0] == 401
             checks.append('login A / refresh B / logout C and revoked refresh rejected')
+            print('PASS '+checks[-1], flush=True)
 
             first = login()
             with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
@@ -200,6 +204,7 @@ def main():
             winner = next(result for result in results if result[0] == 200)
             assert refresh(ports[2],winner)[0] == 401
             checks.append('concurrent refresh: one winner, reuse revokes full family')
+            print('PASS '+checks[-1], flush=True)
 
             first = login()
             bad = session_headers(first); bad['X-CSRF-Token']='arbitrary'
@@ -208,6 +213,7 @@ def main():
             bad = session_headers(first); bad['Origin']='http://identity-test.example:4444'
             assert request(proxy_port,'/api/v1/auth/refresh',method='POST',headers=bad)[0] == 403
             checks.append('proxy rejects unbound CSRF and different scheme/port Origin')
+            print('PASS '+checks[-1], flush=True)
 
             password2 = 'SyntheticPassword456!'
             assert request(ports[1],'/api/v1/profile/password',method='PUT',
@@ -226,6 +232,7 @@ def main():
             assert result[0] == 200 and refresh(ports[2],first)[0] == 401
             assert request(ports[2],'/api/v1/auth/password-recovery/confirm',method='POST',payload={'token':recovery,'new_password':password2})[0] == 400
             checks.append('password change/reset revoke sessions across processes; reset token single-use')
+            print('PASS '+checks[-1], flush=True)
 
             # Provision via actual CLI in the disposable DB, passing secret only on stdin.
             run(['docker','exec','-i',tag+'-a','python','-c',
@@ -239,6 +246,7 @@ def main():
             assert result[0]==200 and refresh(ports[2],first)[0]==401
             assert request(ports[0],'/api/v1/auth/login',method='POST',headers={'Origin':ORIGIN},payload={'email':email,'password':PASSWORD})[0]==401
             checks.append('ADMIN block revokes sessions; blocked login 401; proxy RBAC')
+            print('PASS '+checks[-1], flush=True)
 
             assert sql("SELECT count(*) FROM audit_logs WHERE NOT legacy AND (action IS NULL OR correlation_id IS NULL)")=='0'
             sql("UPDATE audit_logs SET event_type='CHANGED'", expected=3)
@@ -247,9 +255,12 @@ def main():
             actions=set(sql('SELECT DISTINCT action FROM audit_logs WHERE NOT legacy').splitlines())
             assert {'USER_REGISTERED','LOGIN_SUCCESS','LOGIN_FAILED','LOGOUT','PASSWORD_CHANGED','PASSWORD_RECOVERY_CONFIRMED','USER_BLOCKED','INITIAL_ADMIN_PROVISIONED','REFRESH_TOKEN_REUSE_DETECTED'} <= actions
             checks.append('audit normative context/events and PostgreSQL append-only enforced')
-            for check in checks:
-                print('PASS '+check,flush=True)
+            print('PASS '+checks[-1], flush=True)
             print(f'PASS identity integration: {len(checks)} checks, 3 independent processes, disposable PostgreSQL/Nginx',flush=True)
+    except Exception:
+        import traceback
+        traceback.print_exc()
+        raise
     finally:
         for name in reversed(containers):
             subprocess.run(['docker','rm','-fv',name],capture_output=True)

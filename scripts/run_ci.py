@@ -90,6 +90,7 @@ def main():
             (directory/(step['id']+'.log')).write_text(redact(output))
             report['steps'].append({'id': step['id'], 'exit_code': code, 'duration_seconds': round(time.monotonic()-started, 3)})
             if code:
+                print(redact(output[-5000:]), flush=True)
                 print('FAIL '+step['id']+' exit='+str(code)+'; report='+str(directory), flush=True)
                 break
         if len(report['steps']) == len(plan['steps']) and all(s['exit_code'] == 0 for s in report['steps']):
