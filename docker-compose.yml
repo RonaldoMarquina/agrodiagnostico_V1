@@ -261,10 +261,17 @@ services:
     user: ${LOCAL_UID:-1000}:${LOCAL_GID:-1000}
     environment:
       APP_ENV: ${APP_ENV:?APP_ENV required; copy .env.example}
+      JWT_PRIVATE_KEY_PATH: /run/secrets/jwt_private_key.pem
+      JWT_PUBLIC_KEY_PATH: /run/secrets/jwt_public_key.pem
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://127.0.0.1:8080,http://localhost:8080}
       DB_HOST: postgres
       DB_PASSWORD_FILE: /run/secrets/identity_password
     secrets:
     - identity_password
+    - source: jwt_private_key
+      target: jwt_private_key.pem
+    - source: jwt_public_key
+      target: jwt_public_key.pem
     networks:
     - persistence
     - application
@@ -451,3 +458,8 @@ secrets:
     file: ${PERSISTENCE_SECRETS_DIR:-./.local/persistence}/rabbit_password
   rabbit_cookie:
     file: ${PERSISTENCE_SECRETS_DIR:-./.local/persistence}/rabbit_cookie
+
+  jwt_private_key:
+    file: ${PERSISTENCE_SECRETS_DIR:-./.local/persistence}/jwt_private_key.pem
+  jwt_public_key:
+    file: ${PERSISTENCE_SECRETS_DIR:-./.local/persistence}/jwt_public_key.pem

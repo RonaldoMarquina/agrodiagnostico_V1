@@ -48,16 +48,17 @@ async def correlation_and_security_headers(request: Request, call_next):
             cid = str(uuid.UUID(cid_header))
         except (ValueError, TypeError):
             # If invalid UUID format in header, return 400 immediately per OpenAPI contract
+            cid = str(uuid.uuid4())
             return JSONResponse(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 content={
                     "code": "INVALID_CORRELATION_ID",
                     "message": "X-Correlation-ID must be a valid UUID",
-                    "correlation_id": str(uuid.uuid4()),
+                    "correlation_id": cid,
                 },
                 headers={
                     "Cache-Control": "private, no-store",
-                    "X-Correlation-ID": str(uuid.uuid4()),
+                    "X-Correlation-ID": cid,
                 },
             )
     if not cid:
@@ -113,7 +114,7 @@ async def http_exception_handler(request: Request, exc: HTTPException):
             "message": str(exc.detail),
             "correlation_id": cid,
         }
-    return JSONResponse(
+    response = JSONResponse(
         status_code=exc.status_code,
         content=body,
         headers={
@@ -121,6 +122,10 @@ async def http_exception_handler(request: Request, exc: HTTPException):
             "X-Correlation-ID": cid,
         },
     )
+    if exc.status_code == 401 and request.url.path in {"/api/v1/auth/refresh", "/api/v1/auth/logout"}:
+        from app.api.auth import _clear_auth_cookies
+        _clear_auth_cookies(response)
+    return response
 
 
 # Health checks (Incremento 0)

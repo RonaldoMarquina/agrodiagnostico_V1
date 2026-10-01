@@ -1,4 +1,5 @@
 """User profile management endpoints: get, patch, password change."""
+from app.infrastructure.audit import audit_entry
 from datetime import datetime, timezone
 from uuid import UUID
 
@@ -12,7 +13,7 @@ from app.api.schemas import (
     ProfilePatchRequest,
     ProfileResponse,
 )
-from app.domain.models import AuditLog, RefreshSession, User
+from app.domain.models import RefreshSession, User
 from app.infrastructure.security import hash_password, verify_password
 from app.persistence import get_db
 
@@ -112,9 +113,9 @@ def change_password(
     ).update({RefreshSession.revoked_at: now}, synchronize_session=False)
 
     # 3. Log audit event
-    db.add(AuditLog(
+    db.add(audit_entry(correlation_id=correlation_id,
         user_id=current_user.id,
-        event_type="PASSWORD_CHANGE",
+        event_type="PASSWORD_CHANGED",
     ))
     db.commit()
 

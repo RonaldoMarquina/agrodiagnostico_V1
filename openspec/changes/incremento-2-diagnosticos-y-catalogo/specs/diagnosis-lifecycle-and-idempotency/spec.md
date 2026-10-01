@@ -2,74 +2,104 @@
 
 ## Purpose
 
-Define el ciclo de vida, estados y transiciones de los diagnósticos, el mecanismo atómico de idempotencia con retención de 24 horas y huella criptográfica SHA-256, el borrado lógico idempotente y la consulta paginada keyset con aislamiento estricto de recursos.
+Define creación idempotente, cancelación, borrado lógico, historial privado y supervisión administrativa de diagnósticos, con autorización y comportamiento verificable sin inferencia disponible.
 
 ## ADDED Requirements
 
+### Requirement: Autenticación y respuestas privadas de Diagnosis
+Diagnosis SHALL aplicar la verificación local Ed25519 y roles de la capacidad vigente de autorización, sin consultar datos de Identity. Toda ruta de negocio SHALL exigir Bearer válido y devolver respuestas con correlación y Cache-Control private, no-store; los errores SHALL usar el sobre común contractual. ADMIN SHALL respetar propiedad en rutas de usuario.
+
+#### Scenario: Token inválido o incompleto
+- **WHEN** el token está ausente, expirado, alterado o tiene algoritmo, claims, issuer o audience inválidos
+- **THEN** Diagnosis rechaza con 401 sin ejecutar la operación
+
+#### Scenario: Correlación inválida
+- **WHEN** la solicitud contiene X-Correlation-ID que no es UUID
+- **THEN** responde 400 contractual sin exponer errores internos
+
 ### Requirement: Creación idempotente de diagnósticos
-El sistema SHALL procesar la creación de diagnósticos mediante `POST /api/v1/diagnoses` soportando el encabezado obligatorio `Idempotency-Key` (cadena ASCII imprimible de 1 a 128 caracteres). El sistema SHALL aislar las claves en un namespace compuesto por `(owner_id, "diagnosis_create", idempotency_key)`. Para cada solicitud, el sistema SHALL calcular la huella digital criptográfica `SHA-256(bytes_de_imagen)` excluyendo metadatos de transporte. Si una solicitud presenta una clave ya registrada dentro de la ventana de retención no deslizante de 24 horas (86,400 segundos) con la misma huella SHA-256, el sistema SHALL responder con código 202 devolviendo el identificador y fecha de creación originales junto al estado actual. Si se presenta la misma clave con una imagen distinta (huella discrepante), el sistema SHALL responder con código 409 `IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD`.
+POST /api/v1/diagnoses SHALL aceptar Idempotency-Key obligatorio ASCII imprimible de 1..128 caracteres, namespace propietario/diagnosis_create/clave y fingerprint SHA-256 de bytes exactos de imagen. Retención SHALL ser 86400 segundos desde primera aceptación, no deslizante. La aceptación SHALL confirmar diagnosis e idempotencia en una transacción antes de 202. No SHALL producir inferencia ni eventos en este incremento.
 
-#### Scenario: Creación inicial exitosa con Idempotency-Key
-- **WHEN** un usuario autenticado envía una imagen válida con un encabezado `Idempotency-Key` nuevo
-- **THEN** el sistema persiste el diagnóstico en estado `PENDIENTE`, registra la clave con su huella SHA-256 y responde 202 con el identificador UUID y fecha de creación
+#### Scenario: Primera aceptación
+- **WHEN** el propietario envía imagen válida y clave nueva
+- **THEN** recibe 202 con UUID, created_at y estado PENDIENTE tras persistencia exitosa
 
-#### Scenario: Reintento idéntico dentro de retención devuelve diagnóstico existente
-- **WHEN** un cliente reenvía la misma solicitud con el mismo `Idempotency-Key` y exactamente la misma imagen dentro de las 24 horas posteriores
-- **THEN** el sistema no duplica el diagnóstico ni sube una nueva imagen, respondiendo 202 con el `id` original y el estado actual
+#### Scenario: Replay idéntico
+- **WHEN** reenvía misma clave e imagen dentro de retención
+- **THEN** recibe 202 con ID/created_at originales y estado actual sin nueva fila ni subida
 
-#### Scenario: Discrepancia de contenido bajo la misma clave produce conflicto 409
-- **WHEN** un cliente envía una clave de idempotencia existente pero adjuntando una fotografía con bytes diferentes
-- **THEN** el sistema rechaza la solicitud con código 409 `IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD` sin alterar el diagnóstico previo
+#### Scenario: Conflicto de contenido
+- **WHEN** reutiliza clave vigente con bytes distintos para un diagnóstico no borrado
+- **THEN** recibe 409 IDEMPOTENCY_CONFLICT sin alterar el previo
 
-#### Scenario: Clave reutilizada sobre recurso borrado durante retención
-- **WHEN** un cliente reutiliza una clave de idempotencia cuyo diagnóstico asociado fue marcado con borrado lógico
-- **THEN** el sistema responde con código 409 `IDEMPOTENCY_RESOURCE_DELETED` sin resucitar el registro
+#### Scenario: Carga concurrente
+- **WHEN** otra solicitud mantiene en curso la misma clave del propietario
+- **THEN** la concurrente recibe 409 IDEMPOTENCY_IN_PROGRESS reintentable y no duplica diagnóstico ni objeto aceptado
 
-#### Scenario: Namespace independiente por usuario
-- **WHEN** dos usuarios autenticados distintos A y B envían solicitudes con el mismo valor textual en `Idempotency-Key`
-- **THEN** el sistema procesa ambas solicitudes como diagnósticos completamente independientes sin conflicto entre usuarios
+#### Scenario: Separación por usuario
+- **WHEN** A y B usan el mismo texto de clave
+- **THEN** sus solicitudes son independientes sin compartir resultados
 
-### Requirement: Ciclo de vida y cancelación de diagnósticos
-El sistema SHALL gestionar las transiciones de estado de los diagnósticos respetando las invariantes: `PENDIENTE → PROCESANDO → COMPLETADO | NO_CONCLUYENTE | FALLIDO` y `PENDIENTE → CANCELADO`. El sistema SHALL permitir al propietario autenticado cancelar un diagnóstico mediante `POST /api/v1/diagnoses/{id}/cancel`. La cancelación SHALL ser exitosa (código 200 con estado `CANCELADO`) únicamente si el diagnóstico se encuentra en estado `PENDIENTE`. Si el diagnóstico ya fue reclamado para procesamiento o alcanzó un estado terminal, el sistema SHALL rechazar la cancelación con código 409 `DIAGNOSIS_NOT_CANCELABLE`.
+#### Scenario: Reutilización en frontera de expiración
+- **WHEN** now es igual o posterior a expires_at y se envía una imagen válida con esa clave
+- **THEN** puede aceptarse un nuevo ID y retención, conservando el diagnóstico anterior y con una única nueva aceptación ante concurrencia
 
-#### Scenario: Cancelación exitosa de diagnóstico en estado PENDIENTE
-- **WHEN** el usuario propietario envía `POST /api/v1/diagnoses/{id}/cancel` para un diagnóstico en estado `PENDIENTE`
-- **THEN** el sistema actualiza atómicamente el estado a `CANCELADO` y responde con código 200 y el objeto actualizado
+#### Scenario: Replay de recurso eliminado
+- **WHEN** se reutiliza durante retención la clave de un diagnóstico con tombstone
+- **THEN** recibe 409 IDEMPOTENCY_RESOURCE_DELETED, sin resurrección, incluso si el contenido difiere
 
-#### Scenario: Rechazo de cancelación si el diagnóstico no está en PENDIENTE
-- **WHEN** un usuario intenta cancelar un diagnóstico que ya se encuentra en estado `PROCESANDO`, `COMPLETADO`, `NO_CONCLUYENTE` o `FALLIDO`
-- **THEN** el sistema rechaza la solicitud con código 409 `DIAGNOSIS_NOT_CANCELABLE`
+### Requirement: Cancelación atómica y terminales irreversibles
+El sistema SHALL conservar PENDIENTE -> PROCESANDO -> COMPLETADO | NO_CONCLUYENTE | FALLIDO y PENDIENTE -> CANCELADO como invariantes. En este incremento solo SHALL implementar creación y cancelación; análisis/reclamo corresponden al siguiente. POST /api/v1/diagnoses/{id}/cancel SHALL cambiar atómicamente PENDIENTE no borrado a CANCELADO y responder 200. Cualquier otro estado SHALL devolver 409 DIAGNOSIS_NOT_CANCELABLE. No SHALL emitir DiagnosisFinished por cancelación.
 
-#### Scenario: Intento de cancelación por usuario ajeno devuelve 404 genérico
-- **WHEN** un usuario A intenta cancelar un diagnóstico perteneciente al usuario B
-- **THEN** el sistema responde con código 404 genérico `RESOURCE_NOT_FOUND`
+#### Scenario: Carrera de cancelaciones
+- **WHEN** dos solicitudes cancelan simultáneamente el mismo PENDIENTE propio
+- **THEN** solo una cambia el estado y devuelve 200; la otra devuelve 409
 
-### Requirement: Borrado lógico y consulta de detalle con aislamiento estricto
-El sistema SHALL permitir al propietario marcar un diagnóstico como eliminado mediante `DELETE /api/v1/diagnoses/{id}`, ejecutando un borrado lógico (`deleted_at = NOW()`) y respondiendo con código 204 sin contenido de manera idempotente. El sistema SHALL proporcionar el endpoint `GET /api/v1/diagnoses/{id}` para consultar el estado y metadatos de un diagnóstico propio. Ante solicitudes de consulta o borrado dirigidas a diagnósticos inexistentes, con borrado lógico o pertenecientes a otros usuarios, el sistema SHALL responder con código 404 genérico `RESOURCE_NOT_FOUND`.
+#### Scenario: Estado no cancelable
+- **WHEN** se cancela PROCESANDO, COMPLETADO, NO_CONCLUYENTE, FALLIDO o CANCELADO
+- **THEN** devuelve 409 y conserva el estado
 
-#### Scenario: Borrado lógico propio devuelve 204 idempotente
-- **WHEN** un usuario autenticado envía `DELETE /api/v1/diagnoses/{id}` para un diagnóstico que le pertenece
-- **THEN** el sistema marca `deleted_at = NOW()` y responde con código 204; solicitudes DELETE subsecuentes sobre el mismo ID responden igualmente 204
+#### Scenario: Cancelación no autorizada o borrada
+- **WHEN** el ID es ajeno, inexistente o borrado
+- **THEN** devuelve 404 RESOURCE_NOT_FOUND genérico
 
-#### Scenario: Consulta de detalle por el propietario devuelve estado y metadatos
-- **WHEN** el propietario realiza `GET /api/v1/diagnoses/{id}` para un diagnóstico activo
-- **THEN** el sistema retorna código 200 con el identificador, estado, fechas y metadatos del diagnóstico
+### Requirement: Tombstone idempotente y detalle privado
+DELETE /api/v1/diagnoses/{id} SHALL conservar tombstone de propiedad y devolver 204 tanto en primer borrado como en repeticiones propias. Ajeno o nunca existente SHALL devolver 404. Borrado no SHALL cancelar, alterar estado terminal ni borrar físicamente la foto. GET detalle SHALL respetar variantes contractuales; detalle, imagen, cancelación y feedback SHALL ocultar borrados con 404.
 
-#### Scenario: Consulta de detalle por usuario ajeno devuelve 404 genérico
-- **WHEN** un usuario A consulta un diagnóstico del usuario B o un identificador borrado lógicamente
-- **THEN** el sistema responde con código 404 genérico `RESOURCE_NOT_FOUND`
+#### Scenario: Borrado repetido propio
+- **WHEN** el propietario repite DELETE sobre su tombstone
+- **THEN** obtiene 204 sin alterar estado ni borrar objeto físico
 
-### Requirement: Consulta paginada del historial de diagnósticos
-El sistema SHALL proporcionar al usuario autenticado el endpoint `GET /api/v1/diagnoses` para listar su historial de diagnósticos propios. La consulta SHALL excluir de forma obligatoria los registros con borrado lógico (`deleted_at IS NOT NULL`). La paginación SHALL utilizar estrategia keyset ordenada por `created_at DESC, id DESC`, admitiendo un parámetro `limit` (entero entre 1 y 100, valor por defecto 20) y un parámetro `cursor` opaco codificado. El sistema SHALL devolver la lista de diagnósticos (`items`) y un indicador `next_cursor` (o `null` si no hay más elementos).
+#### Scenario: Detalle y aislamiento
+- **WHEN** el propietario consulta un diagnóstico no borrado
+- **THEN** recibe 200 con estado/metadatos y resultado únicamente cuando corresponda al contrato
 
-#### Scenario: Consulta de primera página de historial propio
-- **WHEN** un usuario autenticado solicita `GET /api/v1/diagnoses?limit=10`
-- **THEN** el sistema responde 200 con hasta 10 diagnósticos ordenados cronológicamente descendente y un cursor opaco para continuar la paginación
+#### Scenario: Recurso ajeno o eliminado
+- **WHEN** se consulta un ID ajeno, inexistente o borrado, incluso con ADMIN en ruta de usuario
+- **THEN** obtiene el mismo 404 genérico sin revelar su existencia
 
-#### Scenario: Navegación a siguiente página con cursor opaco
-- **WHEN** el cliente solicita `GET /api/v1/diagnoses?cursor=<next_cursor>&limit=10`
-- **THEN** el sistema valida el cursor y retorna los diagnósticos subsiguientes en el orden estipulado
+### Requirement: Historial keyset y cursores ligados a solicitante
+GET /api/v1/diagnoses SHALL listar solo propios no borrados, orden created_at DESC, id DESC, limit 1..100/default 20 y respuesta items/next_cursor. El cursor SHALL estar protegido contra alteración y ligado al principal y propósito de endpoint. Cursor inválido/ajeno o límite inválido SHALL devolver 400 INVALID_PAGINATION.
 
-#### Scenario: Validación de límites de paginación
-- **WHEN** un cliente envía `limit=0`, `limit=150` o un cursor malformado
-- **THEN** el sistema rechaza la solicitud con código 400 `INVALID_PAGINATION`
+#### Scenario: Paginación estable
+- **WHEN** el usuario recorre páginas con fechas empatadas e inserciones posteriores
+- **THEN** recibe orden estable sin duplicados y next_cursor null al terminar
+
+#### Scenario: Ancla borrada
+- **WHEN** se borra el diagnóstico que originó un cursor válido antes de pedir la página siguiente
+- **THEN** el cursor sigue permitiendo continuar sin exponer el diagnóstico borrado
+
+#### Scenario: Cursor no autorizado o manipulado
+- **WHEN** se usa un cursor alterado, de otro principal/endpoint, malformado o firmado con clave retirada
+- **THEN** recibe 400 INVALID_PAGINATION genérico sin revelar propietario
+
+### Requirement: Supervisión administrativa limitada y auditada
+GET /api/v1/admin/diagnoses SHALL exigir ADMIN, listar diagnósticos no borrados con id, owner_id, status, created_at, updated_at y reason_code cuando corresponda, y aplicar paginación/cursores anteriores con propósito independiente. No SHALL incluir imágenes, object_key, feedback ni datos personales obtenidos de Identity. Toda consulta exitosa SHALL auditar actor, acción, correlación y UTC sin copiar resultados; no concede acceso adicional a imágenes ajenas.
+
+#### Scenario: Supervisión autorizada
+- **WHEN** ADMIN consulta el listado
+- **THEN** obtiene 200 con metadatos paginados y queda una auditoría propia de Diagnosis
+
+#### Scenario: Supervisión denegada
+- **WHEN** USER o una solicitud anónima consulta supervisión
+- **THEN** obtiene respectivamente 403 o 401 sin datos de otros usuarios

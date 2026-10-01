@@ -5,7 +5,7 @@ Estado actual: estructura y auditoría del equipo disponibles; grupos 1–7 del 
 | Incremento | Resultado previsto | Estado |
 | --- | --- | --- |
 | 0 | Entorno Compose, contratos HTTP/eventos, migraciones base, CI e inventario de datos | Verificado: grupos 1–7 terminados; 8 operaciones de salud implementadas; 19 contract-only |
-| 1 | Registro, sesiones, roles, perfil, cambio y recuperación de contraseña, autorización | Verificado: grupos 1–7 terminados; 12 operaciones de identidad implementadas; Ed25519 asimétrico, PostgreSQL compartido, rotación atómica y auditoría inmutable |
+| 1 | Registro, sesiones, roles, perfil, cambio y recuperación de contraseña, autorización | Implementado y revisado mediante correctivo posterior; 12 operaciones de identidad. Véase evidencia INCREMENTO-1-CORRECCION |
 | 2 | Imágenes privadas, validación y formatos, diagnósticos, catálogo, historial, feedback | Pendiente |
 | 3 | RabbitMQ, outbox/inbox, lease, worker provisional e idempotencia | Pendiente; resultados simulados, no diagnósticos reales |
 | 4 | Dataset autorizado, cultivo automático, entrenamiento, evaluación y modelo validado | Pendiente; siete clases candidatas |
@@ -18,3 +18,6 @@ La [fuente V1](reference/Definicion_Base_AgroDiagnostico_V1_Limpia.docx) se inte
 Aceptación integrada local del grupo 7: 7.1–7.4 verificadas, incluida CI remota. [Evidencia](evidence/INCREMENTO-0-GRUPO-7.md). Los cinco deltas están sincronizados en `openspec/specs/` y el cambio está archivado.
 
 Estado final del Incremento 1: Grupos 1–7 concluidos y verificados (38/38 pruebas de identidad, contratos OpenAPI y pruebas multi-instancia contra PostgreSQL). [Evidencia](evidence/INCREMENTO-1-AUDIT.md). Las 12 operaciones de negocio del servicio identity han sido implementadas; los tres deltas están sincronizados en `openspec/specs/` y el cambio está archivado en [tasks.md](../openspec/changes/archive/2026-09-30-incremento-1-identidad-y-autorizacion/tasks.md). Los incrementos 2–5 permanecen pendientes.
+
+
+El cierre original del Incremento 1 fue rectificado tras revisión. [Corrección y límites verificados](evidence/INCREMENTO-1-CORRECCION.md): configuración Ed25519, Origin/CSRF, respuestas, correlación, auditoría y aceptación de procesos independientes. El archivo original se conserva como histórico. Incremento 2 continúa pendiente y separado.

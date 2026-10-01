@@ -2,7 +2,8 @@
 import os
 import uuid
 from typing import Generator, List, Optional
-from urllib.parse import urlparse
+import hmac
+from app.infrastructure.security import csrf_for_refresh
 from fastapi import Cookie, Depends, Header, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
@@ -37,19 +38,9 @@ def get_allowed_origins() -> set[str]:
     return DEFAULT_ALLOWED_ORIGINS
 
 
-def get_correlation_id(
-    x_correlation_id: Optional[str] = Header(None, alias="X-Correlation-ID")
-) -> uuid.UUID:
-    """Validate incoming X-Correlation-ID or generate a new UUIDv4."""
-    if not x_correlation_id:
-        return uuid.uuid4()
-    try:
-        return uuid.UUID(x_correlation_id)
-    except (ValueError, TypeError):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail={"code": "INVALID_CORRELATION_ID", "message": "X-Correlation-ID must be a valid UUID"},
-        )
+def get_correlation_id(request: Request) -> uuid.UUID:
+    """The middleware is the single authority for request correlation."""
+    return uuid.UUID(request.state.correlation_id)
 
 
 def validate_origin(request: Request) -> str:
@@ -61,17 +52,12 @@ def validate_origin(request: Request) -> str:
             detail={"code": "MISSING_ORIGIN", "message": "Origin header is required"},
         )
     allowed = get_allowed_origins()
-    # Normalize origin without trailing slash
-    origin_clean = origin.rstrip("/")
-    if origin_clean not in allowed:
-        # Check if hostname matches allowed origins without port or scheme
-        parsed = urlparse(origin_clean)
-        if not any(parsed.hostname == urlparse(a).hostname for a in allowed):
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail={"code": "FORBIDDEN_ORIGIN", "message": "Origin not allowed"},
-            )
-    return origin_clean
+    if origin not in allowed:
+        raise HTTPException(
+            status_code=403,
+            detail={"code": "FORBIDDEN_ORIGIN", "message": "Origin not allowed"},
+        )
+    return origin
 
 
 def validate_csrf(
@@ -80,7 +66,13 @@ def validate_csrf(
     csrf_token_cookie: Optional[str] = Cookie(None, alias="csrf_token"),
 ) -> str:
     """Verify that X-CSRF-Token matches the expected csrf_token cookie or session value."""
-    if not x_csrf_token or not csrf_token_cookie or x_csrf_token != csrf_token_cookie:
+    refresh = request.cookies.get("__Secure-agro_refresh")
+    if not refresh:
+        raise HTTPException(status_code=401, detail={"code": "UNAUTHORIZED", "message": "Sesión requerida."})
+    expected = csrf_for_refresh(refresh)
+    if (not x_csrf_token or not csrf_token_cookie
+            or not hmac.compare_digest(x_csrf_token.encode(), csrf_token_cookie.encode())
+            or not hmac.compare_digest(x_csrf_token.encode(), expected.encode())):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail={"code": "CSRF_TOKEN_MISMATCH", "message": "CSRF token validation failed"},

@@ -186,7 +186,7 @@ class TestAdminApi(unittest.TestCase):
 
                 audit = db.query(AuditLog).filter(
                     AuditLog.user_id == sa.id,
-                    AuditLog.event_type == "INITIAL_ADMIN_CREATED"
+                    AuditLog.event_type == "INITIAL_ADMIN_PROVISIONED"
                 ).first()
                 self.assertIsNotNone(audit)
 

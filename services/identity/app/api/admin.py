@@ -1,4 +1,5 @@
 """Administrative account management endpoints: list users, block, activate."""
+from app.infrastructure.audit import audit_entry
 import base64
 from datetime import datetime, timezone
 from typing import Optional
@@ -10,7 +11,7 @@ from sqlalchemy.orm import Session
 
 from app.api.deps import get_correlation_id, require_admin
 from app.api.schemas import AdminUserPageResponse, AdminUserResponse
-from app.domain.models import AuditLog, RefreshSession, User
+from app.domain.models import RefreshSession, User
 from app.persistence import get_db
 
 router = APIRouter(prefix="/api/v1/admin", tags=["admin"])
@@ -111,9 +112,9 @@ def block_user(
     ).update({RefreshSession.revoked_at: now}, synchronize_session=False)
 
     # Insert audit log
-    db.add(AuditLog(
+    db.add(audit_entry(correlation_id=correlation_id,
         user_id=admin_user.id,
-        event_type="USER_BLOCKED",
+        event_type="USER_BLOCKED", target_id=target.id,
         details={"target_user_id": str(target.id), "target_email": target.email},
     ))
     db.commit()
@@ -157,9 +158,9 @@ def activate_user(
     target.updated_at = now
 
     # Insert audit log
-    db.add(AuditLog(
+    db.add(audit_entry(correlation_id=correlation_id,
         user_id=admin_user.id,
-        event_type="USER_ACTIVATED",
+        event_type="USER_ACTIVATED", target_id=target.id,
         details={"target_user_id": str(target.id), "target_email": target.email},
     ))
     db.commit()

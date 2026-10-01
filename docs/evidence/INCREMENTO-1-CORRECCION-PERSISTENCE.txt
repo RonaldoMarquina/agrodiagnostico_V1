@@ -1,0 +1,23 @@
+Building locked migration images...
+Clean bootstrap and second initialization PASS
+{
+  "checks": [
+    "identity: upgrade/current/repeat/downgrade/upgrade/restricted-role PASS",
+    "identity: bad-password/missing-head/wrong-head/failed-migration/no-secret PASS",
+    "diagnosis: upgrade/current/repeat/downgrade/upgrade/restricted-role PASS",
+    "diagnosis: bad-password/missing-head/wrong-head/failed-migration/no-secret PASS",
+    "ai_inference: upgrade/current/repeat/downgrade/upgrade/restricted-role PASS",
+    "ai_inference: bad-password/missing-head/wrong-head/failed-migration/no-secret PASS",
+    "notification: upgrade/current/repeat/downgrade/upgrade/restricted-role PASS",
+    "notification: bad-password/missing-head/wrong-head/failed-migration/no-secret PASS"
+  ],
+  "own_connections": 4,
+  "cross_connections_denied": 12
+}
+
+One-shot dependency chain PASS
+Persisted heads verified before reapplying migrations PASS
+Stop/recreate without volume deletion PASS
+Failed one-shot blocks schema-check; corrected rerun PASS
+No credentials in captured commands or container logs PASS
+PASS project=agro-mig-test-5b47e4dd79f7 duration_seconds=92.832

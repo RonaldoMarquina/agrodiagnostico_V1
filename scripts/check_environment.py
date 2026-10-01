@@ -85,7 +85,7 @@ def main():
             assert assets
             for asset in assets:
                 assert urllib.request.urlopen(f'http://127.0.0.1:{port}'+asset,timeout=5).status==200
-            for route in ['/internal/diagnoses/x/claim','/health/ready','/ai','/api/v1/diagnoses','/api/v1/auth/login']:
+            for route in ['/internal/diagnoses/x/claim','/health/ready','/ai','/api/v1/diagnoses']:
                 try:urllib.request.urlopen(f'http://127.0.0.1:{port}'+route,timeout=5)
                 except urllib.error.HTTPError as exc:
                     assert exc.code==404
@@ -93,6 +93,10 @@ def main():
                         assert exc.headers['Cache-Control']=='private, no-store'
                         data=json.loads(exc.read());uuid.UUID(data['correlation_id'])
                 else:raise AssertionError('Unexpected published route '+route)
+            try:
+                urllib.request.urlopen(f'http://127.0.0.1:{port}/api/v1/auth/login',timeout=5)
+            except urllib.error.HTTPError as exc:
+                assert exc.code==405, f'Expected 405 for GET /api/v1/auth/login, got {exc.code}'
             print('Loopback-only proxy, static page and rejected routes PASS',flush=True)
             for svc in SERVICES:
                 text=run(base+['run','--rm','--no-deps','-e','APP_ENV=',svc],expected=1)

@@ -1,7 +1,7 @@
-"""Multi-instance and concurrency tests on shared database storage.
+"""Logical-client regression tests in disposable in-memory SQLite.
 
-Simulates multiple independent service instances (identity-1, identity-2, identity-3)
-behind a load balancer sharing PostgreSQL/shared persistence with NO shared in-memory state.
+These clients share a Python app. Real process/DB/proxy acceptance is in
+scripts/check_identity_integration.py; this suite never connects to DB_HOST.
 """
 import concurrent.futures
 import threading
@@ -27,34 +27,24 @@ class TestMultiInstance(unittest.TestCase):
         cls.priv_pem, cls.pub_pem = generate_ed25519_keypair()
 
     def setUp(self):
-        import os
-        self.is_postgres = bool(os.environ.get("DB_HOST"))
-        if self.is_postgres:
-            from app.persistence import get_engine, get_sessionmaker
-            self.engine = get_engine()
-            self.TestingSessionLocal = get_sessionmaker()
-            app.dependency_overrides.clear()
-            # Clean tables
-            with self.engine.connect() as conn:
-                conn.execute(Base.metadata.tables["users"].delete())
-                conn.commit()
-        else:
-            self.engine = create_engine(
-                "sqlite:///:memory:",
-                connect_args={"check_same_thread": False},
-                poolclass=StaticPool,
-            )
-            Base.metadata.create_all(self.engine)
-            self.TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
+        self.is_postgres = False
+        self.engine = create_engine(
+            "sqlite:///:memory:",
+            connect_args={"check_same_thread": False},
+            poolclass=StaticPool,
+        )
+        Base.metadata.create_all(self.engine)
+        self.TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
 
-            def override_get_db():
-                db = self.TestingSessionLocal()
-                try:
-                    yield db
-                finally:
-                    db.close()
+        def override_get_db():
+            db = self.TestingSessionLocal()
+            try:
+                yield db
+            finally:
+                db.close()
 
-            app.dependency_overrides[get_db] = override_get_db
+        app.dependency_overrides[get_db] = override_get_db
+
 
         # Shared TokenManager (cryptographically compatible configuration)
         self.shared_token_manager = TokenManager(
@@ -259,7 +249,7 @@ class TestMultiInstance(unittest.TestCase):
 
         # Audit log verifies reuse detection
         with self.TestingSessionLocal() as db:
-            audit = db.query(AuditLog).filter(AuditLog.event_type == "REFRESH_REUSE_DETECTED").first()
+            audit = db.query(AuditLog).filter(AuditLog.event_type == "REFRESH_TOKEN_REUSE_DETECTED").first()
             self.assertIsNotNone(audit)
 
     def test_password_change_revokes_sessions_across_instances(self):

@@ -1,6 +1,7 @@
 """Lightweight ASGI test client without external dependencies."""
 import asyncio
 import json
+from http.cookies import SimpleCookie
 from urllib.parse import urlencode
 
 
@@ -99,10 +100,9 @@ class TestClient:
                     key = k.decode("latin1")
                     val = v.decode("latin1")
                     if key.lower() == "set-cookie":
-                        cookie_part = val.split(";")[0]
-                        if "=" in cookie_part:
-                            cname, cval = cookie_part.split("=", 1)
-                            resp_cookies[cname.strip()] = cval.strip()
+                        parsed = SimpleCookie()
+                        parsed.load(val)
+                        resp_cookies.update({name: morsel.value for name, morsel in parsed.items()})
                     resp_headers[key] = val
             elif msg["type"] == "http.response.body":
                 resp_body += msg.get("body", b"")

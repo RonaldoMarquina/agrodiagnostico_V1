@@ -1,4 +1,5 @@
 """Authentication API endpoints: register, login, refresh, logout, password-recovery."""
+from app.infrastructure.audit import audit_entry
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 from uuid import UUID
@@ -16,10 +17,11 @@ from app.api.schemas import (
     RegisterRequest,
     SessionResponse,
 )
-from app.domain.models import AuditLog, PasswordRecoveryToken, RefreshSession, User
+from app.domain.models import PasswordRecoveryToken, RefreshSession, User
 from app.infrastructure.email import get_email_sender
 from app.infrastructure.security import (
     generate_secure_token,
+    csrf_for_refresh,
     hash_password,
     hash_token,
     verify_password,
@@ -127,6 +129,8 @@ def register(
         status="ACTIVE",
     )
     db.add(user)
+    db.flush()
+    db.add(audit_entry(user_id=user.id, event_type="USER_REGISTERED", correlation_id=correlation_id))
     db.commit()
     db.refresh(user)
 
@@ -159,9 +163,9 @@ def login(
     client_ip = request.client.host if request.client else None
     user_agent = request.headers.get("user-agent", "")[:500]
 
-    if not user or not verify_password(payload.password, user.password_hash):
+    if not user or not verify_password(payload.password, user.password_hash) or user.status != "ACTIVE":
         # Audit failed login attempt
-        failed_log = AuditLog(
+        failed_log = audit_entry(correlation_id=correlation_id,
             user_id=user.id if user else None,
             event_type="LOGIN_FAILED",
             ip_address=client_ip,
@@ -179,16 +183,6 @@ def login(
             },
         )
 
-    if user.status == "BLOCKED":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail={
-                "code": "ACCOUNT_BLOCKED",
-                "message": "Cuenta inactiva o bloqueada por administración.",
-                "correlation_id": str(correlation_id),
-            },
-        )
-
     # Generate Ed25519 access token
     token_mgr = get_token_manager()
     access_token = token_mgr.create_access_token(user_id=user.id, role=user.role)
@@ -196,13 +190,13 @@ def login(
     # Generate refresh session and CSRF token
     raw_refresh = generate_secure_token(32)
     refresh_hash = hash_token(raw_refresh)
-    csrf_token = generate_secure_token(32)
+    csrf_token = csrf_for_refresh(raw_refresh)
     now = datetime.now(timezone.utc)
     expires_at = now + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
 
     session = RefreshSession(
         user_id=user.id,
-        family_id=user.id if False else None,  # Will assign uuid4
+        family_id=None,  # Assigned below before insertion
         token_hash=refresh_hash,
         expires_at=expires_at,
         created_ip=client_ip,
@@ -213,7 +207,7 @@ def login(
     db.add(session)
 
     # Audit successful login
-    db.add(AuditLog(
+    db.add(audit_entry(correlation_id=correlation_id,
         user_id=user.id,
         event_type="LOGIN_SUCCESS",
         ip_address=client_ip,
@@ -285,9 +279,9 @@ def refresh(
             RefreshSession.family_id == session.family_id
         ).update({RefreshSession.revoked_at: now}, synchronize_session=False)
 
-        db.add(AuditLog(
+        db.add(audit_entry(correlation_id=correlation_id,
             user_id=session.user_id,
-            event_type="REFRESH_REUSE_DETECTED",
+            event_type="REFRESH_TOKEN_REUSE_DETECTED",
             ip_address=client_ip,
             user_agent=user_agent,
             details={"family_id": str(session.family_id), "session_id": str(session.id)},
@@ -305,7 +299,7 @@ def refresh(
         )
 
     # 2. Check if already revoked or expired
-    if session.revoked_at is not None or ensure_utc(session.expires_at) < now:
+    if session.revoked_at is not None or ensure_utc(session.expires_at) <= now:
         _clear_auth_cookies(response)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -332,7 +326,7 @@ def refresh(
     # 4. Atomic rotation: create new session and mark old as rotated
     new_raw_token = generate_secure_token(32)
     new_hash = hash_token(new_raw_token)
-    new_csrf = generate_secure_token(32)
+    new_csrf = csrf_for_refresh(new_raw_token)
     new_expires_at = now + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
 
     new_session = RefreshSession(
@@ -399,9 +393,13 @@ def logout(
         .first()
     )
 
-    if session and session.revoked_at is None:
-        session.revoked_at = now
-        db.add(AuditLog(
+    if not session or session.revoked_at is not None or ensure_utc(session.expires_at) <= now:
+        raise HTTPException(status_code=401, detail={"code": "UNAUTHORIZED", "message": "Sesión inválida."})
+
+    if session.revoked_at is None:
+        db.query(RefreshSession).filter(RefreshSession.family_id == session.family_id).update(
+            {RefreshSession.revoked_at: now}, synchronize_session=False)
+        db.add(audit_entry(correlation_id=correlation_id,
             user_id=session.user_id,
             event_type="LOGOUT",
             ip_address=client_ip,
@@ -430,7 +428,7 @@ def password_recovery(
 
     # Generic 202 response to prevent account enumeration
     generic_message = (
-        "Si la cuenta existe, se ha enviado un correo con instrucciones para restablecer la contraseña."
+        "Si la cuenta existe, recibirá instrucciones de recuperación."
     )
 
     if user and user.status == "ACTIVE":
@@ -445,7 +443,7 @@ def password_recovery(
             expires_at=expires_at,
         )
         db.add(recovery_entry)
-        db.add(AuditLog(
+        db.add(audit_entry(correlation_id=correlation_id,
             user_id=user.id,
             event_type="PASSWORD_RECOVERY_REQUESTED",
         ))
@@ -490,7 +488,7 @@ def confirm_password_recovery(
         .first()
     )
 
-    if not rec_token or rec_token.used_at is not None or ensure_utc(rec_token.expires_at) < now:
+    if not rec_token or rec_token.used_at is not None or ensure_utc(rec_token.expires_at) <= now:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail={
@@ -525,7 +523,7 @@ def confirm_password_recovery(
     ).update({RefreshSession.revoked_at: now}, synchronize_session=False)
 
     # 4. Insert audit log
-    db.add(AuditLog(
+    db.add(audit_entry(correlation_id=correlation_id,
         user_id=user.id,
         event_type="PASSWORD_RECOVERY_CONFIRMED",
     ))

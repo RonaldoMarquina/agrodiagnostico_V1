@@ -7,6 +7,7 @@ from pathlib import Path
 import re
 import secrets
 import subprocess
+from prepare_identity_keys import prepare as prepare_identity_keys
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--directory', type=Path, default=Path('.local/persistence'))
@@ -18,6 +19,7 @@ subprocess.run(['python3', 'scripts/prepare_persistence.py', '--directory', str(
 # File-backed Compose secrets retain the host mode. Keep the source directory
 # private even if the S3 server runs under a mapped UID inside Docker.
 args.directory.chmod(0o700)
+prepare_identity_keys(args.directory)
 
 
 def store(name, content):

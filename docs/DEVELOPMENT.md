@@ -87,3 +87,12 @@ python3 scripts/run_ci.py
 ```
 
 El ejecutor verifica versiones y todas las etapas obligatorias, guarda evidencia en `.local/ci/<id>/` y limpia exclusivamente sus proyectos Docker. Instala tooling aislado; no cambia npm/Python/Docker globales. [Versiones y procedimiento](CI.md). La ejecución remota sigue pendiente hasta disponer de revisión publicada y enlace de GitHub Actions; no se hace push automáticamente.
+
+
+## Corrección de Identity posterior al archivo del incremento 1
+
+`python3 scripts/prepare_local.py` requiere OpenSSL y genera claves Ed25519 persistentes en el directorio privado de secretos. Reejecutarlo valida y conserva las claves existentes. Una pareja incompatible produce error; no se rota automáticamente. Compose monta `jwt_private_key.pem` y `jwt_public_key.pem` solo en Identity. Configura `ALLOWED_ORIGINS` como lista separada por comas de orígenes completos; por defecto incluye `http://127.0.0.1:8080` y `http://localhost:8080`. Si cambias HTTP_PORT, ajusta también esa lista.
+
+Para aplicar el código corregido al entorno local: ejecutar `python3 scripts/prepare_local.py`, `docker compose build identity identity-migrate` y `docker compose up -d --wait --wait-timeout 180`. Revisar primero los cambios/migraciones y preservar respaldos si hay datos que conservar. La migración nueva es `identity_0003`; conserva auditoría anterior como legacy. Las sesiones con CSRF anterior requieren nuevo login. Cookies siguen siendo Secure: las pruebas HTTP de backend transfieren cookies explícitamente; no acreditan un flujo de navegador sin HTTPS.
+
+Aceptación independiente: `python3 scripts/check_identity_integration.py`. Construye una imagen del código actual, usa DB/red/contenedores propios y los elimina al terminar. No usa credenciales ni bases del entorno local. El correo sigue siendo adaptador local/de prueba; no se anuncia entrega externa.

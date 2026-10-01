@@ -7,7 +7,7 @@ from app.persistence import SERVICE
 
 
 def main():
-    required = ["APP_ENV", "DB_HOST", "DB_PASSWORD_FILE"]
+    required = ["APP_ENV", "DB_HOST", "DB_PASSWORD_FILE", "JWT_PRIVATE_KEY_PATH", "JWT_PUBLIC_KEY_PATH"]
     if SERVICE == "diagnosis":
         required += ["S3_ENDPOINT_URL", "S3_REGION", "S3_BUCKET", "S3_CREDENTIALS_FILE"]
     for key in required:
@@ -15,7 +15,7 @@ def main():
         if not value:
             print("configuration_invalid: " + key, flush=True)
             return 1
-        if key.endswith("_FILE"):
+        if key.endswith(("_FILE", "_PATH")):
             try:
                 if not Path(value).read_text().strip():
                     raise ValueError()
@@ -24,6 +24,15 @@ def main():
                 return 1
     if os.environ["APP_ENV"] != "local":
         print("configuration_invalid: APP_ENV (only local scaffold)", flush=True)
+        return 1
+    try:
+        from app.infrastructure.tokens import TokenManager
+        manager = TokenManager.from_environment()
+        import uuid
+        probe = manager.create_access_token(uuid.uuid4(), "USER")
+        manager.decode_access_token(probe)
+    except Exception:
+        print("configuration_invalid: JWT Ed25519 keys", flush=True)
         return 1
     uvicorn.run("app.main:app", host="0.0.0.0", port=8000, access_log=False)
     return 0

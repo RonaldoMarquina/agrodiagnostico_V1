@@ -70,3 +70,9 @@ def verify_token_hash(token: str, expected_hash: str) -> bool:
         return False
     computed = hash_token(token)
     return secrets.compare_digest(computed, expected_hash)
+
+
+def csrf_for_refresh(raw_refresh: str) -> str:
+    """Session-bound CSRF proof; never store or log the refresh credential."""
+    import hmac
+    return hmac.new(raw_refresh.encode("utf-8"), b"agrodiagnostico:csrf:v1", "sha256").hexdigest()

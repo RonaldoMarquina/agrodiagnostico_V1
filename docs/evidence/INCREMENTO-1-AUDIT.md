@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-09-30  
 **Alcance:** Grupos 1 al 7 del Incremento 1 (Registro, sesiones, roles, perfil, cambio y recuperación de contraseña, autorización).  
-**Resultado Global:** APROBADO (38/38 pruebas del servicio de identidad, 11/11 pruebas de contratos OpenAPI/JSONSchema, 3/3 verificaciones de salud, sintaxis y enrutamiento Nginx comprobados).
+**Estado de este informe:** evidencia histórica rectificada. La revisión posterior encontró fallos de seguridad/configuración y pruebas insuficientes para acreditar procesos independientes. El texto y las salidas siguientes describen lo registrado entonces, no certifican el estado actual. El cierre corregido se documenta en [INCREMENTO-1-CORRECCION.md](INCREMENTO-1-CORRECCION.md).
 
 ---
 

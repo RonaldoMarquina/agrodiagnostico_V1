@@ -221,7 +221,7 @@ class TestAuthApi(unittest.TestCase):
 
         # 4. Verify that entire family was revoked in DB
         with self.TestingSessionLocal() as db:
-            reuse_log = db.query(AuditLog).filter(AuditLog.event_type == "REFRESH_REUSE_DETECTED").first()
+            reuse_log = db.query(AuditLog).filter(AuditLog.event_type == "REFRESH_TOKEN_REUSE_DETECTED").first()
             self.assertIsNotNone(reuse_log)
 
             # Even token 2 should now be revoked!

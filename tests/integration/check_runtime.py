@@ -29,7 +29,10 @@ def health(degraded=None):
     for service in SERVICES:
         doc = json.loads(Path('contracts/openapi/' + service + '.openapi.json').read_text())
         actual = http('http://' + service + ':8000/openapi.json').json()
-        assert set(actual['paths']) == {'/health/live', '/health/ready'}
+        if service == 'identity':
+            assert set(actual['paths']) == set(doc['paths'])
+        else:
+            assert set(actual['paths']) == {'/health/live', '/health/ready'}
         for kind in ['live', 'ready']:
             route = '/health/' + kind
             response = http('http://' + service + ':8000' + route)
@@ -73,7 +76,7 @@ def database():
 
 def seed():
     with database() as db:
-        assert db.execute('SELECT version_num FROM alembic_version').fetchone() == ('identity_0001',)
+        assert db.execute('SELECT version_num FROM alembic_version').fetchone() == ('identity_0003',)
     client=s3('diagnosis')
     client.put_object(Bucket=BUCKET,Key=KEY,Body=BODY)
     assert client.get_object(Bucket=BUCKET,Key=KEY)['Body'].read() == BODY
@@ -105,7 +108,7 @@ def seed():
 
 def recover():
     with database() as db:
-        assert db.execute('SELECT version_num FROM alembic_version').fetchone() == ('identity_0001',)
+        assert db.execute('SELECT version_num FROM alembic_version').fetchone() == ('identity_0003',)
     client=s3('diagnosis');data=client.get_object(Bucket=BUCKET,Key=KEY)['Body'].read()
     assert hashlib.sha256(data).digest() == hashlib.sha256(BODY).digest()
     with broker() as conn:
@@ -123,7 +126,7 @@ def revision(mode):
         elif mode=='revision-wrong':db.execute("UPDATE alembic_version SET version_num='wrong_head'")
         else:
             db.execute('DELETE FROM alembic_version')
-            db.execute("INSERT INTO alembic_version VALUES ('identity_0001')")
+            db.execute("INSERT INTO alembic_version VALUES ('identity_0003')")
 
 
 parser=argparse.ArgumentParser();parser.add_argument('mode',choices=['health','postgres','s3','identity','seed','recover','revision-empty','revision-wrong','revision-restore'])

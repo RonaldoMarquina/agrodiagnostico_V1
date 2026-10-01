@@ -333,7 +333,7 @@
       "post": {
         "operationId": "identity_login",
         "summary": "Crear sesión",
-        "description": "Origin obligatorio permitido para evitar login CSRF; credenciales inválidas/bloqueo 401 genérico. Devuelve access y csrf en JSON, refresh exclusivamente cookie.",
+        "description": "Origin obligatorio permitido para evitar login CSRF; credenciales inválidas/bloqueo 401 genérico. Devuelve access y csrf en JSON, refresh exclusivamente cookie. Origin compara esquema, host y puerto con la allowlist; no basta el hostname.",
         "security": [],
         "parameters": [
           {
@@ -546,7 +546,7 @@
       "post": {
         "operationId": "identity_refresh",
         "summary": "Rotar sesión",
-        "description": "Valida Origin y CSRF ligado a sesión; rota refresh y CSRF de forma atómica. Reutilización revoca familia; expirado/revocado/reutilizado 401. CSRF inválido 403. No registrar tokens.",
+        "description": "Valida Origin y CSRF ligado a sesión; rota refresh y CSRF de forma atómica. Reutilización revoca familia; expirado/revocado/reutilizado 401. CSRF inválido 403. No registrar tokens. Origin compara esquema, host y puerto con la allowlist; no basta el hostname. El CSRF debe corresponder al refresh de esta solicitud; cookie y cabecera arbitrarias iguales son rechazadas.",
         "security": [
           {
             "RefreshCookie": [],
@@ -750,7 +750,7 @@
       "post": {
         "operationId": "identity_logout",
         "summary": "Revocar sesión",
-        "description": "Valida Origin/CSRF antes de revocar familia y borrar cookie. Cookie ausente/expirada 401; sesión vigente 204. Revocación de access según ADR de incremento 1.",
+        "description": "Valida Origin/CSRF antes de revocar familia y borrar cookie. Cookie ausente/expirada 401; sesión vigente 204. Revocación de access según ADR de incremento 1. Origin compara esquema, host y puerto con la allowlist; no basta el hostname. El CSRF debe corresponder al refresh de esta solicitud; cookie y cabecera arbitrarias iguales son rechazadas.",
         "security": [
           {
             "RefreshCookie": [],

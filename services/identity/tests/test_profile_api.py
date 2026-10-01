@@ -147,7 +147,7 @@ class TestProfileApi(unittest.TestCase):
             self.assertIsNotNone(s.revoked_at)
 
             audit = db.query(AuditLog).filter(
-                AuditLog.user_id == self.user_id, AuditLog.event_type == "PASSWORD_CHANGE"
+                AuditLog.user_id == self.user_id, AuditLog.event_type == "PASSWORD_CHANGED"
             ).first()
             self.assertIsNotNone(audit)
 

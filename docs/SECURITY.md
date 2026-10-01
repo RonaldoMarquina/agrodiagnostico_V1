@@ -39,3 +39,6 @@ No subas `.env`, claves, secretos, pesos o datasets privados al repositorio. Usa
 | Prompt injection opcional | Intenciones cerradas; backend autoriza toda acción; sin SQL, URL o comandos arbitrarios |
 
 Audita mutaciones administrativas con actor, fecha y cambio pertinente, sin registrar secretos. La política de retención, acceso a auditoría y respuesta a incidentes se terminará con el entorno real.
+
+
+Corrección de identidad: [ADR-0005](adr/0005-correccion-identidad-y-evidencia.md). Origin ya no admite esquemas/puertos alternativos por coincidencia del hostname. Refresh y logout exigen CSRF ligado al refresh, no solo dos valores arbitrarios coincidentes. La auditoría nueva incluye actor, destino, acción y correlación; filas históricas incompletas quedan identificadas como legacy, sin reconstruir datos ausentes.

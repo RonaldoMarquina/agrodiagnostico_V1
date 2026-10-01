@@ -101,3 +101,10 @@ Las 14 etapas se repitieron desde checkout temporal limpio con instalación nuev
 Historial de corrección: [primera ejecución fallida 36743640034](https://github.com/RonaldoMarquina/agrodiagnostico_V1/actions/runs/36743640034). [Evidencia](evidence/INCREMENTO-0-GRUPO-7-REMOTO.md).
 
 La [tercera ejecución de Application CI](https://github.com/RonaldoMarquina/agrodiagnostico_V1/actions/runs/36749372314) aprobó la revisión `97472b1`; pasos y artefacto constan en [evidencia remota](evidence/INCREMENTO-0-GRUPO-7-REMOTO.md).
+
+
+## Regresión del cierre de Identity
+
+Desde `services/identity/`: `PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m unittest discover -s tests -v` (entorno instalado con `uv sync --locked`). Las pruebas lógicas usan SQLite en memoria aun cuando exista DB_HOST; la carrera PostgreSQL no se acredita con SQLite y se omite explícitamente en esa suite.
+
+`python3 scripts/check_identity_integration.py` cubre esa carrera con tres procesos independientes, PostgreSQL restringido y Nginx desechables. Comprueba migración con auditoría histórica, claves/configuración, sesiones cruzadas, reuso, revocaciones, RBAC y triggers. La entrega del token de recuperación en esa prueba usa una fixture SQL sintética; el adaptador de correo se prueba por separado en memoria. No se ejecutan eliminaciones de usuarios contra el entorno del desarrollador.

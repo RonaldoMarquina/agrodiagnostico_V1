@@ -1,13 +1,16 @@
 """CLI commands for Identity service administrative provisioning."""
+from app.infrastructure.audit import audit_entry
 import argparse
+import uuid
 import sys
-from app.domain.models import AuditLog, User
+from app.domain.models import User
 from app.infrastructure.security import hash_password, validate_password_policy
 from app.persistence import get_sessionmaker
 
 
 def create_initial_admin(email: str, password: str, display_name: str) -> int:
     """Safely provision the initial ADMIN account."""
+    correlation_id = uuid.uuid4()
     email_clean = email.strip().lower()
     if "@" not in email_clean:
         print("Error: Invalid email format", file=sys.stderr)
@@ -38,9 +41,9 @@ def create_initial_admin(email: str, password: str, display_name: str) -> int:
         db.flush()
 
         # Audit initial admin creation
-        db.add(AuditLog(
+        db.add(audit_entry(correlation_id=correlation_id,
             user_id=admin.id,
-            event_type="INITIAL_ADMIN_CREATED",
+            event_type="INITIAL_ADMIN_PROVISIONED",
             details={"email": admin.email},
         ))
         db.commit()

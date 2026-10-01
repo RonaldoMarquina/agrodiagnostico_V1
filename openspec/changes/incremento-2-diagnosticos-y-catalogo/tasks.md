@@ -1,37 +1,64 @@
 # Tasks
 
-## 1. Contratos OpenAPI, Dependencias y Modelos de Diagnosis
+Guía de ejecución para Antigraviti: implementar este cambio con `openspec-apply-change`, siguiendo design.md y los tres deltas. Cada casilla requiere código/artefacto y verificación indicada; no marcar por existencia de archivos. Registrar comandos, resultados y límites por grupo en `docs/evidence/INCREMENTO-2-AUDIT.md`. Si surge una contradicción normativa o cambia el alcance, devolverla a planificación antes de improvisar comportamiento. No modificar trabajo ajeno.
 
-- [ ] 1.1 Formalizar en `contracts/openapi/diagnosis.openapi.json` los contratos para `POST /api/v1/diagnoses/{id}/feedback`, `GET/POST /api/v1/admin/crops`, `GET/POST /api/v1/admin/problems`, `GET/POST /api/v1/admin/recommendations` y `GET /api/v1/admin/diagnoses`, actualizando `contracts/operations.json`, `contracts/security-matrix.json` y `contracts/deferred-operations.json`, y verificar con `scripts/validate_contracts.py`.
-- [ ] 1.2 Agregar la dependencia `pillow` a `services/diagnosis/pyproject.toml`, regenerar `uv.lock` y verificar la instalación limpia en el entorno.
-- [ ] 1.3 Definir los modelos SQLAlchemy en `services/diagnosis/app/domain/models.py` (`Diagnosis`, `IdempotencyKey`, `Crop`, `Problem`, `Recommendation`, `DiagnosisFeedback`), y verificar consistencia de relaciones, claves e índices.
-- [ ] 1.4 Crear la migración Alembic `0002_diagnosis_domain_and_seeds.py` con tablas, restricciones y datos semilla iniciales de papa y maíz, y verificar su aplicación contra PostgreSQL (`agro_dev`).
+Orden: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7. Grupo 8 integra los anteriores y grupo 9 verifica/cierra. No implementar inferencia, broker, outbox, claim/lease ni UI final. Fixtures terminales solo en pruebas aisladas. El catálogo puede arrancar sin recomendaciones aprobadas; eso no acredita contenido agronómico revisado disponible.
 
-## 2. Ingesta y Validación de Imágenes, y Adaptador S3
+## 1. Decisiones y contratos completos
 
-- [ ] 2.1 Implementar el módulo de validación gráfica en memoria en `services/diagnosis/app/infrastructure/image_validation.py` (inspección de magic bytes JPEG/PNG/WebP, límite de 10 MiB, decodificación PIL y límite de 24 MP), y verificar con pruebas unitarias de casos válidos, corruptos, no soportados y sobredimensionados.
-- [ ] 2.2 Implementar el cliente y repositorio de almacenamiento de objetos en `services/diagnosis/app/infrastructure/s3_storage.py` (subida privada con clave `diagnoses/{id}/original.{ext}` y recuperación de stream con credenciales de `S3_CREDENTIALS_FILE`), y verificar con pruebas de integración contra el contenedor S3/SeaweedFS.
-- [ ] 2.3 Implementar el endpoint `GET /api/v1/diagnoses/{id}/image` con verificación de propiedad Bearer (`owner_id == sub`), cabecera `Cache-Control: private, no-store` y respuesta 404 genérica ante recursos ajenos o inexistentes, y verificar con pruebas de entrega autorizada y denegación.
+- [ ] 1.1 Registrar un ADR de Diagnosis con el siguiente número libre en `docs/adr/`, tomando las decisiones de design.md: alcance 2/3, propiedad, idempotencia/expiración, recuperación S3, cursor autenticado, catálogo/versiones/feedback y supervisión. Verificar trazabilidad con ADR-0002/0004 y los tres deltas; no redefinir estados/eventos vigentes.
+- [ ] 1.2 Formalizar todos los métodos/rutas de la tabla de design.md en `contracts/openapi/diagnosis.openapi.json` y esquemas asociados: consultas públicas del catálogo, GET/POST/PATCH administrativos, supervisión y feedback; definir payloads cerrados, límites de texto, respuestas y ejemplos positivos/negativos. Conservar contratos existentes, `MAIZE`, `IDEMPOTENCY_CONFLICT` y DELETE propio 204 repetible; añadir errores de infraestructura, catálogo y feedback. Verificar referencias y ejemplos con `bash scripts/check_contracts.sh` antes de handlers.
+- [ ] 1.3 Actualizar únicamente entradas del incremento en `contracts/operations.json`, `security-matrix.json`, `http-scenarios.json` y `deferred-operations.json`; mantener operaciones nuevas como contract-only y escenarios sin ejecución como no verificados. Actualizar `docs/API_CONTRACTS.md`; verificar que cada operación del inventario tiene autorización, escenario y tarea de implementación.
 
-## 3. Idempotencia y Creación de Diagnósticos
+## 2. Dependencias, configuración y autorización
 
-- [ ] 3.1 Implementar el servicio de idempotencia transaccional en `services/diagnosis/app/application/idempotency.py` (namespace `owner_id + operation + key`, fingerprint SHA-256 de bytes de imagen y retención de 24h), y verificar con pruebas unitarias y de concurrencia.
-- [ ] 3.2 Implementar el endpoint `POST /api/v1/diagnoses` que valida la imagen multipart, aplica idempotencia, almacena el objeto en S3, persiste el registro en estado `PENDIENTE` y devuelve HTTP 202 con el identificador UUID, y verificar con pruebas de carga válida, reintentos con misma y distinta imagen, y rechazos 400/413/415.
+- [ ] 2.1 Incorporar Pillow, python-multipart y verificación PyJWT/Ed25519 con dependencias bloqueadas en `services/diagnosis/pyproject.toml` y `uv.lock`; comprobar instalación limpia con lock y ausencia de dependencias de inferencia.
+- [ ] 2.2 Preparar configuración local/Compose para firma en Identity y verificación con la misma clave pública en Diagnosis; añadir secreto separado `CURSOR_SIGNING_KEY_FILE`, estable entre instancias y externo a Git. Reutilizar base diagnosis y S3_BUCKET/ENDPOINT/REGION/CREDENTIALS existentes. Verificar Compose, fallo cerrado sin clave/configuración y que Diagnosis no recibe clave privada; documentar preparación/rotación en `docs/DEVELOPMENT.md` sin volcar secretos.
+- [ ] 2.3 Implementar autenticación local y RBAC de Diagnosis conforme ADR-0004; probar token válido, ausencia, firma alterada, algoritmo incorrecto, issuer/audience erróneos, expiración, claims faltantes, UUID/rol inválidos, 403 USER en admin y ausencia de consultas a Identity. Documentar ventana stateless de 15 minutos en `docs/SECURITY.md`.
+- [ ] 2.4 Implementar sobre común de errores, validación/propagación X-Correlation-ID y no-store en respuestas de negocio, incluidos errores. Probar entradas inválidas con 400 contractual, ausencia de filtración de excepciones/credenciales y respuestas 401/403/404 coherentes con esquemas.
 
-## 4. Ciclo de Vida, Cancelación y Consulta de Historial
+## 3. Persistencia y catálogo candidato
 
-- [ ] 4.1 Implementar el endpoint de cancelación `POST /api/v1/diagnoses/{id}/cancel` (válida únicamente en `PENDIENTE`, conflicto 409 si ya no es cancelable y 404 para ajenos), y verificar con pruebas de cancelación exitosa y rechazo por estado.
-- [ ] 4.2 Implementar el borrado lógico idempotente `DELETE /api/v1/diagnoses/{id}` (`deleted_at = NOW()`, HTTP 204) y la consulta de detalle `GET /api/v1/diagnoses/{id}` con aislamiento 404, y verificar con pruebas de borrado y consulta.
-- [ ] 4.3 Implementar el endpoint de historial `GET /api/v1/diagnoses` con paginación keyset (`created_at DESC, id DESC`), cursor opaco codificado y filtro de exclusión de registros eliminados, y verificar con pruebas de ordenamiento, límites y paginación multicursor.
+- [ ] 3.1 Definir modelos de Diagnosis, IdempotencyKey, ImageUploadIntent, Crop, Problem, Recommendation, DiagnosisFeedback y auditoría propia; incluir tombstone, FK/snapshot de recomendación, campos necesarios para variantes de detalle, UNIQUE de idempotencia/versión/feedback e índices keyset. Verificar restricciones y relaciones contra PostgreSQL, sin FK ni consultas a datos de otros servicios; no implementar lease/outbox todavía.
+- [ ] 3.2 Crear migración posterior a 0001 para tablas/índices/restricciones y seeds `POTATO`/`MAIZE` con las siete condiciones contractuales HEALTHY/DISEASE y `model_supported=false`; no insertar recomendaciones sin evidencia aprobada. Probar upgrade desde 0001, instalación limpia, downgrade/re-upgrade solo en base desechable y rechazo de duplicados/inconsistencias.
+- [ ] 3.3 Documentar esquema, migración y límites en `docs/PERSISTENCE.md` y `services/diagnosis/README.md`; verificar comandos reproducibles con base/usuario diagnosis. Documentar que ninguna condición candidata activa equivale a clase validada y que catálogo sin recomendaciones es un arranque válido.
 
-## 5. Catálogo Agrícola, Administración y Feedback
+## 4. Ingesta, S3 e idempotencia
 
-- [ ] 5.1 Implementar endpoints de consulta de catálogo para usuarios (`GET /api/v1/crops`, `GET /api/v1/crops/{code}/problems`, `GET /api/v1/problems/{code}/recommendations`), y verificar con pruebas de lectura de semillas de papa y maíz.
-- [ ] 5.2 Implementar los endpoints administrativos de catálogo bajo `/api/v1/admin/crops`, `/admin/problems` y `/admin/recommendations` protegidos con rol `ADMIN`, y verificar permisos exclusivos y denegación 403 a usuarios con rol `USER`.
-- [ ] 5.3 Implementar el endpoint `POST /api/v1/diagnoses/{id}/feedback` para registrar utilidad (`useful: boolean` y comentario opcional) con validación de propiedad y verificación de que no dispare reentrenamiento de modelos, y verificar con pruebas de feedback propio y rechazo 404 ajeno.
+- [ ] 4.1 Implementar parser/validador acotado: único campo image, tamaño real máximo 10 MiB, transporte 11 MiB, JPEG/PNG/WebP, integridad y decodificación completa, máximo 24 MP, rechazo multiframe y limpieza de temporales. Probar límites exactos y +1, Content-Length ausente/engañoso, partes extra, corrupción posterior a cabecera, bomba de píxeles, MIME/extensión falsos y HEIC/HEIF 415, sin diagnóstico/objeto aceptado ante rechazo.
+- [ ] 4.2 Implementar adaptador S3 put/get/delete con configuración existente, clave generada por servidor, timeouts y reintentos acotados. Verificar integración con SeaweedFS, bytes privados recuperados y denegación anónima; no emitir URL pública, credenciales ni nombres originales.
+- [ ] 4.3 Implementar idempotencia con bloqueo advisory no bloqueante de namespace y restricción UNIQUE, fingerprint SHA-256, retención no deslizante y reemplazo atómico al expirar. Probar con conexiones PostgreSQL independientes: replay idéntico, contenido distinto, separación A/B, contención 409, frontera exacta now >= expires_at, tombstone 409 y nueva generación sin borrar diagnóstico anterior.
+- [ ] 4.4 Implementar intención durable y protocolo de carga/commit/compensación descrito en design.md; unirlo a POST diagnoses, con 202 solo tras commit del diagnóstico e idempotencia. Probar S3 caído, subida exitosa seguida de fallo SQL, commit incierto y replay tras timeout: ningún diagnóstico aceptado sin objeto y ninguna eliminación ciega de objeto referenciado.
+- [ ] 4.5 Implementar comando de reconciliación de intenciones con bloqueo SKIP LOCKED y delete idempotente. Probar caída tras put, fallo de compensación, reinicio, limpiador concurrente con subida, intención limpiada antes de put y objeto referenciado conservado; la intención permanece si la limpieza falla. Documentar comando, reintentos y límites en `docs/PERSISTENCE.md`, verificándolo contra S3/PostgreSQL aislados.
+- [ ] 4.6 Implementar GET diagnoses/{id}/image con propiedad y exclusión de tombstone. Probar bytes/Content-Type/no-store, 401 y 404 idéntico para ajeno/inexistente/borrado, incluyendo ADMIN en ruta de usuario. Documentar formatos y límites efectivos sin anunciar sanitización EXIF ni soporte HEIC/HEIF.
 
-## 6. Integración en Nginx, Pruebas E2E y Verificación
+## 5. Ciclo de vida, historial y supervisión
 
-- [ ] 6.1 Configurar el proxy inverso Nginx (`infra/nginx/default.conf`) para enrutar `/api/v1/diagnoses` y `/api/v1/crops` hacia `diagnosis_backend`, propagando cabeceras y límites de cuerpo hasta 10 MiB, y verificar sintaxis con `nginx -t`.
-- [ ] 6.2 Implementar pruebas de integración completas del microservicio `diagnosis` abarcando el flujo completo: autenticación con JWT Ed25519 emitido por `identity`, ingesta de foto, S3 privado, idempotencia, historial paginado, cancelación y feedback.
-- [ ] 6.3 Promocionar operaciones en contratos OpenAPI, ejecutar suite de pruebas de backend y validación de contratos, y registrar la evidencia en `docs/evidence/INCREMENTO-2-AUDIT.md`.
+- [ ] 5.1 Implementar cancelación mediante UPDATE condicional de PENDIENTE no borrado. Probar cancelación 200, carrera de dos cancelaciones con un solo éxito, 409 para todos los estados restantes incluido CANCELADO y 404 ajeno/inexistente/borrado; no generar DiagnosisFinished.
+- [ ] 5.2 Implementar DELETE propio idempotente 204 y detalle contractual. Probar DELETE repetido, 404 ajeno/nunca existente, ocultación de tombstones en detalle/imagen/cancel/feedback, y conservación de estado/objeto; comprobar variantes terminales con fixtures sin crear endpoint de simulación.
+- [ ] 5.3 Implementar cursores HMAC versionados ligados a principal/propósito e historial keyset, limit 1..100/default 20. Probar empate de fechas, paginación sin duplicados, inserciones entre páginas, ancla borrada, cursor malformado/alterado/ajeno/de otro endpoint y rotación de secreto; todos los cursores inválidos devuelven 400 INVALID_PAGINATION.
+- [ ] 5.4 Implementar GET admin/diagnoses con campos mínimos de design.md, paginación, exclusión de borrados y auditoría de lectura. Probar ADMIN 200, USER 403, anónimo 401 y ausencia de imágenes/object_key/feedback/datos Identity; comprobar que no concede acceso a fotos ajenas.
+- [ ] 5.5 Actualizar documentación de estados y supervisión en `docs/API_CONTRACTS.md` y `services/diagnosis/README.md`; contrastar ejemplos con pruebas. Explicitar PENDIENTE sin worker, borrado diferente de cancelación y necesidad de outbox/backfill al habilitar procesamiento en Incremento 3.
+
+## 6. Catálogo revisado y versiones
+
+- [ ] 6.1 Implementar consultas públicas autenticadas de cultivos/condiciones/recomendaciones: solo activos y última versión aprobada activa, lista vacía sin contenido aprobado y 404 para padre desconocido/inactivo. Probar taxonomía exacta, HEALTHY, model_supported=false, no publicación de inactivos y ausencia de recomendaciones inventadas en seeds.
+- [ ] 6.2 Implementar GET/POST/PATCH de cultivos y condiciones, limitados a taxonomía V1, campos mutables definidos y auditoría propia en la misma transacción. Probar ADMIN/USER/anónimo, duplicados 409, cambios de código/cultivo/tipo o model_supported rechazados y rollback de mutación si falla auditoría.
+- [ ] 6.3 Implementar GET/POST/PATCH de recomendaciones: revisión/fuentes obligatorias, POST crea versión incremental bajo bloqueo y PATCH solo active. Probar creación concurrente sin versiones duplicadas, rechazo de edición de contenido y evidencia ausente, selección de última versión activa y auditoría transaccional. Usar textos sintéticos solo en fixtures aislados.
+- [ ] 6.4 Verificar con fixture COMPLETADO que nueva versión, desactivación de recomendación/cultivo/problema no alteran FK/snapshot ni respuesta histórica del diagnóstico. Documentar proceso humano de revisión, referencias de aprobación y estado del contenido disponible en `docs/API_CONTRACTS.md`; si no hay paquete aprobado, registrar ese pendiente sin bloquear arranque técnico ni atribuir aprobación.
+
+## 7. Feedback propio
+
+- [ ] 7.1 Implementar POST feedback con UNIQUE(diagnosis_id), serialización con DELETE, booleano estricto y comentario de hasta 1000 caracteres. Probar 201 inicial, 200 de reemplazo, omisión de comentario, concurrencia sin duplicación y payload inválido 400.
+- [ ] 7.2 Aplicar estados permitidos COMPLETADO/NO_CONCLUYENTE; probar 409 PENDIENTE/PROCESANDO/CANCELADO/FALLIDO y 404 ajeno/inexistente/borrado, incluidos permisos ADMIN propios. Verificar ausencia de eventos/pipelines de entrenamiento y documentar semántica en `docs/API_CONTRACTS.md`; usar fixtures terminales aislados.
+
+## 8. Integración de proxy y aceptación integral
+
+- [ ] 8.1 Configurar upstream Diagnosis y rutas de diagnoses/crops/problems y admin/crops/problems/recommendations/diagnoses, preservando admin/users en Identity; límite de transporte 11 MiB y cabeceras privadas/correlación. Verificar nginx -t y solicitudes reales de cada familia por proxy, incluyendo coincidencias de prefijo, rutas internas bloqueadas y archivo válido de exactamente 10 MiB.
+- [ ] 8.2 Ejecutar aceptación aislada Identity + Diagnosis + PostgreSQL + S3 + Nginx: JWT real, carga, replay, A/B, historial, cancelación, tombstone, catálogo/admin y feedback con fixture terminal. Inyectar fallos S3/SQL y ejecutar reconciliador; comprobar que no se requiere broker, Redis, correo ni inferencia para este alcance. Documentar comando de reproducción y resultados.
+- [ ] 8.3 Integrar pruebas Diagnosis en CI y comparación de OpenAPI generado contra operaciones implementadas. Ejecutar suite pertinente de backend, contratos y regresión de integración/persistencia; promover solo operaciones y escenarios realmente verificados, dejando claim/lease/imagen interna contract-only. Conservar reportes reproducibles.
+
+## 9. Revisión y cierre del incremento
+
+- [ ] 9.1 Consolidar evidencia en `docs/evidence/INCREMENTO-2-AUDIT.md` con matriz requisito/tarea/prueba, comandos, resultados, fallos resueltos y pendientes (contenido aprobado, HEIC/HEIF, worker y métricas no medidas). Actualizar README, `docs/Incrementos.md`, DEVELOPMENT y TESTING para que describan exactamente lo ejecutable.
+- [ ] 9.2 Revisar implementación contra contratos y tres deltas; ejecutar `openspec validate incremento-2-diagnosticos-y-catalogo --strict` y confirmar que ninguna casilla se cerró solo por documentación. Sincronizar deltas y archivar por las skills instaladas únicamente tras cumplir las tareas y verificaciones, conservando pendientes de V1 explícitos.

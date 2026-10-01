@@ -2,38 +2,38 @@
 
 ## Why
 
-Una vez completada la infraestructura base y la autenticación de usuarios en el Incremento 1, AgroDiagnóstico V1 requiere habilitar el núcleo del negocio agrícola: la carga segura de fotografías de cultivos de papa y maíz en almacenamiento privado de objetos, la creación y gestión del ciclo de vida de los diagnósticos con garantías de idempotencia y paginación, la estructuración de un catálogo agronómico revisado y versionado, y la captura de retroalimentación de los agricultores.
-
-Este cambio implementa las capacidades esenciales del servicio `diagnosis`, permitiendo a los usuarios autenticados subir imágenes, consultar su historial y recomendaciones sin depender aún de la inferencia en tiempo real ni exponer fotografías en redes públicas.
+Tras el Incremento 1, Diagnosis todavía expone solo salud. El Incremento 2 habilita carga privada, consulta y administración del dominio con contratos verificables, conservando la separación entre un registro de diagnóstico y un resultado de inferencia. El implementador debe poder ejecutar tareas sin inventar reglas de negocio, recomendaciones agronómicas ni garantías transaccionales entre PostgreSQL y S3.
 
 ## What Changes
 
-- **Ingesta y Validación de Imágenes:** Validación estricta en memoria de imágenes multipart (inspección de magic bytes para JPEG, PNG, WebP; límite de tamaño de 10 MiB; decodificación con Pillow y límite dimensional de 24 megapíxeles). Sin campo obligatorio de cultivo manual (RF-07).
-- **Almacenamiento Privado S3/SeaweedFS:** Persistencia de fotos exclusivamente como objetos privados en bucket S3 con credenciales segregadas; nunca almacenamiento de bytes binarios en PostgreSQL.
-- **Entrega Privada de Imágenes (`GET /api/v1/diagnoses/{id}/image`):** Descarga de fotos reservada exclusivamente al propietario autenticado con cabecera `Cache-Control: private, no-store`; respuesta 404 genérica ante recursos inexistentes o ajenos.
-- **Idempotencia de Carga (`Idempotency-Key`):** Tratamiento atómico de solicitudes duplicadas mediante clave ASCII (1..128 caracteres), namespace `(owner_id, "diagnosis_create", key)`, fingerprint `SHA-256(bytes_de_imagen)` y retención no deslizante de 24 horas (86,400 segundos).
-- **Máquina de Estados y Ciclo de Vida de Diagnósticos:** Creación en estado inicial `PENDIENTE`, cancelación con `POST /api/v1/diagnoses/{id}/cancel` (válida únicamente en `PENDIENTE`), borrado lógico idempotente (`DELETE /api/v1/diagnoses/{id}`) y consulta de detalle.
-- **Historial Paginado:** Endpoint `GET /api/v1/diagnoses` con paginación keyset (`created_at DESC, id DESC`), cursor opaco y límite configurable (1..100, default 20), excluyendo registros con borrado lógico.
-- **Catálogo Agrícola Versionado:** Estructura relacional de cultivos (`crops`: `POTATO`, `CORN`), problemas fitosanitarios (`problems`) y recomendaciones preventivas (`recommendations`) con semillas iniciales revisadas (sin dosis químicas no validadas).
-- **Gestión Administrativa del Catálogo:** Endpoints de consulta y mutación bajo `/api/v1/admin/crops`, `/admin/problems` y `/admin/recommendations` protegidos con rol `ADMIN`.
-- **Retroalimentación de Usuario (Feedback):** Endpoint `POST /api/v1/diagnoses/{id}/feedback` para registrar utilidad (`useful: boolean`, comentario opcional), prohibiendo expresamente su uso para reentrenamiento automático de modelos.
+- Ingesta autenticada de un único campo multipart `image`, sin cultivo manual obligatorio: JPEG/PNG/WebP, máximo 10,485,760 bytes y 24,000,000 píxeles decodificados. HEIC/HEIF sigue pendiente de conversor y E2E para V1; inicialmente devuelve 415.
+- Almacenamiento privado mediante la configuración S3 existente, entrega al propietario y recuperación de objetos huérfanos mediante intenciones de carga durables. No se promete una transacción distribuida S3/PostgreSQL.
+- Creación `PENDIENTE`, idempotencia por propietario/operación/clave durante 86,400 segundos no deslizantes, cancelación atómica, borrado lógico idempotente, detalle e historial keyset con cursores ligados a principal y operación.
+- Verificación local Ed25519 con clave pública, errores y correlación conformes a los contratos; ninguna lectura de tablas de Identity.
+- Catálogo de `POTATO` y `MAIZE`, con las siete clases candidatas contractuales, incluidas las condiciones sanas. Ser candidato o estar activo en el catálogo no acredita validación del modelo.
+- Consultas de catálogo autenticadas y administración mediante GET/POST/PATCH explícitos; versiones inmutables de recomendaciones y auditoría propia de Diagnosis. Solo se publica contenido con fuentes y aprobación registradas. No se inventan recomendaciones semilla: sin evidencia aprobada la consulta devuelve una lista vacía.
+- Supervisión administrativa paginada de metadatos de diagnósticos, sin acceso adicional a fotos ajenas.
+- Feedback único y actualizable por diagnóstico propio, únicamente en `COMPLETADO` o `NO_CONCLUYENTE`, sin uso automático para entrenamiento.
+- Integración de todas las rutas en Nginx, secretos públicos y de cursor en Compose, pruebas por grupo y evidencia reproducible.
+
+El alcance implementable termina en creación, consulta, cancelación y administración. Broker, outbox/inbox, claim/lease, transiciones por análisis y worker pertenecen al Incremento 3; el modelo validado al 4. En este incremento los nuevos diagnósticos permanecen pendientes salvo cancelación. Las pruebas de resultados finales usan fixtures internos, nunca un endpoint público que simule inferencia.
 
 ## Capabilities
 
 ### New Capabilities
 
-- `private-image-ingestion-and-storage`: Ingesta multipart de imágenes de cultivos (JPEG/PNG/WebP, máx 10 MiB), validación de decodificación y píxeles (máx 24 MP) con Pillow, almacenamiento privado en bucket S3/SeaweedFS y entrega privada autorizada con `Cache-Control: private, no-store`.
-- `diagnosis-lifecycle-and-idempotency`: Creación y ciclo de vida del diagnóstico (`PENDIENTE`, cancelación, borrado lógico), protección por `Idempotency-Key` (retención 24h, fingerprint SHA-256), consulta paginada keyset del historial y aislamiento estricto 404 para recursos ajenos o inexistentes.
-- `agricultural-catalog-and-feedback`: Modelado y persistencia del catálogo agrícola versionado (cultivos papa/maíz, problemas y recomendaciones preventivas), semillas iniciales, administración CRUD restringida al rol ADMIN y registro de feedback del usuario (`useful: boolean`) sin reentrenamiento automático.
+- `private-image-ingestion-and-storage`: carga limitada, decodificación real, almacenamiento privado, recuperación de cargas interrumpidas y entrega autorizada.
+- `diagnosis-lifecycle-and-idempotency`: autenticación de Diagnosis, creación idempotente, cancelación, tombstones, historial y supervisión administrativa auditada.
+- `agricultural-catalog-and-feedback`: catálogo candidato coherente con contratos, publicación revisada y versionada, administración y feedback propio.
 
 ### Modified Capabilities
 
-<!-- Ninguna especificación existente cambia de comportamiento; se incorporan nuevas capacidades de dominio para el microservicio diagnosis. -->
+Ninguna. Se aplican las capacidades vigentes de autenticación, autorización y contratos sin cambiar sus requisitos.
 
 ## Impact
 
-- **Código y Servicio:** Implementación en `services/diagnosis/` (modelos SQLAlchemy, endpoints FastAPI, adaptadores de almacenamiento S3, dependencias de autenticación JWT y validadores de imágenes).
-- **Dependencias:** Incorporación de `pillow` en `services/diagnosis/pyproject.toml` para decodificación y verificación dimensional de imágenes.
-- **Base de Datos:** Nueva migración Alembic en `services/diagnosis/migrations/versions/` para tablas `diagnoses`, `idempotency_keys`, `crops`, `problems`, `recommendations` y `diagnosis_feedback`, junto a semillas de catálogo.
-- **Contratos:** Promoción e incorporación de contratos en `contracts/openapi/diagnosis.openapi.json`, `contracts/operations.json` y `contracts/deferred-operations.json`.
-- **Infraestructura:** Conexión del servicio diagnosis con el almacenamiento S3/SeaweedFS (`s3-1`) y enrutamiento en Nginx (`/api/v1/diagnoses`).
+- `services/diagnosis/`: API, aplicación, persistencia, validadores y adaptadores; dependencias bloqueadas de imágenes, multipart y verificación JWT Ed25519.
+- Base propia `diagnosis`: diagnósticos, claves de idempotencia, intenciones de carga, catálogo, versiones, feedback y auditoría. Sin claves foráneas a tablas de otros servicios.
+- `contracts/`: ampliar OpenAPI y esquemas, operaciones, matriz de seguridad, escenarios y pendientes exclusivamente del incremento; conservar nombres y comportamiento ya contratados.
+- `docker-compose.yml`, preparación local y Nginx: verificación con clave pública, secreto de cursor, bucket configurado, rutas específicas y límite de transporte con margen multipart.
+- `docs/`: ADR de decisiones de Diagnosis, operación, seguridad, catálogo y evidencia; sincronización de deltas y archivo solo al completar implementación y verificaciones.

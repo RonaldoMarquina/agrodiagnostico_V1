@@ -2,55 +2,63 @@
 
 ## Purpose
 
-Garantiza la ingesta validada, inspección binaria y almacenamiento privado de fotografías agrícolas en almacenamiento compatible con S3, asegurando descarga autorizada con aislamiento 404 y cabeceras privadas sin exposición pública de URLs.
+Garantiza carga limitada y decodificada de imágenes, almacenamiento privado y entrega por propietario, con recuperación segura de cargas interrumpidas entre objetos y persistencia relacional.
 
 ## ADDED Requirements
 
-### Requirement: Validación estricta y decodificación en memoria de imágenes
-El sistema SHALL validar la imagen recibida mediante multipart/form-data en `POST /api/v1/diagnoses` antes de persistir cualquier registro en la base de datos o almacenamiento de objetos. La validación SHALL constatar: (1) que el tamaño del archivo no exceda los 10 MiB (`10,485,760 bytes`), respondiendo con código 413 si se supera; (2) que el formato real determinado por magic bytes corresponda a `image/jpeg`, `image/png` o `image/webp`, respondiendo con código 415 ante formatos no soportados; (3) que los bytes puedan ser decodificados efectivamente como imagen válida mediante biblioteca de procesamiento gráfico (Pillow), respondiendo con código 400 `INVALID_IMAGE` ante archivos corruptos; y (4) que las dimensiones decodificadas (`ancho * alto`) no superen los 24 megapíxeles (`24,000,000 px`), respondiendo con código 413 ante dimensiones excesivas. La solicitud SHALL NOT exigir la especificación manual obligatoria del cultivo por parte del usuario.
+### Requirement: Validación efectiva y límites de imágenes
+POST /api/v1/diagnoses SHALL aceptar exactamente un archivo multipart image, sin exigir cultivo manual. SHALL limitar archivo a 10485760 bytes reales y 24000000 píxeles, permitir JPEG/PNG/WebP decodificables y rechazar archivos corruptos, animados/multiframe o partes adicionales. Límite de transporte SHALL permitir un archivo máximo con sobre multipart ordinario (configuración inicial 11 MiB); no SHALL confiar en Content-Length o MIME/extensión declarados. No SHALL persistir diagnósticos u objetos de imágenes rechazadas.
 
-#### Scenario: Carga exitosa de imagen válida
-- **WHEN** un usuario autenticado envía un archivo multipart de 2 MiB en formato JPEG válido de 1920x1080 píxeles
-- **THEN** el sistema valida los magic bytes, decodifica exitosamente la imagen en memoria y procede con el almacenamiento y creación del diagnóstico
+#### Scenario: Archivo válido en frontera
+- **WHEN** se envía por proxy un JPEG/PNG/WebP válido de exactamente 10485760 bytes y no más de 24000000 píxeles con un único campo image
+- **THEN** supera validación de tamaño y formato sin exigir crop_code
 
-#### Scenario: Rechazo por exceso de tamaño de archivo (HTTP 413)
-- **WHEN** un cliente envía un archivo que excede los 10 MiB (10,485,760 bytes)
-- **THEN** el sistema rechaza la solicitud inmediatamente con código 413 `PAYLOAD_TOO_LARGE` sin persistir el archivo en S3
+#### Scenario: Bytes o píxeles excesivos
+- **WHEN** el archivo excede el límite real de bytes o dimensiones, aunque Content-Length sea ausente o engañoso
+- **THEN** devuelve 413 PAYLOAD_TOO_LARGE sin persistir diagnóstico ni objeto
 
-#### Scenario: Rechazo por formato no soportado (HTTP 415)
-- **WHEN** un cliente envía un archivo con extensión `.jpg` pero cuyos bytes reales corresponden a un ejecutable, PDF o formato no soportado (ej. GIF o BMP)
-- **THEN** el sistema detecta la discrepancia mediante inspección de magic bytes y rechaza la solicitud con código 415 `UNSUPPORTED_MEDIA_TYPE`
+#### Scenario: Formato no soportado
+- **WHEN** bytes reales corresponden a GIF, ejecutable, HEIC/HEIF u otro formato no admitido, cualquiera sea su nombre o MIME declarado
+- **THEN** devuelve 415 UNSUPPORTED_MEDIA_TYPE; HEIC/HEIF sigue pendiente de conversor y E2E para V1
 
-#### Scenario: Rechazo por imagen corrupta o dimensiones superiores a 24 megapíxeles
-- **WHEN** un cliente envía un archivo JPEG con cabecera válida pero con stream de datos corrupto o con dimensiones de 6000x5000 píxeles (30 MP)
-- **THEN** el sistema rechaza la solicitud con código 400 `INVALID_IMAGE` o 413 según corresponda, sin almacenar el objeto
+#### Scenario: Corrupción tras cabecera válida
+- **WHEN** cabeceras parecen válidas pero la decodificación completa falla, o la imagen es multiframe
+- **THEN** devuelve 400 INVALID_IMAGE sin almacenar imagen
 
-#### Scenario: Ingesta agnóstica sin cultivo obligatorio
-- **WHEN** el cliente envía la imagen sin incluir el parámetro `crop_code` en el cuerpo multipart
-- **THEN** el sistema acepta la solicitud de diagnóstico conforme a RF-07 sin rechazar por ausencia de cultivo
+#### Scenario: Multipart inesperado
+- **WHEN** hay más de un archivo, campos adicionales o no existe image
+- **THEN** devuelve 400 contractual sin crear diagnóstico
 
-### Requirement: Almacenamiento seguro y privado en bucket S3
-El sistema SHALL persistir las fotografías validadas exclusivamente como objetos privados en un bucket de almacenamiento compatible con S3 (SeaweedFS / S3). El sistema SHALL generar una clave de objeto opaca con convención determinista por diagnóstico (`diagnoses/{diagnosis_id}/original.{ext}`). El sistema SHALL NOT almacenar los bytes binarios de las imágenes en las tablas de PostgreSQL. Las credenciales de acceso al bucket SHALL obtenerse de forma segregada a través de secretos inyectados por el entorno (`S3_CREDENTIALS_FILE`).
+### Requirement: Objetos privados con recuperación durable
+Las fotos aceptadas SHALL almacenarse solo en objetos privados y PostgreSQL SHALL guardar referencias/metadatos, nunca bytes. Credenciales/bucket SHALL provenir del entorno existente. Una aceptación 202 SHALL tener objeto confirmado y diagnóstico/idempotencia confirmados. Las cargas interrumpidas SHALL poder reconciliarse tras reinicio mediante registro durable; el rollback SQL no SHALL presentarse como eliminación automática de S3.
 
-#### Scenario: Persistencia exclusiva como objeto privado en bucket S3
-- **WHEN** una imagen pasa satisfactoriamente las validaciones de tamaño, formato y decodificación
-- **THEN** el servicio sube el archivo al bucket S3 con su clave privada correspondiente y guarda únicamente la referencia (`object_key`) en la base de datos relacional
+#### Scenario: Persistencia exitosa
+- **WHEN** la carga se confirma
+- **THEN** la foto queda privada bajo clave generada por servidor y la base conserva referencia sin URL pública ni nombre original del cliente
 
-#### Scenario: Fallo de almacenamiento S3 produce error sin registrar diagnóstico corrupto
-- **WHEN** ocurre una falla transitoria de red o indisponibilidad en el almacenamiento S3 durante la subida
-- **THEN** la transacción se aborta, no se crea el diagnóstico en PostgreSQL y el sistema retorna un código 500/503 controlado sin datos huérfanos
+#### Scenario: S3 indisponible
+- **WHEN** S3 falla durante la subida
+- **THEN** devuelve 503 STORAGE_UNAVAILABLE sin diagnóstico aceptado; cualquier carga parcial o incierta queda recuperable
 
-### Requirement: Entrega privada y autenticada de imagen al propietario
-El sistema SHALL permitir la descarga o visualización de la fotografía original asociada a un diagnóstico mediante el endpoint `GET /api/v1/diagnoses/{id}/image`. La solicitud SHALL requerir un token Bearer de usuario válido y comprobar que el `owner_id` del diagnóstico coincida con el identificador del usuario autenticado (`sub`). La respuesta SHALL transmitir los bytes de la imagen con la cabecera `Content-Type` correspondiente y la cabecera estricta `Cache-Control: private, no-store`. El sistema SHALL NOT retornar URLs públicas ni permitir el acceso anónimo o a través de redes de distribución de contenido (CDN) públicas.
+#### Scenario: Fallo de commit después de subir
+- **WHEN** S3 recibió la foto pero falla o es incierto el commit relacional
+- **THEN** responde error controlado de persistencia y conserva información durable para reconciliar; no borra el objeto hasta comprobar que ningún diagnóstico lo referencia
 
-#### Scenario: Propietario descarga su imagen original autenticado
-- **WHEN** el usuario propietario del diagnóstico realiza una solicitud GET a `/api/v1/diagnoses/{id}/image` con su token Bearer
-- **THEN** el sistema verifica la propiedad, recupera el objeto desde S3 y transmite los bytes de la imagen con código 200 y cabecera `Cache-Control: private, no-store`
+#### Scenario: Limpieza repetida o interrumpida
+- **WHEN** el mantenimiento reintenta una carga huérfana tras caída o fallo de delete
+- **THEN** puede eliminarla idempotentemente sin afectar cargas activas ni objetos referenciados, y conserva la intención si vuelve a fallar
 
-#### Scenario: Intento de descarga por usuario ajeno devuelve 404 genérico
-- **WHEN** un usuario autenticado A intenta acceder a la imagen de un diagnóstico perteneciente al usuario B
-- **THEN** el sistema responde con código 404 genérico `RESOURCE_NOT_FOUND` idéntico al de un identificador inexistente, impidiendo determinar si la imagen o diagnóstico existen
+### Requirement: Entrega privada al propietario
+GET /api/v1/diagnoses/{id}/image SHALL exigir Bearer, propiedad y diagnóstico no borrado. SHALL devolver bytes originales con Content-Type real y Cache-Control private, no-store, sin URLs públicas ni redirecciones firmadas. ADMIN en esta ruta SHALL respetar la misma propiedad.
 
-#### Scenario: Cabecera Cache-Control privada sin caché compartida ni CDN
-- **WHEN** se sirve cualquier imagen a través de `/api/v1/diagnoses/{id}/image`
-- **THEN** la respuesta incluye obligatoriamente `Cache-Control: private, no-store` impidiendo que proxies intermedios o navegadores almacenen fotos de otros usuarios en caché compartida
+#### Scenario: Descarga propia
+- **WHEN** el propietario pide su foto no borrada
+- **THEN** recibe 200 con bytes originales, Content-Type y no-store
+
+#### Scenario: Aislamiento de imagen
+- **WHEN** se solicita foto ajena, inexistente o borrada
+- **THEN** recibe 404 RESOURCE_NOT_FOUND genérico, incluso si el solicitante tiene ADMIN
+
+#### Scenario: Acceso anónimo
+- **WHEN** se accede sin autenticación a la API o directamente al objeto privado
+- **THEN** la API devuelve 401 y el almacenamiento no entrega la imagen anónimamente

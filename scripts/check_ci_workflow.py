@@ -7,7 +7,7 @@ import subprocess
 ROOT = Path(__file__).resolve().parents[1]
 REQUIRED = {'workflow', 'python-lint', 'ci-tests', 'contracts', 'dataset', 'backend',
             'frontend-install', 'frontend-lint', 'frontend-types', 'frontend-tests',
-            'frontend-build', 'openspec', 'persistence', 'environment'}
+            'frontend-build', 'openspec', 'persistence', 'environment', 'identity-integration'}
 
 
 def validate_plan(plan):

@@ -58,3 +58,6 @@ Esta CI verifica base técnica, contratos e inventario; no acredita autenticaci�
 ## Aceptación remota del Incremento 0
 
 [Application CI 36749372314](https://github.com/RonaldoMarquina/agrodiagnostico_V1/actions/runs/36749372314) aprobó sobre `97472b1`, incluidos controles, limpieza y artefacto. [Evidencia y fallos previos](evidence/INCREMENTO-0-GRUPO-7-REMOTO.md).
+
+
+El correctivo de Identity añade la etapa obligatoria `identity-integration` a las 14 etapas originales (15 en total). `backend` ejecuta también las pruebas unitarias de Identity; `identity-integration` construye el servicio y comprueba tres procesos con PostgreSQL/Nginx desechables mediante `scripts/check_identity_integration.py`. Las ejecuciones remotas históricas citadas arriba no acreditan esta etapa nueva; su evidencia local está en [el correctivo](evidence/INCREMENTO-1-CORRECCION.md).

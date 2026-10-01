@@ -99,3 +99,6 @@ Aceptación integrada local del grupo 7: 7.1–7.4 verificadas, incluida la CI r
 Historial de corrección: [primera ejecución fallida 36743640034](https://github.com/RonaldoMarquina/agrodiagnostico_V1/actions/runs/36743640034). [Evidencia](docs/evidence/INCREMENTO-0-GRUPO-7-REMOTO.md).
 
 Cierre de tareas del Incremento 0: [Application CI aprobada](https://github.com/RonaldoMarquina/agrodiagnostico_V1/actions/runs/36749372314) sobre `97472b1`. [Evidencia remota](docs/evidence/INCREMENTO-0-GRUPO-7-REMOTO.md). Los cinco deltas se sincronizaron y el cambio se archivó el 2026-09-30.
+
+
+Estado posterior del Incremento 1: Identity implementa las 12 operaciones de negocio; la revisión posterior al archivo exigió un correctivo de claves, Origin/CSRF, auditoría y evidencia multi-instancia. El estado vigente y sus límites están en [INCREMENTO-1-CORRECCION](docs/evidence/INCREMENTO-1-CORRECCION.md). Las referencias previas al Incremento 0 son históricas. Diagnosis y los incrementos 2–5 siguen pendientes.

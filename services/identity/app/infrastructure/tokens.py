@@ -98,6 +98,11 @@ class TokenManager:
         issuer = os.environ.get("JWT_ISSUER", DEFAULT_ISSUER)
         audience = os.environ.get("JWT_AUDIENCE", DEFAULT_AUDIENCE)
 
+        if priv_pem and not isinstance(serialization.load_pem_private_key(priv_pem.encode(), password=None), ed25519.Ed25519PrivateKey):
+            raise TokenError("Ed25519 private key required")
+        if pub_pem and not isinstance(serialization.load_pem_public_key(pub_pem.encode()), ed25519.Ed25519PublicKey):
+            raise TokenError("Ed25519 public key required")
+
         return cls(
             private_key_pem=priv_pem,
             public_key_pem=pub_pem,

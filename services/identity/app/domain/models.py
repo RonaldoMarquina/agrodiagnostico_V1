@@ -3,6 +3,8 @@ import uuid
 from datetime import datetime, timezone
 from sqlalchemy import (
     Column,
+    Boolean,
+    CheckConstraint,
     DateTime,
     ForeignKey,
     Index,
@@ -112,6 +114,11 @@ class AuditLog(Base):
         ForeignKey("users.id", ondelete="SET NULL"),
         nullable=True,
     )
+    actor_id = Column(Uuid, nullable=True)
+    target_id = Column(Uuid, nullable=True)
+    action = Column(String(50), nullable=True)
+    correlation_id = Column(Uuid, nullable=True)
+    legacy = Column(Boolean, nullable=False, default=False)
     event_type = Column(String(50), nullable=False)
     ip_address = Column(String(45), nullable=True)
     user_agent = Column(String(500), nullable=True)
@@ -119,6 +126,8 @@ class AuditLog(Base):
     created_at = Column(DateTime(timezone=True), nullable=False, default=utc_now)
 
     __table_args__ = (
+        CheckConstraint("legacy OR (action IS NOT NULL AND correlation_id IS NOT NULL)",
+                        name="ck_audit_normative_fields"),
         Index("ix_audit_logs_event_type", "event_type"),
         Index("ix_audit_logs_user_id", "user_id"),
         Index("ix_audit_logs_created_at", "created_at"),

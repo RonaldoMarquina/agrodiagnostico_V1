@@ -136,6 +136,14 @@
         "scripts/check_environment.py"
       ],
       "timeout_seconds": 1800
+    },
+    {
+      "id": "identity-integration",
+      "command": [
+        "python3",
+        "scripts/check_identity_integration.py"
+      ],
+      "timeout_seconds": 600
     }
   ]
 }
