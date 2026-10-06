@@ -7,13 +7,16 @@ import subprocess
 ROOT = Path(__file__).resolve().parents[1]
 REQUIRED = {'workflow', 'python-lint', 'ci-tests', 'contracts', 'dataset', 'backend',
             'frontend-install', 'frontend-lint', 'frontend-types', 'frontend-tests',
-            'frontend-build', 'openspec', 'persistence', 'environment', 'identity-integration'}
+            'frontend-build', 'openspec', 'persistence', 'environment', 'identity-integration', 'diagnosis-integration'}
 
 
 def validate_plan(plan):
     names = [s['id'] for s in plan['steps']]
     if len(names) != len(set(names)) or set(names) != REQUIRED:
         raise ValueError('CI plan missing/duplicate required steps')
+    diagnosis = next(s for s in plan['steps'] if s['id'] == 'diagnosis-integration')
+    if diagnosis['command'] != ['python3', 'scripts/check_acceptance_incremento2.py']:
+        raise ValueError('Diagnosis integration must execute the acceptance suite')
     for step in plan['steps']:
         if not step.get('command') or not 1 <= step.get('timeout_seconds', 0) <= 1800:
             raise ValueError('CI command or timeout missing')

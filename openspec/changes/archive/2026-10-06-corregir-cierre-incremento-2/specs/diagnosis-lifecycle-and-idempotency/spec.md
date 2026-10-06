@@ -1,10 +1,4 @@
-# diagnosis-lifecycle-and-idempotency Specification
-
-## Purpose
-
-Define creación idempotente, cancelación, borrado lógico, historial privado y supervisión administrativa de diagnósticos, con autorización y comportamiento verificable sin inferencia disponible.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Autenticación y respuestas privadas de Diagnosis
 Diagnosis SHALL aplicar la verificación local Ed25519 y roles de la capacidad vigente de autorización, sin consultar datos de Identity. Toda ruta de negocio SHALL exigir Bearer válido y devolver respuestas con correlación y Cache-Control private, no-store; los errores SHALL usar el sobre común contractual. ADMIN SHALL respetar propiedad en rutas de usuario.

@@ -306,15 +306,15 @@ def run_acceptance_tests(proxy_url, pg_host, s3_url, secrets_dir):
     # Admin creates recommendation with full review metadata
     rec_payload = {
         "problem_code": "POTATO_EARLY_BLIGHT",
-        "title": "Manejo preventivo de tizón temprano",
-        "summary": "Monitoreo semanal del envés foliar y aplicación preventiva.",
-        "cultural_practices": ["Rotación de cultivos", "Eliminación de rastrojos"],
-        "biological_control": ["Trichoderma spp."],
-        "preventive_measures": ["Evitar riego por aspersión tardío"],
-        "reviewed_by": "Ing. Agrónomo Colegiado CIP 9999",
+        "title": "Fixture sintético de catálogo",
+        "summary": "Contenido sintético para aceptación; no es orientación agronómica.",
+        "cultural_practices": [],
+        "biological_control": [],
+        "preventive_measures": [],
+        "reviewed_by": "Revisor sintético",
         "review_reference": "REV-2024-001",
-        "reviewed_at": datetime.now(timezone.utc).isoformat(),
-        "source_refs": ["Manual de Manejo Integrado de Papa, INIA 2024"],
+        "reviewed_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "source_refs": ["Fuente sintética de prueba"],
     }
     st, rec_data, _ = request_json(
         f"{proxy_url}/api/v1/admin/recommendations",
@@ -467,12 +467,15 @@ def main():
         proxy_url = sys.argv[2]
         secrets_dir = "/run/secrets"
         run_acceptance_tests(proxy_url, "postgres", "http://s3:8333", secrets_dir)
+        from check_diagnosis_concurrency import run_checks
+        run_checks()
         return
 
     print("Setting up isolated Increment 2 acceptance environment...", flush=True)
     tag = f"agro-acc2-{uuid.uuid4().hex[:8]}"
     network = f"{tag}-net"
     containers = []
+    images = {service: f"{tag}-{service}" for service in ("identity", "diagnosis")}
 
     tmp_dir = tempfile.TemporaryDirectory(prefix="agro-acc2-secrets-")
     secrets_path = Path(tmp_dir.name)
@@ -481,8 +484,10 @@ def main():
     def cleanup():
         print("\nCleaning up acceptance containers and network...", flush=True)
         for c in containers:
-            subprocess.run(["docker", "rm", "-f", c], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            subprocess.run(["docker", "rm", "-f", "-v", c], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         subprocess.run(["docker", "network", "rm", network], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        for image in images.values():
+            subprocess.run(["docker", "image", "rm", image], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         try:
             tmp_dir.cleanup()
         except Exception:
@@ -496,6 +501,9 @@ def main():
     signal.signal(signal.SIGINT, interrupted)
 
     try:
+        for service, image in images.items():
+            subprocess.check_call(["docker", "build", "-q", "-t", image, "-f",
+                                   str(ROOT / f"services/{service}/Dockerfile"), str(ROOT)])
         # 1. Prepare Secrets
         subprocess.check_call([
             "python3", str(ROOT / "scripts/prepare_persistence.py"), "--directory", str(secrets_path)
@@ -564,7 +572,7 @@ def main():
             "-e", "DB_HOST=postgres",
             "-v", f"{secrets_path}:/run/secrets:ro",
             "-v", f"{ROOT}/infra/postgres/bootstrap.py:/bootstrap/bootstrap.py:ro",
-            "agrodiagnostico-v1-db-bootstrap:latest",
+            images["diagnosis"],
             "python", "/bootstrap/bootstrap.py",
         ], stdout=subprocess.DEVNULL)
 
@@ -576,7 +584,7 @@ def main():
             "-e", "DB_HOST=postgres",
             "-e", "DB_PASSWORD_FILE=/run/secrets/identity_password",
             "-v", f"{secrets_path}:/run/secrets:ro",
-            "agrodiagnostico-v1-identity-migrate:latest",
+            images["identity"], "python", "-m", "app.migrate", "upgrade",
         ], stdout=subprocess.DEVNULL)
 
         subprocess.check_call([
@@ -585,7 +593,7 @@ def main():
             "-e", "DB_HOST=postgres",
             "-e", "DB_PASSWORD_FILE=/run/secrets/diagnosis_password",
             "-v", f"{secrets_path}:/run/secrets:ro",
-            "agrodiagnostico-v1-diagnosis-migrate:latest",
+            images["diagnosis"], "python", "-m", "app.migrate", "upgrade",
         ], stdout=subprocess.DEVNULL)
 
         # 6. Start SeaweedFS S3
@@ -615,7 +623,7 @@ def main():
             "-e", "S3_REGION=us-east-1",
             "-v", f"{secrets_path}:/run/secrets:ro",
             "-v", f"{ROOT}/infra/s3/bootstrap.py:/bootstrap/bootstrap.py:ro",
-            "agrodiagnostico-v1-s3-bootstrap:latest",
+            images["diagnosis"],
             "python", "/bootstrap/bootstrap.py",
         ], stdout=subprocess.DEVNULL)
 
@@ -634,7 +642,7 @@ def main():
             "-e", "JWT_PRIVATE_KEY_PATH=/run/secrets/jwt_private_key.pem",
             "-e", "JWT_PUBLIC_KEY_PATH=/run/secrets/jwt_public_key.pem",
             "-v", f"{secrets_path}:/run/secrets:ro",
-            "agrodiagnostico-v1-identity:latest",
+            images["identity"],
         ], stdout=subprocess.DEVNULL)
 
         # 8. Start Diagnosis Service
@@ -657,7 +665,7 @@ def main():
             "-e", "CURSOR_SIGNING_KEY_FILE=/run/secrets/cursor_signing_key",
             "-v", f"{secrets_path}:/run/secrets:ro",
             "-v", f"{ROOT}/services/diagnosis/app:/service/app:ro",
-            "agrodiagnostico-v1-diagnosis:latest",
+            images["diagnosis"],
         ], stdout=subprocess.DEVNULL)
 
         # 9. Start Nginx Proxy
@@ -674,7 +682,16 @@ def main():
         ], stdout=subprocess.DEVNULL)
 
         # Wait for services to be ready
-        time.sleep(2.0)
+        for container in (id_container, diag_container):
+            for attempt in range(60):
+                probe = subprocess.run(["docker", "exec", container, "python", "-c",
+                    "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/ready', timeout=3)"],
+                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                if probe.returncode == 0:
+                    break
+                time.sleep(1)
+            else:
+                raise RuntimeError("Service readiness timeout")
 
         # 10. Execute Acceptance Tests Runner
         print("Running Increment 2 Acceptance Test Suite inside container...", flush=True)
@@ -683,10 +700,13 @@ def main():
         runner_res = subprocess.run([
             "docker", "run", "--rm",
             "--name", runner_container,
+            "-e", "PYTHONPATH=/service",
+            "-e", "DB_HOST=postgres",
+            "-e", "DB_PASSWORD_FILE=/run/secrets/diagnosis_password",
             "--network", network,
             "-v", f"{ROOT}:/app:ro",
             "-v", f"{secrets_path}:/run/secrets:ro",
-            "agrodiagnostico-v1-diagnosis:latest",
+            images["diagnosis"],
             "python3", "/app/scripts/check_acceptance_incremento2.py", "--runner", "http://proxy:8080",
         ], text=True)
 

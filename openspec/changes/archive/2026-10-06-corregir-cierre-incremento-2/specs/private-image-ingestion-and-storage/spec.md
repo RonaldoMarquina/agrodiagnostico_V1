@@ -1,10 +1,4 @@
-# private-image-ingestion-and-storage Specification
-
-## Purpose
-
-Garantiza carga limitada y decodificada de imágenes, almacenamiento privado y entrega por propietario, con recuperación segura de cargas interrumpidas entre objetos y persistencia relacional.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Validación efectiva y límites de imágenes
 POST /api/v1/diagnoses SHALL aceptar exactamente un archivo multipart image, sin exigir cultivo manual. SHALL limitar archivo a 10485760 bytes reales y 24000000 píxeles, permitir JPEG/PNG/WebP decodificables y rechazar archivos corruptos, animados/multiframe o partes adicionales. Límite de transporte SHALL permitir un archivo máximo con sobre multipart ordinario (configuración inicial 11 MiB); no SHALL confiar en Content-Length o MIME/extensión declarados. No SHALL persistir diagnósticos u objetos de imágenes rechazadas.

@@ -144,6 +144,14 @@
         "scripts/check_identity_integration.py"
       ],
       "timeout_seconds": 600
+    },
+    {
+      "id": "diagnosis-integration",
+      "command": [
+        "python3",
+        "scripts/check_acceptance_incremento2.py"
+      ],
+      "timeout_seconds": 1200
     }
   ]
 }

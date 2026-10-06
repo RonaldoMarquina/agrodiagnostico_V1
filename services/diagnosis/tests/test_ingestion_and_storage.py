@@ -198,6 +198,20 @@ class TestIngestionAndStorage(unittest.TestCase):
 
     # --- Task 4.1: Image parsing and limits ---
 
+    def test_incomplete_multipart_does_not_persist(self):
+        body, ct = make_multipart_body(files=[("image", "leaf.jpg", make_test_jpeg(), "image/jpeg")], boundary="audit")
+        variants = [body[:-len(b"--audit--\r\n")], body.replace(b'; filename="leaf.jpg"', b'')]
+        for body in variants:
+            response = self.client.post("/api/v1/diagnoses", data=body,
+                                        headers={"Authorization": f"Bearer {self.token_user_a}",
+                                                 "Content-Type": ct, "Idempotency-Key": str(uuid.uuid4())})
+            self.assertEqual(response.status_code, 400)
+            self.assertEqual(response.json()["code"], "INVALID_REQUEST")
+        with self.SessionLocal() as session:
+            self.assertEqual(session.query(Diagnosis).count(), 0)
+            self.assertEqual(session.query(ImageUploadIntent).count(), 0)
+        self.assertEqual(self.storage.objects, {})
+
     def test_post_diagnoses_valid_jpeg(self):
         img_bytes = make_test_jpeg(60, 60)
         body, ct = make_multipart_body(files=[("image", "test.jpg", img_bytes, "image/jpeg")])

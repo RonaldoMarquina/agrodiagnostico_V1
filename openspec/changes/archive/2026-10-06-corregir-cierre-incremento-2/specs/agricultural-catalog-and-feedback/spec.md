@@ -1,10 +1,4 @@
-# agricultural-catalog-and-feedback Specification
-
-## Purpose
-
-Define catálogo candidato de papa y maíz, publicación de recomendaciones con revisión documentada y versiones inmutables, administración auditada y feedback propio sin entrenamiento automático.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Catálogo candidato coherente con contratos
 Diagnosis SHALL mantener cultivos POTATO y MAIZE y las siete condiciones candidatas contractuales: POTATO_HEALTHY, POTATO_EARLY_BLIGHT, POTATO_LATE_BLIGHT, MAIZE_HEALTHY, MAIZE_COMMON_RUST, MAIZE_LEAF_BLIGHT y MAIZE_GRAY_LEAF_SPOT. SHALL distinguir HEALTHY de DISEASE; activo no SHALL significar clase de modelo validada. Las semillas SHALL tener model_supported=false. No SHALL introducir plagas ni clases ajenas a la taxonomía V1 por administración.

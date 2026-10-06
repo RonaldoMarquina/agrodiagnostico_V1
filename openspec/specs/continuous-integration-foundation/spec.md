@@ -30,3 +30,9 @@ La evidencia SHALL vincular cada requisito ENV, CTR, MIG, CI y DATA con comando,
 #### Scenario: Informe final del incremento
 - **WHEN** se revisa la evidencia de cierre
 - **THEN** incluye casos positivos y negativos del Incremento 0 y enumera como pendientes el flujo de diagnóstico, autorización de negocio, métricas ML y despliegue público.
+
+### Requirement: Aceptación obligatoria de Diagnosis
+El CI SHALL construir desde el checkout y ejecutar aceptación aislada del incremento 2 con PostgreSQL, S3 y proxy, incluyendo carreras reales de cancelación, idempotencia, versiones y feedback. Un fallo SHALL impedir éxito del CI y los recursos SHALL limpiarse.
+#### Scenario: Regresión de Diagnosis
+- **WHEN** falla aceptación o una carrera relacional
+- **THEN** la etapa obligatoria diagnosis-integration falla y el pipeline no declara éxito

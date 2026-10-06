@@ -499,6 +499,30 @@ class TestCatalogAndVersions(unittest.TestCase):
             logs = session.scalars(select(DiagnosisAuditLog).where(DiagnosisAuditLog.action == "ADMIN_CREATE_RECOMMENDATION")).all()
             self.assertEqual(len(logs), 2)
 
+    def test_recommendation_rejects_invalid_contract_without_persistence(self):
+        payload = dict(problem_code="POTATO_EARLY_BLIGHT", title="Fixture", summary="Fixture",
+                       cultural_practices=[], biological_control=[], preventive_measures=[],
+                       source_refs=["fixture"], review_reference="fixture", reviewed_by="fixture",
+                       reviewed_at="2026-01-01T00:00:00Z")
+        cases = [("source_refs", [""], "CATALOG_REVIEW_REQUIRED"),
+                 ("source_refs", [123], "CATALOG_REVIEW_REQUIRED"),
+                 ("source_refs", ["x"] * 21, "CATALOG_REVIEW_REQUIRED"),
+                 ("reviewed_at", "2026-01-01", "CATALOG_REVIEW_REQUIRED"),
+                 ("review_reference", "x" * 201, "CATALOG_REVIEW_REQUIRED"),
+                 ("cultural_practices", [123], "INVALID_REQUEST"),
+                 ("biological_control", ["x"] * 21, "INVALID_REQUEST"),
+                 ("preventive_measures", ["x" * 501], "INVALID_REQUEST"),
+                 ("active", 1, "INVALID_REQUEST"), ("unexpected", True, "INVALID_REQUEST")]
+        for field, value, code in cases:
+            with self.subTest(field=field, value=value):
+                response = self.client.post("/api/v1/admin/recommendations", json={**payload, field: value},
+                                            headers={"Authorization": f"Bearer {self.token_admin}"})
+                self.assertEqual(response.status_code, 400)
+                self.assertEqual(response.json()["code"], code)
+        with self.SessionLocal() as session:
+            self.assertEqual(session.query(Recommendation).count(), 0)
+            self.assertEqual(session.query(DiagnosisAuditLog).count(), 0)
+
     def test_admin_patch_recommendation_only_active(self):
         headers = {"Authorization": f"Bearer {self.token_admin}"}
         # Insert recommendation

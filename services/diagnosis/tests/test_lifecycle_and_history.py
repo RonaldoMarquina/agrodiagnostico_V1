@@ -198,7 +198,7 @@ class TestLifecycleAndHistory(unittest.TestCase):
             refreshed = session.get(Diagnosis, diag.id)
             self.assertEqual(refreshed.status, "CANCELADO")
 
-    def test_cancel_concurrency_race_single_winner(self):
+    def test_cancel_repeated_request_returns_conflict(self):
         diag = self._insert_diagnosis(owner_id=self.user_a_id, status="PENDIENTE")
         headers = {"Authorization": f"Bearer {self.token_user_a}"}
 

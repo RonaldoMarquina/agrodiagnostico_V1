@@ -8,6 +8,7 @@ from fastapi import HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
+from app.domain.catalog_input import CropCreate, ProblemCreate, RecommendationCreate, validate_catalog_input
 from app.domain.models import Crop, DiagnosisAuditLog, Problem, Recommendation
 from app.infrastructure.cursor import format_utc_iso, parse_utc_iso
 from app.infrastructure.security import Principal
@@ -142,6 +143,7 @@ def create_admin_crop(
     data: Dict[str, Any],
 ) -> Dict[str, Any]:
     """Create a new crop strictly restricted to V1 taxonomy."""
+    validate_catalog_input(CropCreate, data)
     code = data.get("code")
     name = data.get("name")
     active = data.get("active", True)
@@ -281,6 +283,7 @@ def create_admin_problem(
     data: Dict[str, Any],
 ) -> Dict[str, Any]:
     """Create a new problem condition strictly restricted to V1 taxonomy."""
+    validate_catalog_input(ProblemCreate, data)
     code = data.get("code")
     crop_code = data.get("crop_code")
     name = data.get("name")
@@ -442,6 +445,7 @@ def create_admin_recommendation(
     data: Dict[str, Any],
 ) -> Dict[str, Any]:
     """Create a new incremental recommendation version requiring formal review and sources."""
+    validate_catalog_input(RecommendationCreate, data)
     problem_code = data.get("problem_code")
     title = data.get("title")
     summary = data.get("summary")

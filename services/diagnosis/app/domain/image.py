@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from typing import Optional, Set
 from fastapi import HTTPException, Request, status
 import multipart
+from python_multipart.multipart import parse_options_header
 from PIL import Image
 
 MAX_FILE_BYTES: int = 10_485_760        # Exact 10 MiB
@@ -162,6 +163,8 @@ def validate_image_bytes(data: bytes) -> ValidatedImage:
 class _MultipartReceiver:
     def __init__(self):
         self.parts_count = 0
+        self.finished = False
+        self.is_file = False
         self.has_image_part = False
         self.current_field_name: Optional[str] = None
         self.spool = tempfile.SpooledTemporaryFile(max_size=1024 * 1024)
@@ -190,14 +193,14 @@ class _MultipartReceiver:
         field_str = self.header_field.decode("latin1", errors="ignore").lower()
         val_str = self.header_value.decode("latin1", errors="ignore")
         if field_str == "content-disposition":
-            match = re.search(r'name=["\']?([^;"\']+)["\']?', val_str)
-            if match:
-                self.current_field_name = match.group(1)
+            disposition, options = parse_options_header(val_str)
+            self.current_field_name = options.get(b"name", b"").decode("latin1")
+            self.is_file = disposition == b"form-data" and b"filename" in options
         self.header_field = b""
         self.header_value = b""
 
     def on_headers_finished(self):
-        if self.current_field_name != "image":
+        if self.current_field_name != "image" or not self.is_file:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail={"code": "INVALID_REQUEST", "message": "Campo multipart no permitido o diferente de 'image'."},
@@ -219,6 +222,7 @@ class _MultipartReceiver:
         pass
 
     def on_end(self):
+        self.finished = True
         if not self.has_image_part or self.parts_count == 0:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -286,6 +290,8 @@ async def parse_multipart_image(request: Request) -> ValidatedImage:
             parser.write(chunk)
 
         parser.finalize()
+        if not receiver.finished or not receiver.has_image_part:
+            raise HTTPException(400, detail={"code": "INVALID_REQUEST", "message": "Multipart incompleto."})
 
         receiver.spool.seek(0)
         data = receiver.spool.read()

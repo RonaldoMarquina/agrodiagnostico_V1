@@ -1,0 +1,40 @@
+2026-10-06 — python3 scripts/check_acceptance_incremento2.py — exit 0
+STARTING INCREMENT 2 INTEGRATED ACCEPTANCE TEST SUITE
+=======================================================
+
+[1/10] Preparing real Ed25519 JWT identities...
+  ✓ Real Ed25519 tokens minted for User A, User B, Admin
+[2/10] Testing image upload and ingestion via Nginx proxy...
+  ✓ Diagnosis c510d478-ccf4-43cf-a434-cae29c1b9a53 created in PENDIENTE state via Nginx
+[3/10] Testing idempotency replay and fingerprint conflict...
+  ✓ Idempotent replay returned identical 202 payload
+  ✓ Replay with modified payload rejected with 409 IDEMPOTENCY_CONFLICT
+[4/10] Verifying private S3 object retrieval...
+  ✓ Private image retrieved matching exact uploaded bytes
+[5/10] Testing multi-tenant isolation (User B access to User A)...
+  ✓ Multi-tenant isolation verified (all cross-tenant access returns 404 NOT_FOUND)
+[6/10] Testing history keyset pagination with signed cursors...
+  ✓ Keyset pagination and HMAC cursor signature enforcement verified
+[7/10] Testing cancellation and idempotent soft delete...
+  ✓ Cancellation and idempotent tombstone deletion verified
+[8/10] Testing catalog administration and public queries...
+  ✓ Catalog management and public access verified
+[9/10] Testing terminal fixture & feedback lifecycle...
+  ✓ Terminal fixture: Diagnosis transitioned to COMPLETADO in DB
+  ✓ Feedback lifecycle (201 creation, 200 atomic replacement) verified
+[10/10] Testing intent reconciler and S3 fault injection...
+  ✓ Reconciler successfully cleaned up orphaned upload intent and S3 object
+
+=======================================================
+ALL INCREMENT 2 INTEGRATED ACCEPTANCE CHECKS PASSED!
+Zero runtime dependency on RabbitMQ, Redis, or AI Inference.
+=======================================================
+
+PASS PostgreSQL concurrent idempotency: 409 in progress, one acceptance and replay
+PASS PostgreSQL simultaneous cancellation: one winner
+PASS PostgreSQL simultaneous recommendation versions: unique consecutive versions
+PASS PostgreSQL simultaneous feedback: one row, final update preserved
+
+Increment 2 Acceptance Testing COMPLETED SUCCESSFULLY!
+
+Cleaning up acceptance containers and network...

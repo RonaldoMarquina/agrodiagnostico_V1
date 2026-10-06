@@ -3,6 +3,8 @@
 Fecha: 2026-10-01. Estado: adoptado para `incremento-2-diagnosticos-y-catalogo`.
 Tarea: 1.1 de `incremento-2-diagnosticos-y-catalogo`.
 
+> Rectificación vigente de validación y valores contractuales: [ADR-0007](0007-correccion-cierre-incremento-2.md).
+
 ## Contexto
 
 El Incremento 1 implementó autenticación, sesiones, roles y tokens asimétricos Ed25519 en Identity (ADR-0004 y ADR-0005). El servicio Diagnosis únicamente expone salud técnica y una sonda de almacenamiento.

@@ -27,6 +27,13 @@ class ControlTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             validate_plan(duplicated)
 
+    def test_diagnosis_acceptance_cannot_be_replaced_by_noop(self):
+        plan = json.loads((ROOT/'tooling/ci/plan.json').read_text())
+        step = next(s for s in plan['steps'] if s['id'] == 'diagnosis-integration')
+        step['command'] = ['true']
+        with self.assertRaises(ValueError):
+            validate_plan(plan)
+
     def test_failed_process_is_not_success(self):
         code, output = execute([sys.executable, '-c', 'raise SystemExit(7)'], 5, os.environ.copy())
         self.assertEqual(code, 7)
