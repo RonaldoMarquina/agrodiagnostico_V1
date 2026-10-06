@@ -97,7 +97,7 @@ def validate_package(root):
                 if identifier in operation_ids:
                     raise ValueError(f'Duplicate operationId: {identifier}')
                 operation_ids.add(identifier)
-                expected_status = 'implemented' if (route in {'/health/live', '/health/ready'} or op['x-increment'] <= 1) else 'contract-only'
+                expected_status = 'implemented' if (route in {'/health/live', '/health/ready'} or op['x-increment'] <= 2) else 'contract-only'
                 if op['x-status'] != expected_status:
                     raise ValueError(f'Unexpected status for {identifier}: expected {expected_status}, got {op["x-status"]}')
                 if 'security' not in op:

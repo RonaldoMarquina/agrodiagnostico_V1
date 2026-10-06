@@ -361,5 +361,215 @@
     ],
     "runtime_verified": false,
     "rule": "Identidad de usuario válida, cuenta activa; recursos propios. Ajeno/inexistente404."
+  },
+  {
+    "operation_id": "diagnosis_list_crops",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      401
+    ],
+    "runtime_verified": false,
+    "rule": "Autenticación Bearer requerida. Lista solo cultivos activos."
+  },
+  {
+    "operation_id": "diagnosis_list_crop_problems",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      401,
+      404
+    ],
+    "runtime_verified": false,
+    "rule": "Autenticación Bearer requerida. Cultivo desconocido o inactivo devuelve 404."
+  },
+  {
+    "operation_id": "diagnosis_get_problem_recommendations",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      401,
+      404
+    ],
+    "runtime_verified": false,
+    "rule": "Autenticación Bearer requerida. Problema desconocido o inactivo devuelve 404."
+  },
+  {
+    "operation_id": "diagnosis_admin_list_crops",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      401,
+      403
+    ],
+    "runtime_verified": false,
+    "rule": "Solo rol ADMIN. USER devuelve 403; anónimo 401."
+  },
+  {
+    "operation_id": "diagnosis_admin_create_crop",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      400,
+      401,
+      403,
+      409
+    ],
+    "runtime_verified": false,
+    "rule": "Solo rol ADMIN. Duplicado devuelve 409 CATALOG_CONFLICT. Audita mutación."
+  },
+  {
+    "operation_id": "diagnosis_admin_patch_crop",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      400,
+      401,
+      403,
+      404
+    ],
+    "runtime_verified": false,
+    "rule": "Solo rol ADMIN. Modifica nombre y active. Inexistente devuelve 404."
+  },
+  {
+    "operation_id": "diagnosis_admin_list_problems",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      401,
+      403
+    ],
+    "runtime_verified": false,
+    "rule": "Solo rol ADMIN. USER devuelve 403."
+  },
+  {
+    "operation_id": "diagnosis_admin_create_problem",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      400,
+      401,
+      403,
+      409
+    ],
+    "runtime_verified": false,
+    "rule": "Solo rol ADMIN. Duplicado 409 CATALOG_CONFLICT. Audita mutación."
+  },
+  {
+    "operation_id": "diagnosis_admin_patch_problem",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      400,
+      401,
+      403,
+      404
+    ],
+    "runtime_verified": false,
+    "rule": "Solo rol ADMIN. Inexistente devuelve 404."
+  },
+  {
+    "operation_id": "diagnosis_admin_list_recommendations",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      401,
+      403
+    ],
+    "runtime_verified": false,
+    "rule": "Solo rol ADMIN. USER devuelve 403."
+  },
+  {
+    "operation_id": "diagnosis_admin_create_recommendation",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      400,
+      401,
+      403,
+      404
+    ],
+    "runtime_verified": false,
+    "rule": "Solo rol ADMIN. Requiere evidencia de revisión y fuentes."
+  },
+  {
+    "operation_id": "diagnosis_admin_patch_recommendation",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      400,
+      401,
+      403,
+      404
+    ],
+    "runtime_verified": false,
+    "rule": "Solo rol ADMIN. Modifica únicamente active. Inexistente devuelve 404."
+  },
+  {
+    "operation_id": "diagnosis_admin_list_diagnoses",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      400,
+      401,
+      403
+    ],
+    "runtime_verified": false,
+    "rule": "Solo rol ADMIN. Metadatos mínimos, sin fotos ni datos ajenos."
+  },
+  {
+    "operation_id": "diagnosis_submit_feedback",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      400,
+      401,
+      404,
+      409
+    ],
+    "runtime_verified": false,
+    "rule": "Propietario del diagnóstico; solo COMPLETADO o NO_CONCLUYENTE. Ajeno/borrado 404."
   }
 ]

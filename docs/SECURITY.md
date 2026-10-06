@@ -14,6 +14,11 @@ Una cuenta autenticada es obligatoria para crear y leer diagnósticos. `USER` ge
 
 La selección de algoritmo de firma (Ed25519/EdDSA), expiraciones (access 15 min, refresh 7 días), persistencia compartida de RefreshSession en PostgreSQL y rotación atómica con detección de reuso se define normativamente en [ADR-0004](adr/0004-seguridad-identidad-y-autorizacion.md).
 
+### Ventana stateless de 15 minutos en servicios consumidores (Diagnosis)
+Diagnosis valida los access tokens de forma completamente local y asimétrica con la clave pública Ed25519 de Identity (`JWT_PUBLIC_KEY_PATH`), sin realizar consultas a la base de datos de Identity ni verificar el estado de la sesión central en cada petición. Esto garantiza aislamiento total y alto rendimiento.
+Como consecuencia de esta arquitectura desacoplada, existe una ventana stateless de 15 minutos (900 segundos): si un usuario es bloqueado o sus permisos son revocados en Identity, dicha revocación impide inmediatamente renovar el token vía refresh token o autenticarse en Identity, pero los access tokens emitidos previamente seguirán siendo técnicamente válidos en Diagnosis hasta que transcurra su tiempo de vida (máximo 15 minutos). No se utilizan listas negras ni sincronizaciones distribuidas síncronas entre Identity y Diagnosis para preservar el desacoplamiento de servicios.
+
+
 ## Fotografías y objetos
 
 Valida tamaño, extensión, MIME real, bytes, decodificación y dimensiones antes de crear el diagnóstico. Parámetros iniciales configurables: máximo 10 MiB, 24 megapíxeles y JPEG/PNG/WebP; HEIC/HEIF forma parte del objetivo V1 de la fuente (§9.12 y §10.9): se incorporará con conversor y prueba E2E en contenedor antes de anunciar soporte y cerrar V1. La implementación deberá rechazarlos de forma controlada mientras no tenga ese soporte; esta condición de validación no elimina el requisito. El grupo 2 fija inicialmente 10485760 bytes/24000000 píxeles en el contrato; no son límites productivos medidos. Cambiar la configuración efectiva requiere alinear contrato y consumidores. Rechaza bombas de descompresión, imágenes corruptas y cargas disfrazadas. Usa clave aleatoria, bucket privado, metadatos mínimos y eliminación de metadatos sensibles según política.

@@ -294,5 +294,377 @@
     "status": 204,
     "precondition": "Tombstone propio; segunda eliminación sin efectos.",
     "runtime_verified": false
+  },
+  {
+    "id": "catalog-crops-list",
+    "operation_id": "diagnosis_list_crops",
+    "status": 200,
+    "precondition": "Usuario autenticado consulta listado de cultivos activos.",
+    "runtime_verified": false,
+    "expected": "crops-list",
+    "body": {
+      "items": [
+        {
+          "code": "POTATO",
+          "name": "Papa",
+          "active": true,
+          "created_at": "2026-09-30T12:00:00Z",
+          "updated_at": "2026-09-30T12:00:00Z"
+        },
+        {
+          "code": "MAIZE",
+          "name": "Maíz",
+          "active": true,
+          "created_at": "2026-09-30T12:00:00Z",
+          "updated_at": "2026-09-30T12:00:00Z"
+        }
+      ]
+    }
+  },
+  {
+    "id": "catalog-crop-problems",
+    "operation_id": "diagnosis_list_crop_problems",
+    "status": 200,
+    "precondition": "Usuario autenticado consulta condiciones de cultivo activo POTATO.",
+    "runtime_verified": false,
+    "expected": "problems-list",
+    "body": {
+      "items": [
+        {
+          "code": "POTATO_HEALTHY",
+          "crop_code": "POTATO",
+          "name": "Planta sana de papa",
+          "problem_type": "HEALTHY",
+          "model_supported": false,
+          "active": true,
+          "created_at": "2026-09-30T12:00:00Z",
+          "updated_at": "2026-09-30T12:00:00Z"
+        }
+      ]
+    }
+  },
+  {
+    "id": "catalog-recommendations",
+    "operation_id": "diagnosis_get_problem_recommendations",
+    "status": 200,
+    "precondition": "Usuario consulta recomendaciones de problema activo.",
+    "runtime_verified": false,
+    "expected": "recommendations-list",
+    "body": {
+      "items": [
+        {
+          "id": "22222222-2222-4222-8222-222222222222",
+          "problem_code": "POTATO_EARLY_BLIGHT",
+          "version": 1,
+          "title": "Manejo preventivo de tizón temprano",
+          "summary": "Prácticas culturales y medidas preventivas validadas para el control de tizón temprano.",
+          "cultural_practices": [
+            "Rotación de cultivos por al menos 2 años."
+          ],
+          "biological_control": [
+            "Uso de cepas antagonistas de Bacillus subtilis."
+          ],
+          "preventive_measures": [
+            "Monitoreo semanal del tercio inferior del follaje."
+          ],
+          "source_refs": [
+            "Manual INIA 2024"
+          ],
+          "review_reference": "REV-2026-AGRO-001",
+          "reviewed_by": "Ing. Agrónomo Certificado",
+          "reviewed_at": "2026-09-30T10:00:00Z",
+          "active": true,
+          "created_at": "2026-09-30T10:00:00Z",
+          "updated_at": "2026-09-30T10:00:00Z"
+        }
+      ]
+    }
+  },
+  {
+    "id": "admin-crops-list",
+    "operation_id": "diagnosis_admin_list_crops",
+    "status": 200,
+    "precondition": "ADMIN consulta listado administrativo de cultivos.",
+    "runtime_verified": false,
+    "expected": "admin-crops-list",
+    "body": {
+      "items": [
+        {
+          "code": "POTATO",
+          "name": "Papa",
+          "active": true,
+          "created_at": "2026-09-30T12:00:00Z",
+          "updated_at": "2026-09-30T12:00:00Z"
+        }
+      ]
+    }
+  },
+  {
+    "id": "admin-crops-create",
+    "operation_id": "diagnosis_admin_create_crop",
+    "status": 201,
+    "precondition": "ADMIN registra cultivo POTATO en catálogo.",
+    "runtime_verified": false,
+    "expected": "crop-created",
+    "body": {
+      "code": "POTATO",
+      "name": "Papa",
+      "active": true,
+      "created_at": "2026-09-30T12:00:00Z",
+      "updated_at": "2026-09-30T12:00:00Z"
+    }
+  },
+  {
+    "id": "admin-crops-patch",
+    "operation_id": "diagnosis_admin_patch_crop",
+    "status": 200,
+    "precondition": "ADMIN actualiza nombre y estado de cultivo POTATO.",
+    "runtime_verified": false,
+    "expected": "crop-updated",
+    "body": {
+      "code": "POTATO",
+      "name": "Papa común",
+      "active": true,
+      "created_at": "2026-09-30T12:00:00Z",
+      "updated_at": "2026-09-30T14:00:00Z"
+    }
+  },
+  {
+    "id": "admin-problems-list",
+    "operation_id": "diagnosis_admin_list_problems",
+    "status": 200,
+    "precondition": "ADMIN consulta listado administrativo de condiciones.",
+    "runtime_verified": false,
+    "expected": "admin-problems-list",
+    "body": {
+      "items": [
+        {
+          "code": "POTATO_HEALTHY",
+          "crop_code": "POTATO",
+          "name": "Planta sana de papa",
+          "problem_type": "HEALTHY",
+          "model_supported": false,
+          "active": true,
+          "created_at": "2026-09-30T12:00:00Z",
+          "updated_at": "2026-09-30T12:00:00Z"
+        }
+      ]
+    }
+  },
+  {
+    "id": "admin-problems-create",
+    "operation_id": "diagnosis_admin_create_problem",
+    "status": 201,
+    "precondition": "ADMIN crea condición POTATO_LATE_BLIGHT.",
+    "runtime_verified": false,
+    "expected": "problem-created",
+    "body": {
+      "code": "POTATO_LATE_BLIGHT",
+      "crop_code": "POTATO",
+      "name": "Tizón tardío de la papa",
+      "problem_type": "DISEASE",
+      "model_supported": false,
+      "active": true,
+      "created_at": "2026-09-30T12:00:00Z",
+      "updated_at": "2026-09-30T12:00:00Z"
+    }
+  },
+  {
+    "id": "admin-problems-patch",
+    "operation_id": "diagnosis_admin_patch_problem",
+    "status": 200,
+    "precondition": "ADMIN actualiza nombre de condición POTATO_EARLY_BLIGHT.",
+    "runtime_verified": false,
+    "expected": "problem-updated",
+    "body": {
+      "code": "POTATO_EARLY_BLIGHT",
+      "crop_code": "POTATO",
+      "name": "Tizón temprano en papa",
+      "problem_type": "DISEASE",
+      "model_supported": false,
+      "active": true,
+      "created_at": "2026-09-30T12:00:00Z",
+      "updated_at": "2026-09-30T12:00:00Z"
+    }
+  },
+  {
+    "id": "admin-recommendations-list",
+    "operation_id": "diagnosis_admin_list_recommendations",
+    "status": 200,
+    "precondition": "ADMIN lista versiones de recomendaciones.",
+    "runtime_verified": false,
+    "expected": "admin-recommendations-list",
+    "body": {
+      "items": [
+        {
+          "id": "22222222-2222-4222-8222-222222222222",
+          "problem_code": "POTATO_EARLY_BLIGHT",
+          "version": 1,
+          "title": "Manejo preventivo de tizón temprano",
+          "summary": "Prácticas culturales y medidas preventivas validadas para el control de tizón temprano.",
+          "cultural_practices": [
+            "Rotación de cultivos por al menos 2 años."
+          ],
+          "biological_control": [
+            "Uso de cepas antagonistas de Bacillus subtilis."
+          ],
+          "preventive_measures": [
+            "Monitoreo semanal del tercio inferior del follaje."
+          ],
+          "source_refs": [
+            "Manual INIA 2024"
+          ],
+          "review_reference": "REV-2026-AGRO-001",
+          "reviewed_by": "Ing. Agrónomo Certificado",
+          "reviewed_at": "2026-09-30T10:00:00Z",
+          "active": true,
+          "created_at": "2026-09-30T10:00:00Z",
+          "updated_at": "2026-09-30T10:00:00Z"
+        }
+      ]
+    }
+  },
+  {
+    "id": "admin-recommendations-create",
+    "operation_id": "diagnosis_admin_create_recommendation",
+    "status": 201,
+    "precondition": "ADMIN crea versión nueva de recomendación con fuentes y revisión.",
+    "runtime_verified": false,
+    "expected": "recommendation-created",
+    "body": {
+      "id": "22222222-2222-4222-8222-222222222222",
+      "problem_code": "POTATO_EARLY_BLIGHT",
+      "version": 1,
+      "title": "Manejo preventivo de tizón temprano",
+      "summary": "Prácticas culturales y medidas preventivas validadas para el control de tizón temprano.",
+      "cultural_practices": [
+        "Rotación de cultivos por al menos 2 años."
+      ],
+      "biological_control": [
+        "Uso de cepas antagonistas de Bacillus subtilis."
+      ],
+      "preventive_measures": [
+        "Monitoreo semanal del tercio inferior del follaje."
+      ],
+      "source_refs": [
+        "Manual INIA 2024"
+      ],
+      "review_reference": "REV-2026-AGRO-001",
+      "reviewed_by": "Ing. Agrónomo Certificado",
+      "reviewed_at": "2026-09-30T10:00:00Z",
+      "active": true,
+      "created_at": "2026-09-30T10:00:00Z",
+      "updated_at": "2026-09-30T10:00:00Z"
+    }
+  },
+  {
+    "id": "admin-recommendations-patch",
+    "operation_id": "diagnosis_admin_patch_recommendation",
+    "status": 200,
+    "precondition": "ADMIN desactiva versión de recomendación.",
+    "runtime_verified": false,
+    "expected": "recommendation-patched",
+    "body": {
+      "id": "22222222-2222-4222-8222-222222222222",
+      "problem_code": "POTATO_EARLY_BLIGHT",
+      "version": 1,
+      "title": "Manejo preventivo de tizón temprano",
+      "summary": "Prácticas culturales y medidas preventivas validadas para el control de tizón temprano.",
+      "cultural_practices": [
+        "Rotación de cultivos por al menos 2 años."
+      ],
+      "biological_control": [
+        "Uso de cepas antagonistas de Bacillus subtilis."
+      ],
+      "preventive_measures": [
+        "Monitoreo semanal del tercio inferior del follaje."
+      ],
+      "source_refs": [
+        "Manual INIA 2024"
+      ],
+      "review_reference": "REV-2026-AGRO-001",
+      "reviewed_by": "Ing. Agrónomo Certificado",
+      "reviewed_at": "2026-09-30T10:00:00Z",
+      "active": false,
+      "created_at": "2026-09-30T10:00:00Z",
+      "updated_at": "2026-09-30T16:00:00Z"
+    }
+  },
+  {
+    "id": "admin-diagnoses-list",
+    "operation_id": "diagnosis_admin_list_diagnoses",
+    "status": 200,
+    "precondition": "ADMIN consulta supervisión de diagnósticos.",
+    "runtime_verified": false,
+    "expected": "admin-diagnoses-page",
+    "body": {
+      "items": [
+        {
+          "id": "11111111-1111-4111-8111-111111111111",
+          "owner_id": "33333333-3333-4333-8333-333333333333",
+          "status": "PENDIENTE",
+          "reason_code": null,
+          "created_at": "2026-09-30T12:00:00Z",
+          "updated_at": "2026-09-30T12:00:00Z"
+        }
+      ],
+      "next_cursor": null
+    }
+  },
+  {
+    "id": "diagnosis-feedback-create",
+    "operation_id": "diagnosis_submit_feedback",
+    "status": 201,
+    "precondition": "Propietario envía valoración inicial sobre diagnóstico terminal permitido.",
+    "runtime_verified": false,
+    "expected": "feedback-created",
+    "body": {
+      "diagnosis_id": "11111111-1111-4111-8111-111111111111",
+      "useful": true,
+      "comment": "Recomendación preventiva muy clara y aplicable en campo.",
+      "created_at": "2026-09-30T13:00:00Z",
+      "updated_at": "2026-09-30T13:00:00Z"
+    }
+  },
+  {
+    "id": "diagnosis-feedback-update",
+    "operation_id": "diagnosis_submit_feedback",
+    "status": 200,
+    "precondition": "Propietario actualiza valoración de diagnóstico terminal permitido.",
+    "runtime_verified": false,
+    "expected": "feedback-updated",
+    "body": {
+      "diagnosis_id": "11111111-1111-4111-8111-111111111111",
+      "useful": true,
+      "comment": "Recomendación preventiva muy clara y aplicable en campo.",
+      "created_at": "2026-09-30T13:00:00Z",
+      "updated_at": "2026-09-30T14:00:00Z"
+    }
+  },
+  {
+    "id": "diagnosis-history-list",
+    "operation_id": "diagnosis_list",
+    "status": 200,
+    "precondition": "Usuario autenticado consulta su historial de diagnósticos no borrados.",
+    "runtime_verified": false,
+    "expected": "user-diagnosis-page",
+    "body": {
+      "items": [
+        {
+          "id": "11111111-1111-4111-8111-111111111111",
+          "status": "PENDIENTE",
+          "created_at": "2026-09-30T12:00:00Z"
+        }
+      ],
+      "next_cursor": null
+    }
+  },
+  {
+    "id": "diagnosis-image-fetch",
+    "operation_id": "diagnosis_own_image",
+    "status": 200,
+    "precondition": "Propietario descarga bytes de imagen de su diagnóstico no borrado.",
+    "runtime_verified": false,
+    "expected": "binary-image"
   }
 ]

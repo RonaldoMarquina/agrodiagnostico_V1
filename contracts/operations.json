@@ -184,7 +184,7 @@
     "method": "POST",
     "path": "/api/v1/diagnoses",
     "operation_id": "diagnosis_create",
-    "status": "contract-only",
+    "status": "implemented",
     "increment": 2,
     "authorization": "user"
   },
@@ -193,7 +193,7 @@
     "method": "GET",
     "path": "/api/v1/diagnoses",
     "operation_id": "diagnosis_list",
-    "status": "contract-only",
+    "status": "implemented",
     "increment": 2,
     "authorization": "user"
   },
@@ -202,7 +202,7 @@
     "method": "GET",
     "path": "/api/v1/diagnoses/{id}",
     "operation_id": "diagnosis_detail",
-    "status": "contract-only",
+    "status": "implemented",
     "increment": 2,
     "authorization": "user"
   },
@@ -211,7 +211,7 @@
     "method": "POST",
     "path": "/api/v1/diagnoses/{id}/cancel",
     "operation_id": "diagnosis_cancel",
-    "status": "contract-only",
+    "status": "implemented",
     "increment": 2,
     "authorization": "user"
   },
@@ -220,7 +220,7 @@
     "method": "DELETE",
     "path": "/api/v1/diagnoses/{id}",
     "operation_id": "diagnosis_delete",
-    "status": "contract-only",
+    "status": "implemented",
     "increment": 2,
     "authorization": "user"
   },
@@ -247,7 +247,7 @@
     "method": "GET",
     "path": "/api/v1/diagnoses/{id}/image",
     "operation_id": "diagnosis_own_image",
-    "status": "contract-only",
+    "status": "implemented",
     "increment": 2,
     "authorization": "user"
   },
@@ -285,6 +285,132 @@
     "operation_id": "notification_patch_preferences",
     "status": "contract-only",
     "increment": 5,
+    "authorization": "user"
+  },
+  {
+    "service": "diagnosis",
+    "method": "GET",
+    "path": "/api/v1/crops",
+    "operation_id": "diagnosis_list_crops",
+    "status": "implemented",
+    "increment": 2,
+    "authorization": "user"
+  },
+  {
+    "service": "diagnosis",
+    "method": "GET",
+    "path": "/api/v1/crops/{code}/problems",
+    "operation_id": "diagnosis_list_crop_problems",
+    "status": "implemented",
+    "increment": 2,
+    "authorization": "user"
+  },
+  {
+    "service": "diagnosis",
+    "method": "GET",
+    "path": "/api/v1/problems/{code}/recommendations",
+    "operation_id": "diagnosis_get_problem_recommendations",
+    "status": "implemented",
+    "increment": 2,
+    "authorization": "user"
+  },
+  {
+    "service": "diagnosis",
+    "method": "GET",
+    "path": "/api/v1/admin/crops",
+    "operation_id": "diagnosis_admin_list_crops",
+    "status": "implemented",
+    "increment": 2,
+    "authorization": "admin"
+  },
+  {
+    "service": "diagnosis",
+    "method": "POST",
+    "path": "/api/v1/admin/crops",
+    "operation_id": "diagnosis_admin_create_crop",
+    "status": "implemented",
+    "increment": 2,
+    "authorization": "admin"
+  },
+  {
+    "service": "diagnosis",
+    "method": "PATCH",
+    "path": "/api/v1/admin/crops/{code}",
+    "operation_id": "diagnosis_admin_patch_crop",
+    "status": "implemented",
+    "increment": 2,
+    "authorization": "admin"
+  },
+  {
+    "service": "diagnosis",
+    "method": "GET",
+    "path": "/api/v1/admin/problems",
+    "operation_id": "diagnosis_admin_list_problems",
+    "status": "implemented",
+    "increment": 2,
+    "authorization": "admin"
+  },
+  {
+    "service": "diagnosis",
+    "method": "POST",
+    "path": "/api/v1/admin/problems",
+    "operation_id": "diagnosis_admin_create_problem",
+    "status": "implemented",
+    "increment": 2,
+    "authorization": "admin"
+  },
+  {
+    "service": "diagnosis",
+    "method": "PATCH",
+    "path": "/api/v1/admin/problems/{code}",
+    "operation_id": "diagnosis_admin_patch_problem",
+    "status": "implemented",
+    "increment": 2,
+    "authorization": "admin"
+  },
+  {
+    "service": "diagnosis",
+    "method": "GET",
+    "path": "/api/v1/admin/recommendations",
+    "operation_id": "diagnosis_admin_list_recommendations",
+    "status": "implemented",
+    "increment": 2,
+    "authorization": "admin"
+  },
+  {
+    "service": "diagnosis",
+    "method": "POST",
+    "path": "/api/v1/admin/recommendations",
+    "operation_id": "diagnosis_admin_create_recommendation",
+    "status": "implemented",
+    "increment": 2,
+    "authorization": "admin"
+  },
+  {
+    "service": "diagnosis",
+    "method": "PATCH",
+    "path": "/api/v1/admin/recommendations/{id}",
+    "operation_id": "diagnosis_admin_patch_recommendation",
+    "status": "implemented",
+    "increment": 2,
+    "authorization": "admin"
+  },
+  {
+    "service": "diagnosis",
+    "method": "GET",
+    "path": "/api/v1/admin/diagnoses",
+    "operation_id": "diagnosis_admin_list_diagnoses",
+    "status": "implemented",
+    "increment": 2,
+    "authorization": "admin"
+  },
+  {
+    "service": "diagnosis",
+    "method": "POST",
+    "path": "/api/v1/diagnoses/{id}/feedback",
+    "operation_id": "diagnosis_submit_feedback",
+    "status": "implemented",
+    "increment": 2,
     "authorization": "user"
   }
 ]

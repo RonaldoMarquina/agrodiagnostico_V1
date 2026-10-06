@@ -31,9 +31,11 @@
     "increment": 2,
     "status": "pending-contract",
     "before_consumer": true,
-    "conceptual_routes": [],
+    "conceptual_routes": [
+      "POST /api/v1/diagnoses/{id}/feedback"
+    ],
     "authorization": "USER-own",
-    "note": "Rutas conceptuales de la fuente; forma final/payload/errores pendientes antes de integrar consumidores. No publicadas ni aliases exigidos."
+    "note": "Feedback único y actualizable por diagnóstico propio en COMPLETADO o NO_CONCLUYENTE; booleano useful y comment opcional; 201 en creación y 200 en reemplazo; sin eventos ML."
   },
   {
     "capability": "notification-read",
@@ -70,16 +72,16 @@
     "conceptual_routes": [
       "GET /api/v1/admin/crops",
       "POST /api/v1/admin/crops",
+      "PATCH /api/v1/admin/crops/{code}",
       "GET /api/v1/admin/problems",
       "POST /api/v1/admin/problems",
+      "PATCH /api/v1/admin/problems/{code}",
       "GET /api/v1/admin/recommendations",
       "POST /api/v1/admin/recommendations",
-      "PATCH /api/v1/admin/crops/{id}",
-      "PATCH /api/v1/admin/problems/{id}",
       "PATCH /api/v1/admin/recommendations/{id}"
     ],
     "authorization": "ADMIN",
-    "note": "Rutas conceptuales de la fuente; forma final/payload/errores pendientes antes de integrar consumidores. No publicadas ni aliases exigidos."
+    "note": "Gestión administrativa de catálogo V1 y versiones inmutables con revisión obligatoria y auditoría transaccional."
   },
   {
     "capability": "admin-diagnoses",
@@ -91,7 +93,7 @@
       "GET /api/v1/admin/diagnoses"
     ],
     "authorization": "ADMIN",
-    "note": "Rutas conceptuales de la fuente; forma final/payload/errores pendientes antes de integrar consumidores. No publicadas ni aliases exigidos."
+    "note": "Supervisión administrativa de metadatos de diagnósticos con paginación HMAC auditada; sin acceso a fotos ni datos ajenos de Identity."
   },
   {
     "capability": "audit",

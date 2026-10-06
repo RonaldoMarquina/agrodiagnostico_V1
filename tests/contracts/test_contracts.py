@@ -26,7 +26,7 @@ class Contracts(unittest.TestCase):
 
     def test_package_and_all_embedded_examples(self):
         report = v.validate_package(CONTRACTS)
-        self.assertEqual(report['operations'], 32)
+        self.assertEqual(report['operations'], 46)
         self.assertGreater(report['embedded_examples'], 100)
 
     def test_positive_and_negative_fixtures(self):

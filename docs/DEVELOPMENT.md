@@ -96,3 +96,24 @@ El ejecutor verifica versiones y todas las etapas obligatorias, guarda evidencia
 Para aplicar el código corregido al entorno local: ejecutar `python3 scripts/prepare_local.py`, `docker compose build identity identity-migrate` y `docker compose up -d --wait --wait-timeout 180`. Revisar primero los cambios/migraciones y preservar respaldos si hay datos que conservar. La migración nueva es `identity_0003`; conserva auditoría anterior como legacy. Las sesiones con CSRF anterior requieren nuevo login. Cookies siguen siendo Secure: las pruebas HTTP de backend transfieren cookies explícitamente; no acreditan un flujo de navegador sin HTTPS.
 
 Aceptación independiente: `python3 scripts/check_identity_integration.py`. Construye una imagen del código actual, usa DB/red/contenedores propios y los elimina al terminar. No usa credenciales ni bases del entorno local. El correo sigue siendo adaptador local/de prueba; no se anuncia entrega externa.
+
+## Configuración y secretos de Diagnosis (Incremento 2)
+
+Diagnosis valida tokens JWT de forma asimétrica y puramente local utilizando la clave pública Ed25519 de Identity (`JWT_PUBLIC_KEY_PATH: /run/secrets/jwt_public_key.pem`). Diagnosis **nunca** recibe ni monta la clave privada `jwt_private_key.pem`.
+
+Para la paginación keyset segura mediante cursores cifrados/autenticados, Diagnosis utiliza un secreto HMAC independiente (`CURSOR_SIGNING_KEY_FILE: /run/secrets/cursor_signing_key`).
+
+### Preparación y permisos locales
+`python3 scripts/prepare_local.py` genera de manera idempotente:
+1. `jwt_public_key.pem` y `jwt_private_key.pem` (modo `0600`).
+2. `cursor_signing_key` con 32 bytes aleatorios en hexadecimal (modo `0600`).
+Ambos archivos residen en `.local/persistence/`, ignorado por Git. Compose monta `cursor_signing_key` y la clave pública en Diagnosis como secretos de solo lectura.
+
+### Fallo cerrado
+Si `JWT_PUBLIC_KEY_PATH` o el archivo de clave pública no está disponible o no es una clave Ed25519 válida, el servicio falla cerrado rechazando cualquier solicitud autenticada con 401 `UNAUTHORIZED`. De igual forma, si falta `CURSOR_SIGNING_KEY_FILE`, cualquier intento de codificar o decodificar un cursor de paginación falla inmediatamente devolviendo un error sin procesar.
+
+### Procedimiento de rotación
+- **Clave pública JWT (Ed25519)**: Para rotar la clave asimétrica, primero se distribuye la nueva clave pública en los servicios verificadores (Diagnosis), y posteriormente se activa la nueva clave privada en Identity. Tokens firmados con claves revocadas o desconocidas devuelven 401 `UNAUTHORIZED`.
+- **Clave de firma de cursores (`cursor_signing_key`)**: Para rotar el secreto HMAC de cursores, se genera un nuevo secreto aleatorio en `cursor_signing_key` y se reinician las instancias de Diagnosis. Los clientes que envíen un cursor firmado con la clave anterior recibirán 400 `INVALID_PAGINATION`, lo cual indica al cliente que debe reiniciar la paginación desde el primer elemento.
+- **Regla de oro**: Ningún comando de preparación, prueba o rotación debe imprimir el valor de los secretos ni guardarlos en el repositorio.
+

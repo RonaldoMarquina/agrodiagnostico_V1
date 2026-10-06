@@ -2,7 +2,7 @@
 
 Plataforma web de apoyo para analizar fotografías de papa y maíz. Muestra una condición visual probable solo cuando la clase está validada y la evidencia es suficiente. En los demás casos devuelve **NO_CONCLUYENTE** y orienta al usuario para repetir la fotografía. No reemplaza una evaluación profesional.
 
-> Estado: documentación inicial para desarrollo incremental. La presencia de una carpeta o un componente en la arquitectura no significa que ya esté implementado.
+> Estado: Incrementos 0 (base técnica y contratos), 1 (identidad y autorización) y 2 (diagnósticos, catálogo y almacenamiento privado) implementados y auditados. La inferencia asíncrona (Incremento 3), entrenamiento (Incremento 4) y despliegue final (Incremento 5) continúan pendientes.
 
 ## Alcance comprometido
 

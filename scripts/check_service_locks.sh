@@ -11,7 +11,7 @@ for service in identity diagnosis ai_inference notification; do
     "$check_dir/tools/bin/uv" sync --project "services/$service" --locked --no-dev --no-install-project
   "$check_dir/$service/bin/python" -c 'import fastapi, sqlalchemy, alembic, psycopg; print("imports_ok")'
   PYTHONPATH="$PWD/services/$service" "$check_dir/$service/bin/python" tests/backend/check_health.py
-  if [[ "$service" == "identity" ]]; then
-    (cd services/identity && PYTHONDONTWRITEBYTECODE=1 "$check_dir/$service/bin/python" -m unittest discover -s tests -v)
+  if [[ "$service" == "identity" || "$service" == "diagnosis" ]]; then
+    (cd "services/$service" && PYTHONDONTWRITEBYTECODE=1 "$check_dir/$service/bin/python" -m unittest discover -s tests -v)
   fi
 done

@@ -857,6 +857,555 @@
         "next_cursor"
       ],
       "additionalProperties": false
+    },
+    "Crop": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "enum": [
+            "POTATO",
+            "MAIZE"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "$ref": "#/$defs/UTC"
+        },
+        "updated_at": {
+          "$ref": "#/$defs/UTC"
+        }
+      },
+      "required": [
+        "code",
+        "name",
+        "active",
+        "created_at",
+        "updated_at"
+      ],
+      "additionalProperties": false
+    },
+    "CropList": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/$defs/Crop"
+          }
+        }
+      },
+      "required": [
+        "items"
+      ],
+      "additionalProperties": false
+    },
+    "CropCreate": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "enum": [
+            "POTATO",
+            "MAIZE"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "active": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "code",
+        "name"
+      ],
+      "additionalProperties": false
+    },
+    "CropPatch": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "active": {
+          "type": "boolean"
+        }
+      },
+      "minProperties": 1,
+      "additionalProperties": false
+    },
+    "Problem": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9_]+$",
+          "maxLength": 80
+        },
+        "crop_code": {
+          "type": "string",
+          "enum": [
+            "POTATO",
+            "MAIZE"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "problem_type": {
+          "type": "string",
+          "enum": [
+            "HEALTHY",
+            "DISEASE"
+          ]
+        },
+        "model_supported": {
+          "type": "boolean"
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "$ref": "#/$defs/UTC"
+        },
+        "updated_at": {
+          "$ref": "#/$defs/UTC"
+        }
+      },
+      "required": [
+        "code",
+        "crop_code",
+        "name",
+        "problem_type",
+        "model_supported",
+        "active",
+        "created_at",
+        "updated_at"
+      ],
+      "additionalProperties": false
+    },
+    "ProblemList": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/$defs/Problem"
+          }
+        }
+      },
+      "required": [
+        "items"
+      ],
+      "additionalProperties": false
+    },
+    "ProblemCreate": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9_]+$",
+          "maxLength": 80
+        },
+        "crop_code": {
+          "type": "string",
+          "enum": [
+            "POTATO",
+            "MAIZE"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "problem_type": {
+          "type": "string",
+          "enum": [
+            "HEALTHY",
+            "DISEASE"
+          ]
+        },
+        "active": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "code",
+        "crop_code",
+        "name",
+        "problem_type"
+      ],
+      "additionalProperties": false
+    },
+    "ProblemPatch": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "active": {
+          "type": "boolean"
+        }
+      },
+      "minProperties": 1,
+      "additionalProperties": false
+    },
+    "Recommendation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "problem_code": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9_]+$",
+          "maxLength": 80
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "cultural_practices": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        },
+        "biological_control": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        },
+        "preventive_measures": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        },
+        "source_refs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 20,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          }
+        },
+        "review_reference": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "reviewed_by": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "reviewed_at": {
+          "$ref": "#/$defs/UTC"
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "$ref": "#/$defs/UTC"
+        },
+        "updated_at": {
+          "$ref": "#/$defs/UTC"
+        }
+      },
+      "required": [
+        "id",
+        "problem_code",
+        "version",
+        "title",
+        "summary",
+        "cultural_practices",
+        "biological_control",
+        "preventive_measures",
+        "source_refs",
+        "review_reference",
+        "reviewed_by",
+        "reviewed_at",
+        "active",
+        "created_at",
+        "updated_at"
+      ],
+      "additionalProperties": false
+    },
+    "RecommendationList": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/$defs/Recommendation"
+          }
+        }
+      },
+      "required": [
+        "items"
+      ],
+      "additionalProperties": false
+    },
+    "RecommendationCreate": {
+      "type": "object",
+      "properties": {
+        "problem_code": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9_]+$",
+          "maxLength": 80
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "cultural_practices": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        },
+        "biological_control": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        },
+        "preventive_measures": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        },
+        "source_refs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 20,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          }
+        },
+        "review_reference": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "reviewed_by": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "reviewed_at": {
+          "$ref": "#/$defs/UTC"
+        },
+        "active": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "problem_code",
+        "title",
+        "summary",
+        "cultural_practices",
+        "biological_control",
+        "preventive_measures",
+        "source_refs",
+        "review_reference",
+        "reviewed_by",
+        "reviewed_at"
+      ],
+      "additionalProperties": false
+    },
+    "RecommendationPatch": {
+      "type": "object",
+      "properties": {
+        "active": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "active"
+      ],
+      "additionalProperties": false
+    },
+    "AdminDiagnosisSummary": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "owner_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "PENDIENTE",
+            "PROCESANDO",
+            "COMPLETADO",
+            "NO_CONCLUYENTE",
+            "FALLIDO",
+            "CANCELADO"
+          ]
+        },
+        "reason_code": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 80
+        },
+        "created_at": {
+          "$ref": "#/$defs/UTC"
+        },
+        "updated_at": {
+          "$ref": "#/$defs/UTC"
+        }
+      },
+      "required": [
+        "id",
+        "owner_id",
+        "status",
+        "created_at",
+        "updated_at"
+      ],
+      "additionalProperties": false
+    },
+    "AdminDiagnosisPage": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/$defs/AdminDiagnosisSummary"
+          }
+        },
+        "next_cursor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 2048
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor"
+      ],
+      "additionalProperties": false
+    },
+    "DiagnosisFeedbackInput": {
+      "type": "object",
+      "properties": {
+        "useful": {
+          "type": "boolean"
+        },
+        "comment": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        }
+      },
+      "required": [
+        "useful"
+      ],
+      "additionalProperties": false
+    },
+    "DiagnosisFeedback": {
+      "type": "object",
+      "properties": {
+        "diagnosis_id": {
+          "$ref": "#/$defs/UUID"
+        },
+        "useful": {
+          "type": "boolean"
+        },
+        "comment": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        },
+        "created_at": {
+          "$ref": "#/$defs/UTC"
+        },
+        "updated_at": {
+          "$ref": "#/$defs/UTC"
+        }
+      },
+      "required": [
+        "diagnosis_id",
+        "useful",
+        "created_at",
+        "updated_at"
+      ],
+      "additionalProperties": false
     }
   }
 }
+

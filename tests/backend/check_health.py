@@ -38,8 +38,28 @@ class HealthTests(unittest.TestCase):
                 '/api/v1/admin/users', '/api/v1/admin/users/{id}/block', '/api/v1/admin/users/{id}/activate',
             }
             self.assertEqual(set(main.app.openapi()['paths']), expected_paths)
+        elif getattr(main, 'SERVICE', None) == 'diagnosis':
+            expected_paths = {
+                '/health/live', '/health/ready',
+                '/api/v1/diagnoses', '/api/v1/diagnoses/{id}',
+                '/api/v1/diagnoses/{id}/cancel',
+                '/api/v1/diagnoses/{id}/image',
+                '/api/v1/diagnoses/{id}/feedback',
+                '/api/v1/admin/diagnoses',
+                '/api/v1/crops',
+                '/api/v1/crops/{code}/problems',
+                '/api/v1/problems/{code}/recommendations',
+                '/api/v1/admin/crops',
+                '/api/v1/admin/crops/{code}',
+                '/api/v1/admin/problems',
+                '/api/v1/admin/problems/{code}',
+                '/api/v1/admin/recommendations',
+                '/api/v1/admin/recommendations/{id}',
+            }
+            self.assertEqual(set(main.app.openapi()['paths']), expected_paths)
         else:
             self.assertEqual(set(main.app.openapi()['paths']), {'/health/live', '/health/ready'})
+
 
 
 if __name__ == '__main__':

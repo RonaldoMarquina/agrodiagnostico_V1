@@ -31,6 +31,25 @@ def health(degraded=None):
         actual = http('http://' + service + ':8000/openapi.json').json()
         if service == 'identity':
             assert set(actual['paths']) == set(doc['paths'])
+        elif service == 'diagnosis':
+            expected_diag_paths = {
+                '/health/live', '/health/ready',
+                '/api/v1/diagnoses', '/api/v1/diagnoses/{id}',
+                '/api/v1/diagnoses/{id}/cancel',
+                '/api/v1/diagnoses/{id}/image',
+                '/api/v1/diagnoses/{id}/feedback',
+                '/api/v1/admin/diagnoses',
+                '/api/v1/crops',
+                '/api/v1/crops/{code}/problems',
+                '/api/v1/problems/{code}/recommendations',
+                '/api/v1/admin/crops',
+                '/api/v1/admin/crops/{code}',
+                '/api/v1/admin/problems',
+                '/api/v1/admin/problems/{code}',
+                '/api/v1/admin/recommendations',
+                '/api/v1/admin/recommendations/{id}',
+            }
+            assert set(actual['paths']) == expected_diag_paths
         else:
             assert set(actual['paths']) == {'/health/live', '/health/ready'}
         for kind in ['live', 'ready']:
@@ -55,7 +74,10 @@ def health(degraded=None):
                 assert set(gs['properties']) == set(cs['properties'])
                 for prop in cs['properties']:
                     assert gs['properties'][prop]['const'] == cs['properties'][prop]['const']
-        assert http('http://' + service + ':8000/api/v1/diagnoses').status_code == 404
+        if service == 'diagnosis':
+            assert http('http://' + service + ':8000/api/v1/diagnoses').status_code == 401
+        else:
+            assert http('http://' + service + ':8000/api/v1/diagnoses').status_code == 404
     print('HTTP health/contracts PASS: ' + str(degraded or 'healthy'))
 
 

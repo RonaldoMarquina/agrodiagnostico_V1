@@ -6,7 +6,7 @@ Estado actual: estructura y auditoría del equipo disponibles; grupos 1–7 del 
 | --- | --- | --- |
 | 0 | Entorno Compose, contratos HTTP/eventos, migraciones base, CI e inventario de datos | Verificado: grupos 1–7 terminados; 8 operaciones de salud implementadas; 19 contract-only |
 | 1 | Registro, sesiones, roles, perfil, cambio y recuperación de contraseña, autorización | Implementado y revisado mediante correctivo posterior; 12 operaciones de identidad. Véase evidencia INCREMENTO-1-CORRECCION |
-| 2 | Imágenes privadas, validación y formatos, diagnósticos, catálogo, historial, feedback | Pendiente |
+| 2 | Imágenes privadas, validación y formatos, diagnósticos, catálogo, historial, feedback | Verificado: Grupos 1–9 implementados y auditados; 20 operaciones de negocio de Diagnosis implementadas. Véase evidencia INCREMENTO-2-AUDIT |
 | 3 | RabbitMQ, outbox/inbox, lease, worker provisional e idempotencia | Pendiente; resultados simulados, no diagnósticos reales |
 | 4 | Dataset autorizado, cultivo automático, entrenamiento, evaluación y modelo validado | Pendiente; siete clases candidatas |
 | 5 | Notificaciones, lectura de avisos, interfaz final, observabilidad, recuperación, pruebas y despliegue con dominio, HTTPS, Cloudflare y CDN | Pendiente |
@@ -19,5 +19,6 @@ Aceptación integrada local del grupo 7: 7.1–7.4 verificadas, incluida CI remo
 
 Estado final del Incremento 1: Grupos 1–7 concluidos y verificados (38/38 pruebas de identidad, contratos OpenAPI y pruebas multi-instancia contra PostgreSQL). [Evidencia](evidence/INCREMENTO-1-AUDIT.md). Las 12 operaciones de negocio del servicio identity han sido implementadas; los tres deltas están sincronizados en `openspec/specs/` y el cambio está archivado en [tasks.md](../openspec/changes/archive/2026-09-30-incremento-1-identidad-y-autorizacion/tasks.md). Los incrementos 2–5 permanecen pendientes.
 
+El cierre original del Incremento 1 fue rectificado tras revisión. [Corrección y límites verificados](evidence/INCREMENTO-1-CORRECCION.md): configuración Ed25519, Origin/CSRF, respuestas, correlación, auditoría y aceptación de procesos independientes. El archivo original se conserva como histórico.
 
-El cierre original del Incremento 1 fue rectificado tras revisión. [Corrección y límites verificados](evidence/INCREMENTO-1-CORRECCION.md): configuración Ed25519, Origin/CSRF, respuestas, correlación, auditoría y aceptación de procesos independientes. El archivo original se conserva como histórico. Incremento 2 continúa pendiente y separado.
+Estado final del Incremento 2: Grupos 1–9 concluidos y verificados (113 pruebas unitarias e integración de Diagnosis, aceptación integral E2E en contenedores aislados vía Nginx, 20 operaciones promovidas a implementadas, 0 dependencias en tiempo de ejecución de RabbitMQ/Redis/AI). [Evidencia](evidence/INCREMENTO-2-AUDIT.md). Tareas archivadas en [tasks.md](../openspec/changes/incremento-2-diagnosticos-y-catalogo/tasks.md). Los incrementos 3–5 permanecen pendientes.

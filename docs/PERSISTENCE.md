@@ -8,14 +8,80 @@ Python3.12, uv0.12.20, FastAPI0.141.1, SQLAlchemy2.1.1, Alembic1.20.0 y psycopg3
 
 La imagen de PostgreSQL16 y Python3.12-bookworm están fijadas por los digests comprobados en `docker-compose.yml` e `infra/docker/persistence.Dockerfile`; son imágenes oficiales disponibles en este equipo, sin afirmar que sean la última revisión o una auditoría de vulnerabilidades. Actualizarlas exige revisar lock/digest y repetir las pruebas.
 
-| Base y rol propietario | Revisión base | Tablas de aplicación iniciales |
+| Base y rol propietario | Revisión base / actual | Tablas de aplicación |
 | --- | --- | --- |
-| identity | identity_0001 | Solo alembic_version |
-| diagnosis | diagnosis_0001 | Solo alembic_version |
+| identity | identity_0003 | alembic_version, users, refresh_sessions, password_recovery_tokens, audit_logs |
+| diagnosis | diagnosis_0002 | alembic_version, crops, problems, recommendations, diagnoses, idempotency_keys, image_upload_intents, diagnosis_feedback, diagnosis_audit_logs |
 | ai_inference | ai_inference_0001 | Solo alembic_version |
 | notification | notification_0001 | Solo alembic_version |
 
-Roles sin superuser/CREATEDB/CREATEROLE/REPLICATION/BYPASSRLS ni membresías. CONNECT público revocado en las cuatro bases y en postgres/template1; permisos del schema public restringidos al dueño. No hay tablas compartidas ni seeds. Bootstrap rechaza dueño inesperado o membresía ajena, sin apropiarse de bases existentes. Credencial postgres solo en PostgreSQL y job bootstrap; cada migración recibe únicamente su secreto propio.
+Roles sin superuser/CREATEDB/CREATEROLE/REPLICATION/BYPASSRLS ni membresías. CONNECT público revocado en las cuatro bases y en postgres/template1; permisos del schema public restringidos al dueño. No hay tablas compartidas ni llaves foráneas cruzadas entre servicios. Bootstrap rechaza dueño inesperado o membresía ajena, sin apropiarse de bases existentes. Credencial postgres solo en PostgreSQL y job bootstrap; cada migración recibe únicamente su secreto propio.
+
+## Dominio de Diagnosis y Catálogo Candidato (Incremento 2)
+
+La revisión `diagnosis_0002` crea las 8 tablas de dominio del servicio Diagnosis:
+1. `crops`: Catálogo de cultivos autorizados (`POTATO`, `MAIZE`).
+2. `problems`: Condiciones candidatas (`HEALTHY` y `DISEASE`), asociadas a su cultivo, con `model_supported=false`.
+3. `recommendations`: Versiones inmutables de recomendaciones agronómicas (`UNIQUE(problem_code, version)`), con fuentes y referencias de revisión humana.
+4. `diagnoses`: Ciclo de vida del diagnóstico, referencia S3 privada `object_key` (sin bytes de imagen en PostgreSQL), snapshot de recomendación y tombstone de borrado lógico `deleted_at`.
+5. `idempotency_keys`: Namespace de idempotencia `(owner_id, scope, key)` con fingerprint SHA-256 de la imagen y expiración de 24 horas.
+6. `image_upload_intents`: Intenciones durables para el protocolo de subida a S3 y reconciliación sin huérfanos.
+7. `diagnosis_feedback`: Registro 1:1 de utilidad y comentarios sobre diagnósticos completados o no concluyentes.
+8. `diagnosis_audit_logs`: Auditoría transaccional exclusiva del servicio Diagnosis (actor, acción, destino, correlación, timestamp UTC).
+
+### Semillas candidatas e invariantes
+- **Taxonomía V1**: Se insertan los cultivos `POTATO` y `MAIZE`, junto a las siete condiciones contractuales: `POTATO_HEALTHY`, `POTATO_EARLY_BLIGHT`, `POTATO_LATE_BLIGHT`, `MAIZE_HEALTHY`, `MAIZE_COMMON_RUST`, `MAIZE_LEAF_BLIGHT` y `MAIZE_GRAY_LEAF_SPOT`.
+- **Invariante de validación**: Ninguna condición candidata activa equivale a clase validada por el modelo de IA; todas inician estrictamente con `model_supported=false`.
+- **Invariante de recomendaciones**: El catálogo arranca sin recomendaciones agronómicas semilla (`items: []`). Un catálogo sin recomendaciones es un arranque técnicamente válido. No se insertan tratamientos ni dosis sin un paquete formal de fuentes y revisión humana documentada.
+
+### Comandos de migración reproducibles para Diagnosis
+```bash
+docker compose run --rm --no-deps diagnosis-migrate python -m app.migrate current
+docker compose run --rm --no-deps diagnosis-migrate python -m app.migrate upgrade head
+docker compose run --rm --no-deps diagnosis-migrate python -m app.migrate ready
+```
+
+## Ingesta, S3, Idempotencia y Reconciliación (Incremento 2)
+
+### Protocolo de carga e intenciones durables
+1. **Validación multipart y límites**:
+   - Único campo `image` obligatorio en `multipart/form-data`; cualquier campo o archivo adicional devuelve `400 INVALID_REQUEST`.
+   - Límite real del archivo: exactamente 10 MiB (10,485,760 bytes). Superar este límite devuelve `413 IMAGE_TOO_LARGE`.
+   - Margen de transporte multipart: 11 MiB (11,534,336 bytes).
+   - Formatos permitidos: JPEG, PNG y WebP decodificables; detectados por número mágico y validación profunda Pillow con decodificación de píxeles (`load()`).
+   - Máximo 24 megapíxeles (24,000,000 píxeles decodificados). Píxeles excesivos o avisos/errores de descompresión disparan `413 IMAGE_TOO_LARGE`.
+   - Archivos multifotograma o animados son rechazados con `400 INVALID_IMAGE`.
+   - Archivos corruptos tras cabecera válida devuelven `400 INVALID_IMAGE`.
+   - Formatos no admitidos (GIF, BMP, TIFF, ejecutables) o HEIC/HEIF devuelven `415 UNSUPPORTED_MEDIA_TYPE`. El soporte y conversión HEIC/HEIF permanece pendiente para V1.
+   - No se anuncia sanitización EXIF no ejecutada; se conserva el archivo original privado para fingerprint SHA-256 y descarga por su propietario.
+
+2. **Idempotencia con bloqueo advisory no bloqueante**:
+   - Clave obligatoria `Idempotency-Key` (patrón `^[A-Za-z0-9._:-]{1,128}$`).
+   - Serialización mediante `SELECT pg_try_advisory_xact_lock(:lock_id)` derivado de `(owner_id, scope, key)`. Si el bloqueo no se adquiere de inmediato, devuelve `409 IDEMPOTENCY_IN_PROGRESS`.
+   - Retención de 24 horas no deslizante (`expires_at = first_accepted_at + 86400s`).
+   - Replay idéntico durante retención devuelve `202 Accepted` con ID, fecha original y estado actual, sin duplicar registros ni subidas a S3.
+   - Clave repetida con contenido diferente devuelve `409 IDEMPOTENCY_CONFLICT`.
+   - Clave asociada a un diagnóstico con borrado lógico (`deleted_at IS NOT NULL`) devuelve `409 IDEMPOTENCY_RESOURCE_DELETED` durante retención, sin resucitar el recurso.
+   - Al expirar (`now >= expires_at`), se permite una nueva generación atómica conservando el diagnóstico previo.
+   - Separación estricta por usuario: claves idénticas entre usuarios distintos operan en namespaces aislados.
+
+3. **Reconciliador de intenciones huérfanas (`reconcile_upload_intents`)**:
+   - Comando de mantenimiento: `python -m app.application.reconcile`
+   - Ejecuta consulta bajo transacción con `FOR UPDATE SKIP LOCKED`, lo que garantiza que no colisiona con subidas en curso ni bloquea otros procesos.
+   - Para cada intención: verifica si algún diagnóstico en PostgreSQL referencia `object_key` o `diagnosis_id`.
+   - Si existe referencia: conserva el objeto en S3 y retira la intención residual.
+   - Si no existe referencia: elimina el objeto en S3 (ausencia cuenta como éxito idempotente) y luego elimina la intención de la base de datos.
+   - Si la eliminación en S3 falla: la intención se preserva en PostgreSQL para reintentarse en ejecuciones posteriores.
+   - Límites: procesamiento por lotes acotados (`batch_size=100`) con reintentos y timeouts acotados.
+
+4. **Entrega privada al propietario**:
+   - `GET /api/v1/diagnoses/{id}/image`:
+     - Exige Bearer token válido y propiedad estricta.
+     - Devuelve bytes originales con `Content-Type` real y cabecera `Cache-Control: private, no-store`.
+     - Si el recurso es ajeno, inexistente o tiene tombstone (`deleted_at`), responde un `404 NOT_FOUND` genérico idéntico.
+     - Usuarios con rol `ADMIN` en esta ruta de usuario están sujetos a la misma comprobación de propiedad (reciben 404 si la imagen no les pertenece).
+
+
 
 ## Preparación y ejecución
 

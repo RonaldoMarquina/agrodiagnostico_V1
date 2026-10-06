@@ -9,13 +9,20 @@ from app.persistence import SERVICE
 def main():
     required = ["APP_ENV", "DB_HOST", "DB_PASSWORD_FILE"]
     if SERVICE == "diagnosis":
-        required += ["S3_ENDPOINT_URL", "S3_REGION", "S3_BUCKET", "S3_CREDENTIALS_FILE"]
+        required += [
+            "S3_ENDPOINT_URL",
+            "S3_REGION",
+            "S3_BUCKET",
+            "S3_CREDENTIALS_FILE",
+            "JWT_PUBLIC_KEY_PATH",
+            "CURSOR_SIGNING_KEY_FILE",
+        ]
     for key in required:
         value = os.environ.get(key)
         if not value:
             print("configuration_invalid: " + key, flush=True)
             return 1
-        if key.endswith("_FILE"):
+        if key.endswith("_FILE") or key.endswith("_PATH"):
             try:
                 if not Path(value).read_text().strip():
                     raise ValueError()

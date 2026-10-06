@@ -302,9 +302,14 @@ services:
       S3_REGION: ${S3_REGION:?S3_REGION required}
       S3_ENDPOINT_URL: http://s3:8333
       S3_CREDENTIALS_FILE: /run/secrets/s3_diagnosis
+      JWT_PUBLIC_KEY_PATH: /run/secrets/jwt_public_key.pem
+      CURSOR_SIGNING_KEY_FILE: /run/secrets/cursor_signing_key
     secrets:
     - diagnosis_password
     - s3_diagnosis
+    - source: jwt_public_key
+      target: jwt_public_key.pem
+    - cursor_signing_key
     networks:
     - persistence
     - application
@@ -463,3 +468,5 @@ secrets:
     file: ${PERSISTENCE_SECRETS_DIR:-./.local/persistence}/jwt_private_key.pem
   jwt_public_key:
     file: ${PERSISTENCE_SECRETS_DIR:-./.local/persistence}/jwt_public_key.pem
+  cursor_signing_key:
+    file: ${PERSISTENCE_SECRETS_DIR:-./.local/persistence}/cursor_signing_key

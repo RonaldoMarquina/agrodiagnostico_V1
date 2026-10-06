@@ -108,3 +108,34 @@ La [tercera ejecución de Application CI](https://github.com/RonaldoMarquina/agr
 Desde `services/identity/`: `PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m unittest discover -s tests -v` (entorno instalado con `uv sync --locked`). Las pruebas lógicas usan SQLite en memoria aun cuando exista DB_HOST; la carrera PostgreSQL no se acredita con SQLite y se omite explícitamente en esa suite.
 
 `python3 scripts/check_identity_integration.py` cubre esa carrera con tres procesos independientes, PostgreSQL restringido y Nginx desechables. Comprueba migración con auditoría histórica, claves/configuración, sesiones cruzadas, reuso, revocaciones, RBAC y triggers. La entrega del token de recuperación en esa prueba usa una fixture SQL sintética; el adaptador de correo se prueba por separado en memoria. No se ejecutan eliminaciones de usuarios contra el entorno del desarrollador.
+
+## Aceptación integral de Diagnósticos y Catálogo — Incremento 2
+
+La suite de Diagnosis se ejecuta localmente mediante:
+```bash
+PYTHONPATH=services/diagnosis .local/diagnosis_venv/bin/python -m unittest discover -s services/diagnosis/tests
+```
+Cubriendo 113 pruebas unitarias y de integración (autenticación Ed25519, sobres de error, persistencia, ingesta de imágenes, S3, idempotencia advisory, intenciones y reconciliador, ciclo de vida, historial keyset HMAC, catálogo versionado, auditoría y feedback).
+
+### Verificación de Proxy Nginx
+`python3 scripts/check_proxy_routes.py` valida en un entorno aislado con Docker:
+- Enrutamiento exacto a `identity_backend` y `diagnosis_backend`.
+- Aislamiento de prefijos: rutas similares no contractuales devuelven 404 NOT_IMPLEMENTED.
+- Bloqueo de rutas internas (`/internal`, `/health`, `/ai` devuelven 404).
+- Límite de transporte de 11 MiB: archivo de exactamente 10 MiB permitido, >11 MiB rechazado con 413.
+- Propagación de `X-Correlation-ID` y cabeceras `Cache-Control: private, no-store`.
+
+### Aceptación Integral E2E
+`python3 scripts/check_acceptance_incremento2.py` ejecuta el flujo completo end-to-end en contenedores efímeros (Identity, Diagnosis, PostgreSQL, SeaweedFS S3, Nginx proxy):
+- Generación y verificación de tokens asimétricos Ed25519 para múltiples usuarios y administrador.
+- Carga de imágenes JPEG reales con respuesta 202 Accepted en estado PENDIENTE.
+- Replay de idempotencia (mismo ID/timestamp; conflicto 409 ante contenido alterado).
+- Aislamiento multi-inquilino A/B estricto (404 al consultar diagnóstico o imagen de otro usuario).
+- Recuperación de bytes privados de imagen con verificación de integridad.
+- Paginación keyset con cursores HMAC-SHA256 (navegación fluida por páginas, rechazo con 400 ante cursor manipulado).
+- Cancelación atómica y borrado lógico con tombstones (204 repetible, ocultación en consultas posteriores).
+- Gestión administrativa del catálogo y consultas públicas jerárquicas.
+- Feedback de usuario con fixture terminal (201 creación, 200 actualización atómica, rechazo en estados no terminales).
+- Tolerancia a fallos e inyección S3 (503) y comando de reconciliación de intenciones huérfanas (`reconcile_upload_intents`).
+- Cero dependencias en tiempo de ejecución de RabbitMQ, Redis, servicio de correo o worker de inferencia.
+

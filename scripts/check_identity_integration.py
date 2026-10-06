@@ -152,7 +152,8 @@ def main():
                     raise RuntimeError('Disposable Identity not ready')
             # Exercise the repo's actual proxy locations against a three-server upstream.
             conf = (ROOT/'infra/nginx/default.conf').read_text().replace('server identity:8000;',
-                  'server identity-a:8000;\n    server identity-b:8000;\n    server identity-c:8000;')
+                  'server identity-a:8000;\n    server identity-b:8000;\n    server identity-c:8000;').replace(
+                  'server diagnosis:8000;', 'server identity-a:8000;')
             (directory/'nginx.conf').write_text(conf)
             proxy = tag+'-proxy'; containers.append(proxy)
             run(['docker','run','-d','--name',proxy,'--network',network,'-p','127.0.0.1::8080',
