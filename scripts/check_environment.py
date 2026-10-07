@@ -85,10 +85,12 @@ def main():
             assert assets
             for asset in assets:
                 assert urllib.request.urlopen(f'http://127.0.0.1:{port}'+asset,timeout=5).status==200
-            for route in ['/internal/diagnoses/x/claim','/health/ready','/ai','/api/v1/diagnoses']:
+            expected_routes = {'/internal/diagnoses/x/claim': 404, '/health/ready': 404,
+                               '/ai': 404, '/api/v1/diagnoses': 401}
+            for route, expected_status in expected_routes.items():
                 try:urllib.request.urlopen(f'http://127.0.0.1:{port}'+route,timeout=5)
                 except urllib.error.HTTPError as exc:
-                    assert exc.code==404
+                    assert exc.code == expected_status, (route, exc.code, expected_status)
                     if route.startswith('/api/'):
                         assert exc.headers['Cache-Control']=='private, no-store'
                         data=json.loads(exc.read());uuid.UUID(data['correlation_id'])

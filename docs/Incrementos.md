@@ -24,3 +24,5 @@ El cierre original del Incremento 1 fue rectificado tras revisión. [Corrección
 Cierre histórico del Incremento 2: Grupos 1–9 concluidos y verificados (113 pruebas unitarias e integración de Diagnosis, aceptación integral E2E en contenedores aislados vía Nginx, 20 operaciones promovidas a implementadas, 0 dependencias en tiempo de ejecución de RabbitMQ/Redis/AI). [Evidencia](evidence/INCREMENTO-2-AUDIT.md). Tareas archivadas en [tasks.md](../openspec/changes/archive/2026-10-06-incremento-2-diagnosticos-y-catalogo/tasks.md). Los incrementos 3–5 permanecen pendientes.
 
 La auditoría posterior y sus correcciones se registran en [INCREMENTO-2-CORRECCION](evidence/INCREMENTO-2-CORRECCION.md). El archivo original conserva su contexto histórico.
+
+CI de cierre del incremento 2 (2026-10-07): 16/16 etapas locales aprobadas, incluidas persistencia, entorno Compose e integraciones Identity/Diagnosis. [Informe](evidence/INCREMENTO-2-CI-LOCAL.json). La verificación remota de este correctivo queda pendiente de publicación autenticada.

@@ -27,7 +27,7 @@ Los entornos Python locales son auxiliares. El CI instala dependencias bloqueada
 
 ## Límites
 
-No se ejecutó todo el pipeline global ni una ejecución remota de GitHub Actions para este correctivo. Incorporar la etapa no constituye evidencia de CI remoto aprobado. No se aplicaron migraciones a la base local de desarrollo. PostgreSQL y S3 de aceptación son desechables; las pruebas de concurrencia de la capa de aplicación usan un adaptador de almacenamiento controlado para retener el lock, mientras el E2E usa S3 real.
+El 2026-10-07 se ejecutó el pipeline global local completo: 16/16 etapas PASS. Se corrigió una expectativa histórica del smoke: GET /api/v1/diagnoses sin credenciales debe devolver 401, mientras rutas internas permanecen en 404. [Informe con versiones, tiempos y hashes del código probado](INCREMENTO-2-CI-LOCAL.json). Comando: `python3 scripts/run_ci.py --artifacts .local/ci/cierre-inc2-final-20261007`. No se ha verificado una ejecución remota de GitHub Actions para este correctivo: publicar está pendiente de autenticación. No se aplicaron migraciones a la base local de desarrollo. PostgreSQL y S3 de aceptación son desechables; las pruebas de concurrencia de la capa de aplicación usan un adaptador de almacenamiento controlado para retener el lock, mientras el E2E usa S3 real.
 
 El E2E original rotula su fase 10 como fault injection, pero esa fase demuestra reconciliación de un huérfano: los fallos de S3 se cubren en la suite aislada de Diagnosis, no mediante caída real de S3 en este correctivo. La prueba unitaria de cancelación repetida fue renombrada para no presentarla como carrera real.
 
