@@ -27,7 +27,7 @@ class HealthTests(unittest.TestCase):
             with patch.object(main, 'schema_ready', return_value=True), patch.object(main, 'storage_ready', return_value=False):
                 self.assertEqual(main.ready().status_code, 503)
 
-    def test_openapi_contains_only_technical_operations(self):
+    def test_openapi_contains_only_implemented_operations(self):
         if getattr(main, 'SERVICE', None) == 'identity':
             expected_paths = {
                 '/health/live', '/health/ready',
@@ -55,6 +55,9 @@ class HealthTests(unittest.TestCase):
                 '/api/v1/admin/problems/{code}',
                 '/api/v1/admin/recommendations',
                 '/api/v1/admin/recommendations/{id}',
+                '/internal/diagnoses/{id}/claim',
+                '/internal/diagnoses/{id}/lease/renew',
+                '/internal/diagnoses/{id}/image',
             }
             self.assertEqual(set(main.app.openapi()['paths']), expected_paths)
         else:

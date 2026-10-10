@@ -8,6 +8,7 @@ import re
 import secrets
 import subprocess
 from prepare_identity_keys import prepare as prepare_identity_keys
+from prepare_internal_keys import prepare as prepare_internal_keys
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--directory', type=Path, default=Path('.local/persistence'))
@@ -20,6 +21,7 @@ subprocess.run(['python3', 'scripts/prepare_persistence.py', '--directory', str(
 # private even if the S3 server runs under a mapped UID inside Docker.
 args.directory.chmod(0o700)
 prepare_identity_keys(args.directory)
+prepare_internal_keys(args.directory)
 
 
 def store(name, content):
@@ -50,5 +52,8 @@ config.chmod(0o644)
 rabbit_password = store('rabbit_password', secrets.token_hex(24)).strip()
 store('rabbit_cookie', secrets.token_hex(32))
 store('rabbit.conf', 'default_user = agro_local\ndefault_pass = ' + rabbit_password + '\nloopback_users.guest = true\n')
+store('rabbit_diagnosis_password', secrets.token_hex(24)).strip()
+store('rabbit_ai_inference_password', secrets.token_hex(24)).strip()
+store('rabbit_notification_password', secrets.token_hex(24)).strip()
 store('cursor_signing_key', secrets.token_hex(32))
 print('Local configuration prepared; no secret values printed.')

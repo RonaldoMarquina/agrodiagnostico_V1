@@ -49,6 +49,7 @@ async def create_diagnosis_endpoint(
         idempotency_key=idempotency_key,
         validated_image=validated_image,
         storage=storage,
+        correlation_id=cid,
     )
 
     return JSONResponse(

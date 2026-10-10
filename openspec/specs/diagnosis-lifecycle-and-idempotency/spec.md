@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Define creación idempotente, cancelación, borrado lógico, historial privado y supervisión administrativa de diagnósticos, con autorización y comportamiento verificable sin inferencia disponible.
+Define creación idempotente, cancelación, borrado lógico, historial privado y supervisión administrativa de diagnósticos, con autorización, outbox transaccional y finalización asíncrona verificable.
 
 ## Requirements
 
@@ -18,7 +18,7 @@ Diagnosis SHALL aplicar la verificación local Ed25519 y roles de la capacidad v
 - **THEN** responde 400 contractual sin exponer errores internos
 
 ### Requirement: Creación idempotente de diagnósticos
-POST /api/v1/diagnoses SHALL aceptar Idempotency-Key obligatorio de 1..128 caracteres que cumpla ^[A-Za-z0-9._:-]+$, namespace propietario/diagnosis_create/clave y fingerprint SHA-256 de bytes exactos de imagen. Retención SHALL ser 86400 segundos desde primera aceptación, no deslizante. La aceptación SHALL confirmar diagnosis e idempotencia en una transacción antes de 202. No SHALL producir inferencia ni eventos en este incremento.
+POST /api/v1/diagnoses SHALL aceptar Idempotency-Key obligatorio de 1..128 caracteres que cumpla ^[A-Za-z0-9._:-]+$, namespace propietario/diagnosis_create/clave y fingerprint SHA-256 de bytes exactos de imagen. Retención SHALL ser 86400 segundos desde primera aceptación, no deslizante. La aceptación SHALL confirmar diagnosis, idempotencia y un outbox DiagnosisRequested v2 en una transacción antes de 202. La respuesta no SHALL esperar al broker o inferencia. Replay no SHALL crear evento adicional.
 
 #### Scenario: Primera aceptación
 - **WHEN** el propietario envía imagen válida y clave nueva
@@ -49,7 +49,7 @@ POST /api/v1/diagnoses SHALL aceptar Idempotency-Key obligatorio de 1..128 carac
 - **THEN** recibe 409 IDEMPOTENCY_RESOURCE_DELETED, sin resurrección, incluso si el contenido difiere
 
 ### Requirement: Cancelación atómica y terminales irreversibles
-El sistema SHALL conservar PENDIENTE -> PROCESANDO -> COMPLETADO | NO_CONCLUYENTE | FALLIDO y PENDIENTE -> CANCELADO como invariantes. En este incremento solo SHALL implementar creación y cancelación; análisis/reclamo corresponden al siguiente. POST /api/v1/diagnoses/{id}/cancel SHALL cambiar atómicamente PENDIENTE no borrado a CANCELADO y responder 200. Cualquier otro estado SHALL devolver 409 DIAGNOSIS_NOT_CANCELABLE. No SHALL emitir DiagnosisFinished por cancelación.
+El sistema SHALL conservar PENDIENTE -> PROCESANDO -> COMPLETADO | NO_CONCLUYENTE | FALLIDO y PENDIENTE -> CANCELADO como invariantes. Reclamo y aplicación de análisis SHALL respetar identidad interna, lease vigente y deduplicación; solo Diagnosis decide la transición visible. POST /api/v1/diagnoses/{id}/cancel SHALL cambiar atómicamente PENDIENTE no borrado a CANCELADO y responder 200. Cualquier otro estado SHALL devolver 409 DIAGNOSIS_NOT_CANCELABLE. No SHALL emitir DiagnosisFinished por cancelación.
 
 #### Scenario: Carrera de cancelaciones
 - **WHEN** dos solicitudes cancelan simultáneamente el mismo PENDIENTE propio
@@ -104,3 +104,24 @@ GET /api/v1/admin/diagnoses SHALL exigir ADMIN, listar diagnósticos no borrados
 - **WHEN** USER o una solicitud anónima consulta supervisión
 - **THEN** obtiene respectivamente 403 o 401 sin datos de otros usuarios
 
+### Requirement: Recuperación explícita de solicitudes previas
+Un backfill operativo SHALL ofrecer dry-run por defecto e IDs/lotes explícitos; aplicación autorizada SHALL crear como máximo una señal inicial para cada PENDIENTE sin outbox, revalidando bajo concurrencia. SHALL preservar objeto, propiedad, created_at y terminales. No SHALL procesar datos reales con el simulador.
+
+#### Scenario: Repetición y carrera
+- **WHEN** se ejecuta dos veces el backfill y compite con cancelación o creación de outbox
+- **THEN** no duplica señales iniciales, no revive CANCELADO y conserva todos los diagnósticos previos
+
+#### Scenario: Correlación histórica ausente
+- **WHEN** una solicitud previa no conserva correlation_id original
+- **THEN** la recuperación registra una correlación nueva y su origen operativo sin inventar la correlación histórica
+
+### Requirement: Decisión y finalización atómicas
+Diagnosis SHALL validar generación vigente y política antes de confirmar inbox, estado visible, snapshot si corresponde y Finished/outbox en una transacción. CANCELADO no SHALL emitir Finished. Un resultado descartado SHALL quedar auditado sin alterar terminales.
+
+#### Scenario: Resultado contra recuperación
+- **WHEN** compiten resultado y recuperación de lease con dos transacciones reales
+- **THEN** solo el resultado con generación/tiempo válidos puede aplicarse y existe como máximo un Finished lógico
+
+#### Scenario: Fallo al persistir Finished
+- **WHEN** falla la inserción del outbox de finalización
+- **THEN** no se confirma estado visible ni inbox y no se hace ACK de Analyzed

@@ -164,10 +164,15 @@ class Contracts(unittest.TestCase):
 
     def test_event_routing_and_future_guarantees(self):
         routing = v.read(CONTRACTS / 'events/routing.json')
-        expected = {'DiagnosisRequested': ('diagnosis', 'ai_inference', 'diagnosis.requested.v1'), 'DiagnosisAnalyzed': ('ai_inference', 'diagnosis', 'diagnosis.analyzed.v1'), 'DiagnosisFinished': ('diagnosis', 'notification', 'diagnosis.finished.v1')}
-        self.assertEqual(len(routing['events']), 3)
+        expected = {
+            ('DiagnosisRequested', 1): ('diagnosis', 'ai_inference', 'diagnosis.requested.v1'),
+            ('DiagnosisRequested', 2): ('diagnosis', 'ai_inference', 'diagnosis.requested.v2'),
+            ('DiagnosisAnalyzed', 1): ('ai_inference', 'diagnosis', 'diagnosis.analyzed.v1'),
+            ('DiagnosisFinished', 1): ('diagnosis', 'notification', 'diagnosis.finished.v1'),
+        }
+        self.assertEqual(len(routing['events']), 4)
         for row in routing['events']:
-            self.assertEqual((row['producer'], row['consumer'], row['routing_key']), expected[row['event_type']])
+            self.assertEqual((row['producer'], row['consumer'], row['routing_key']), expected[(row['event_type'], row['schema_version'])])
             self.assertTrue(row['durable_queue'])
             self.assertTrue(row['dlq'])
             self.assertTrue((CONTRACTS / 'events' / row['schema']).is_file())

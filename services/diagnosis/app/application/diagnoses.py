@@ -18,6 +18,7 @@ from app.domain.models import (
     Diagnosis,
     DiagnosisAuditLog,
     DiagnosisFeedback,
+    DiagnosisOutbox,
     IdempotencyKey,
     ImageUploadIntent,
 )
@@ -44,12 +45,12 @@ def _ensure_utc(dt: datetime) -> datetime:
 
 
 def create_diagnosis(
-
     db: Session,
     principal: Principal,
     idempotency_key: str,
     validated_image: ValidatedImage,
     storage: S3StorageAdapter,
+    correlation_id: Optional[uuid.UUID] = None,
 ) -> Diagnosis:
     """Create a diagnosis with advisory locking, idempotency, and durable upload intent protocol."""
     if not IDEMPOTENCY_KEY_REGEX.match(idempotency_key):
@@ -196,6 +197,8 @@ def create_diagnosis(
 
     # 5. Insert diagnosis, idempotency key and delete intent in main transaction commit
     try:
+        cid = correlation_id or uuid.uuid4()
+        now = datetime.now(timezone.utc)
         new_diag = Diagnosis(
             id=new_diag_id,
             owner_id=principal.id,
@@ -206,12 +209,13 @@ def create_diagnosis(
             image_size_bytes=validated_image.size_bytes,
             image_width=validated_image.width,
             image_height=validated_image.height,
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            correlation_id=cid,
+            created_at=now,
+            updated_at=now,
         )
         db.add(new_diag)
 
-        expires_at = datetime.now(timezone.utc) + timedelta(seconds=86400)
+        expires_at = now + timedelta(seconds=86400)
         if is_replacement and existing_key is not None:
             db.delete(existing_key)
             db.flush()
@@ -222,11 +226,38 @@ def create_diagnosis(
             key=idempotency_key,
             fingerprint=validated_image.sha256,
             diagnosis_id=new_diag_id,
-            created_at=datetime.now(timezone.utc),
+            created_at=now,
             expires_at=expires_at,
         )
-
         db.add(idemp_record)
+
+        event_id = uuid.uuid4()
+        envelope_v2 = {
+            "event_id": str(event_id),
+            "event_type": "DiagnosisRequested",
+            "schema_version": 2,
+            "occurred_at": format_utc_iso(now),
+            "correlation_id": str(cid),
+            "payload": {
+                "diagnosis_id": str(new_diag_id),
+                "owner_id": str(principal.id),
+                "object_key": object_key,
+            },
+        }
+
+        outbox_event = DiagnosisOutbox(
+            id=uuid.uuid4(),
+            event_id=event_id,
+            event_type="DiagnosisRequested",
+            schema_version=2,
+            routing_key="diagnosis.requested.v2",
+            envelope=envelope_v2,
+            diagnosis_id=new_diag_id,
+            attempt_number=1,
+            created_at=now,
+            available_at=now,
+        )
+        db.add(outbox_event)
 
         db.delete(locked_intent)
         db.commit()

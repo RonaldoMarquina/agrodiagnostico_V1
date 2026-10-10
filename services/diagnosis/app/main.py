@@ -226,11 +226,13 @@ from app.api.diagnoses import router as diagnoses_router
 from app.api.admin_diagnoses import router as admin_diagnoses_router
 from app.api.catalog import router as catalog_router
 from app.api.admin_catalog import router as admin_catalog_router
+from app.api.internal_diagnoses import router as internal_diagnoses_router
 
 app.include_router(diagnoses_router)
 app.include_router(admin_diagnoses_router)
 app.include_router(catalog_router)
 app.include_router(admin_catalog_router)
+app.include_router(internal_diagnoses_router)
 
 
 

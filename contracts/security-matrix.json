@@ -272,11 +272,14 @@
       }
     ],
     "negative_statuses": [
+      400,
       401,
       403,
-      404
+      404,
+      409,
+      503
     ],
-    "runtime_verified": false,
+    "runtime_verified": true,
     "rule": "Identidad AI verificada y audience interna; usuario403, sin identidad401; lease no autentica."
   },
   {
@@ -287,11 +290,14 @@
       }
     ],
     "negative_statuses": [
+      400,
       401,
       403,
-      404
+      404,
+      409,
+      503
     ],
-    "runtime_verified": false,
+    "runtime_verified": true,
     "rule": "Identidad AI verificada y audience interna; usuario403, sin identidad401; lease no autentica."
   },
   {
@@ -316,11 +322,14 @@
       }
     ],
     "negative_statuses": [
+      400,
       401,
       403,
-      404
+      404,
+      409,
+      503
     ],
-    "runtime_verified": false,
+    "runtime_verified": true,
     "rule": "Identidad AI verificada y audience interna; usuario403, sin identidad401; lease no autentica."
   },
   {

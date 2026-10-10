@@ -6,6 +6,7 @@ WORKDIR /service
 COPY services/ai_inference/pyproject.toml services/ai_inference/uv.lock ./
 RUN uv sync --locked --no-dev --no-install-project
 COPY services/ai_inference/app ./app
+COPY contracts ./contracts
 COPY services/ai_inference/alembic.ini ./
 COPY services/ai_inference/migrations ./migrations
 ENV PATH="/service/.venv/bin:$PATH"

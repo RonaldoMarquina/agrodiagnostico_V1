@@ -7,7 +7,7 @@ import subprocess
 ROOT = Path(__file__).resolve().parents[1]
 REQUIRED = {'workflow', 'python-lint', 'ci-tests', 'contracts', 'dataset', 'backend',
             'frontend-install', 'frontend-lint', 'frontend-types', 'frontend-tests',
-            'frontend-build', 'openspec', 'persistence', 'environment', 'identity-integration', 'diagnosis-integration'}
+            'frontend-build', 'openspec', 'persistence', 'environment', 'identity-integration', 'diagnosis-integration', 'async-integration'}
 
 
 def validate_plan(plan):
@@ -17,6 +17,9 @@ def validate_plan(plan):
     diagnosis = next(s for s in plan['steps'] if s['id'] == 'diagnosis-integration')
     if diagnosis['command'] != ['python3', 'scripts/check_acceptance_incremento2.py']:
         raise ValueError('Diagnosis integration must execute the acceptance suite')
+    async_step = next(s for s in plan['steps'] if s['id'] == 'async-integration')
+    if async_step['command'] != ['python3', 'scripts/check_async_acceptance.py']:
+        raise ValueError('Async integration must execute the acceptance suite')
     for step in plan['steps']:
         if not step.get('command') or not 1 <= step.get('timeout_seconds', 0) <= 1800:
             raise ValueError('CI command or timeout missing')

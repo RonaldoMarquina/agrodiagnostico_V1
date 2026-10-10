@@ -254,6 +254,28 @@ services:
       s3:
         condition: service_healthy
     restart: 'no'
+  rabbit-bootstrap:
+    build:
+      context: .
+      dockerfile: infra/docker/integration.Dockerfile
+    command:
+    - python
+    - /bootstrap/bootstrap.py
+    environment:
+      RABBIT_HOST: rabbitmq
+    volumes:
+    - ./infra/rabbitmq/bootstrap.py:/bootstrap/bootstrap.py:ro
+    secrets:
+    - rabbit_password
+    - rabbit_diagnosis_password
+    - rabbit_ai_inference_password
+    - rabbit_notification_password
+    networks:
+    - persistence
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    restart: 'no'
   identity:
     build:
       context: .
@@ -304,12 +326,18 @@ services:
       S3_CREDENTIALS_FILE: /run/secrets/s3_diagnosis
       JWT_PUBLIC_KEY_PATH: /run/secrets/jwt_public_key.pem
       CURSOR_SIGNING_KEY_FILE: /run/secrets/cursor_signing_key
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: rabbit_diagnosis
+      RABBITMQ_PASSWORD_FILE: /run/secrets/rabbit_diagnosis_password
+      INTERNAL_SERVICE_KEYS_FILE: /run/secrets/internal_service_keys
     secrets:
     - diagnosis_password
     - s3_diagnosis
     - source: jwt_public_key
       target: jwt_public_key.pem
     - cursor_signing_key
+    - rabbit_diagnosis_password
+    - internal_service_keys
     networks:
     - persistence
     - application
@@ -317,6 +345,8 @@ services:
       diagnosis-migrate:
         condition: service_completed_successfully
       s3-bootstrap:
+        condition: service_completed_successfully
+      rabbit-bootstrap:
         condition: service_completed_successfully
     healthcheck:
       test:
@@ -338,13 +368,19 @@ services:
       APP_ENV: ${APP_ENV:?APP_ENV required; copy .env.example}
       DB_HOST: postgres
       DB_PASSWORD_FILE: /run/secrets/ai_inference_password
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: rabbit_ai_inference
+      RABBITMQ_PASSWORD_FILE: /run/secrets/rabbit_ai_inference_password
     secrets:
     - ai_inference_password
+    - rabbit_ai_inference_password
     networks:
     - persistence
     - application
     depends_on:
       ai_inference-migrate:
+        condition: service_completed_successfully
+      rabbit-bootstrap:
         condition: service_completed_successfully
     healthcheck:
       test:
@@ -366,13 +402,19 @@ services:
       APP_ENV: ${APP_ENV:?APP_ENV required; copy .env.example}
       DB_HOST: postgres
       DB_PASSWORD_FILE: /run/secrets/notification_password
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: rabbit_notification
+      RABBITMQ_PASSWORD_FILE: /run/secrets/rabbit_notification_password
     secrets:
     - notification_password
+    - rabbit_notification_password
     networks:
     - persistence
     - application
     depends_on:
       notification-migrate:
+        condition: service_completed_successfully
+      rabbit-bootstrap:
         condition: service_completed_successfully
     healthcheck:
       test:
@@ -383,8 +425,245 @@ services:
         timeout=12)
       interval: 5s
       timeout: 15s
-      retries: 24
-      start_period: 5s
+  diagnosis-publisher:
+    build:
+      context: .
+      dockerfile: services/diagnosis/Dockerfile
+    user: ${LOCAL_UID:-1000}:${LOCAL_GID:-1000}
+    command:
+    - python
+    - -m
+    - app.publisher
+    environment:
+      APP_ENV: ${APP_ENV:?APP_ENV required; copy .env.example}
+      DB_HOST: postgres
+      DB_PASSWORD_FILE: /run/secrets/diagnosis_password
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: rabbit_diagnosis
+      RABBITMQ_PASSWORD_FILE: /run/secrets/rabbit_diagnosis_password
+    secrets:
+    - diagnosis_password
+    - rabbit_diagnosis_password
+    networks:
+    - persistence
+    depends_on:
+      diagnosis-migrate:
+        condition: service_completed_successfully
+      rabbit-bootstrap:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+      - CMD
+      - test
+      - -f
+      - /tmp/diagnosis_publisher_ready
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 2s
+    restart: unless-stopped
+  diagnosis-consumer:
+    build:
+      context: .
+      dockerfile: services/diagnosis/Dockerfile
+    user: ${LOCAL_UID:-1000}:${LOCAL_GID:-1000}
+    command:
+    - python
+    - -m
+    - app.consumer
+    environment:
+      APP_ENV: ${ASYNC_CONSUMER_ENV:-local}
+      ENABLE_SIMULATED_INFERENCE: ${ENABLE_SIMULATED_INFERENCE:-false}
+      DB_HOST: postgres
+      DB_PASSWORD_FILE: /run/secrets/diagnosis_password
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: rabbit_diagnosis
+      RABBITMQ_PASSWORD_FILE: /run/secrets/rabbit_diagnosis_password
+    secrets:
+    - diagnosis_password
+    - rabbit_diagnosis_password
+    networks:
+    - persistence
+    depends_on:
+      diagnosis-migrate:
+        condition: service_completed_successfully
+      rabbit-bootstrap:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+      - CMD
+      - test
+      - -f
+      - /tmp/diagnosis_consumer_ready
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 2s
+    restart: unless-stopped
+  diagnosis-recovery:
+    build:
+      context: .
+      dockerfile: services/diagnosis/Dockerfile
+    user: ${LOCAL_UID:-1000}:${LOCAL_GID:-1000}
+    command:
+    - python
+    - -m
+    - app.recovery
+    environment:
+      APP_ENV: ${APP_ENV:?APP_ENV required; copy .env.example}
+      DB_HOST: postgres
+      DB_PASSWORD_FILE: /run/secrets/diagnosis_password
+    secrets:
+    - diagnosis_password
+    networks:
+    - persistence
+    depends_on:
+      diagnosis-migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+      - CMD
+      - test
+      - -f
+      - /tmp/diagnosis_recovery_ready
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 2s
+    restart: unless-stopped
+  ai_inference-publisher:
+    build:
+      context: .
+      dockerfile: services/ai_inference/Dockerfile
+    user: ${LOCAL_UID:-1000}:${LOCAL_GID:-1000}
+    command:
+    - python
+    - -m
+    - app.publisher
+    environment:
+      APP_ENV: ${APP_ENV:?APP_ENV required; copy .env.example}
+      DB_HOST: postgres
+      DB_PASSWORD_FILE: /run/secrets/ai_inference_password
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: rabbit_ai_inference
+      RABBITMQ_PASSWORD_FILE: /run/secrets/rabbit_ai_inference_password
+    secrets:
+    - ai_inference_password
+    - rabbit_ai_inference_password
+    networks:
+    - persistence
+    depends_on:
+      ai_inference-migrate:
+        condition: service_completed_successfully
+      rabbit-bootstrap:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+      - CMD
+      - test
+      - -f
+      - /tmp/ai_publisher_ready
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 2s
+    restart: unless-stopped
+  ai_inference-worker-1:
+    profiles: [async-test]
+    build:
+      context: .
+      dockerfile: services/ai_inference/Dockerfile
+    user: ${LOCAL_UID:-1000}:${LOCAL_GID:-1000}
+    command:
+    - python
+    - -m
+    - app.worker
+    environment:
+      APP_ENV: test
+      ENABLE_SIMULATED_INFERENCE: ${ENABLE_SIMULATED_INFERENCE:-false}
+      DB_HOST: postgres
+      DB_PASSWORD_FILE: /run/secrets/ai_inference_password
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: rabbit_ai_inference
+      RABBITMQ_PASSWORD_FILE: /run/secrets/rabbit_ai_inference_password
+      DIAGNOSIS_INTERNAL_URL: http://diagnosis:8000
+      WORKER_INSTANCE_ID: worker-1
+      INTERNAL_WORKER_INSTANCE_ID: worker-1
+      INTERNAL_WORKER_KID: worker-1-key
+      INTERNAL_WORKER_PRIVATE_KEY_FILE: /run/secrets/internal_worker_1_private_key
+    secrets:
+    - ai_inference_password
+    - rabbit_ai_inference_password
+    - internal_worker_1_private_key
+    networks:
+    - persistence
+    - application
+    depends_on:
+      ai_inference-migrate:
+        condition: service_completed_successfully
+      rabbit-bootstrap:
+        condition: service_completed_successfully
+      diagnosis:
+        condition: service_healthy
+    healthcheck:
+      test:
+      - CMD
+      - test
+      - -f
+      - /tmp/ai_worker_ready_worker-1
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 2s
+    restart: unless-stopped
+  ai_inference-worker-2:
+    profiles: [async-test]
+    build:
+      context: .
+      dockerfile: services/ai_inference/Dockerfile
+    user: ${LOCAL_UID:-1000}:${LOCAL_GID:-1000}
+    command:
+    - python
+    - -m
+    - app.worker
+    environment:
+      APP_ENV: test
+      ENABLE_SIMULATED_INFERENCE: ${ENABLE_SIMULATED_INFERENCE:-false}
+      DB_HOST: postgres
+      DB_PASSWORD_FILE: /run/secrets/ai_inference_password
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: rabbit_ai_inference
+      RABBITMQ_PASSWORD_FILE: /run/secrets/rabbit_ai_inference_password
+      DIAGNOSIS_INTERNAL_URL: http://diagnosis:8000
+      WORKER_INSTANCE_ID: worker-2
+      INTERNAL_WORKER_INSTANCE_ID: worker-2
+      INTERNAL_WORKER_KID: worker-2-key
+      INTERNAL_WORKER_PRIVATE_KEY_FILE: /run/secrets/internal_worker_2_private_key
+    secrets:
+    - ai_inference_password
+    - rabbit_ai_inference_password
+    - internal_worker_2_private_key
+    networks:
+    - persistence
+    - application
+    depends_on:
+      ai_inference-migrate:
+        condition: service_completed_successfully
+      rabbit-bootstrap:
+        condition: service_completed_successfully
+      diagnosis:
+        condition: service_healthy
+    healthcheck:
+      test:
+      - CMD
+      - test
+      - -f
+      - /tmp/ai_worker_ready_worker-2
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 2s
+    restart: unless-stopped
   nginx:
     build:
       context: .
@@ -463,6 +742,12 @@ secrets:
     file: ${PERSISTENCE_SECRETS_DIR:-./.local/persistence}/rabbit_password
   rabbit_cookie:
     file: ${PERSISTENCE_SECRETS_DIR:-./.local/persistence}/rabbit_cookie
+  rabbit_diagnosis_password:
+    file: ${PERSISTENCE_SECRETS_DIR:-./.local/persistence}/rabbit_diagnosis_password
+  rabbit_ai_inference_password:
+    file: ${PERSISTENCE_SECRETS_DIR:-./.local/persistence}/rabbit_ai_inference_password
+  rabbit_notification_password:
+    file: ${PERSISTENCE_SECRETS_DIR:-./.local/persistence}/rabbit_notification_password
 
   jwt_private_key:
     file: ${PERSISTENCE_SECRETS_DIR:-./.local/persistence}/jwt_private_key.pem
@@ -470,3 +755,9 @@ secrets:
     file: ${PERSISTENCE_SECRETS_DIR:-./.local/persistence}/jwt_public_key.pem
   cursor_signing_key:
     file: ${PERSISTENCE_SECRETS_DIR:-./.local/persistence}/cursor_signing_key
+  internal_worker_1_private_key:
+    file: ${PERSISTENCE_SECRETS_DIR:-./.local/persistence}/internal_worker_1_private_key.pem
+  internal_worker_2_private_key:
+    file: ${PERSISTENCE_SECRETS_DIR:-./.local/persistence}/internal_worker_2_private_key.pem
+  internal_service_keys:
+    file: ${PERSISTENCE_SECRETS_DIR:-./.local/persistence}/internal_service_keys.json

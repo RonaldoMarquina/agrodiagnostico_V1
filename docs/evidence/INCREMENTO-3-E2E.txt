@@ -1,0 +1,37 @@
+Aceptación local 2026-10-09
+Comando: python3 scripts/check_async_acceptance.py
+Extracto de checkpoints del log de async-integration; los logs completos permanecen en .local/ci/cierre-inc3-final-20261009-b.
+
+  ✓ All services healthy and ready
+  ✓ Verified: only Nginx proxy publishes host port on loopback
+  ✓ Real Ed25519 tokens minted for User A and User B
+  ✓ Agricultural catalog problem and active recommendation configured
+  ✓ Diagnosis bb1b732b-39da-430c-adaf-bab697bfd589 transitioned cleanly to COMPLETADO with immutable snapshot
+  ✓ Diagnosis 64c1380b-0380-48be-a074-34b442ece41d transitioned cleanly to NO_CONCLUYENTE (reason=LOW_CONFIDENCE)
+  ✓ Diagnosis 2e7ca4e0-d8f3-484e-ad97-9ba3012b292f transitioned cleanly to FALLIDO (reason_code=INFERENCE_ERROR)
+  ✓ Event envelopes and payloads conform strictly to JSON Schemas (Requested v2, Analyzed v1, Finished v1)
+  ✓ Durable Finished events remain accumulated without simulate Notification (pending Incremento 5)
+  ✓ Real AMQP duplicate, collision, unknown version, mandatory return and Finished retention
+  ✓ Internal stale lease renew rejected with 409 STALE_LEASE
+  ✓ Stale cancel and single-winner cancellation race verified
+  ✓ Operational replay audit and terminal immutability verified
+  ✓ Ingestion and outbox persistence verified; outage tested separately by orchestrator
+Broker restored: pending request reached one terminal result
+Concurrent claim/cancel: exactly one winner in four real PostgreSQL races
+Worker process killed at before_claim
+Worker process killed at after_claim
+Worker process killed at before_commit
+Worker process killed at after_commit_before_ack
+Lease renewal verified: heartbeat
+Recovered worker checkpoint: before_claim
+Recovered worker checkpoint: after_claim
+Recovered worker checkpoint: before_commit
+Recovered worker checkpoint: after_commit_before_ack
+Recovered worker checkpoint: heartbeat
+Publisher process killed at before_confirm
+Publisher process killed at after_confirm_before_sent_commit
+Publisher crashes before/after confirm recovered with one Finished per diagnosis
+PostgreSQL: late result/recovery race preserves one terminal and one Finished
+PostgreSQL: concurrent recovery emits one signal; budget and deadline close once, including after prior signal
+Increment 3 Acceptance Testing COMPLETED SUCCESSFULLY!
+Limpieza: 3 proyectos aislados sin contenedores, redes, volúmenes ni imágenes residuales.

@@ -11,11 +11,39 @@ La imagen de PostgreSQL16 y Python3.12-bookworm están fijadas por los digests c
 | Base y rol propietario | Revisión base / actual | Tablas de aplicación |
 | --- | --- | --- |
 | identity | identity_0003 | alembic_version, users, refresh_sessions, password_recovery_tokens, audit_logs |
-| diagnosis | diagnosis_0002 | alembic_version, crops, problems, recommendations, diagnoses, idempotency_keys, image_upload_intents, diagnosis_feedback, diagnosis_audit_logs |
-| ai_inference | ai_inference_0001 | Solo alembic_version |
+| diagnosis | diagnosis_0003 | alembic_version, crops, problems, recommendations, diagnoses, idempotency_keys, image_upload_intents, diagnosis_feedback, diagnosis_audit_logs, diagnosis_outbox, diagnosis_inbox, diagnosis_quarantine_messages |
+| ai_inference | ai_inference_0002 | alembic_version, inference_jobs, inference_inbox, inference_results, inference_outbox, inference_quarantine_messages, inference_audit_logs |
 | notification | notification_0001 | Solo alembic_version |
 
 Roles sin superuser/CREATEDB/CREATEROLE/REPLICATION/BYPASSRLS ni membresías. CONNECT público revocado en las cuatro bases y en postgres/template1; permisos del schema public restringidos al dueño. No hay tablas compartidas ni llaves foráneas cruzadas entre servicios. Bootstrap rechaza dueño inesperado o membresía ajena, sin apropiarse de bases existentes. Credencial postgres solo en PostgreSQL y job bootstrap; cada migración recibe únicamente su secreto propio.
+
+## Persistencia Asíncrona, Leases y Cuarentena (Incremento 3)
+
+### Diagnosis (`diagnosis_0003`)
+- **Columnas de lease y ciclo asíncrono en `diagnoses`**:
+  - `correlation_id`: Identificador de correlación de la solicitud o del backfill de recuperación.
+  - `lease_owner`: Identificador de la instancia worker verificado mediante JWT interno.
+  - `lease_token`: Token UUID único de la generación de trabajo en curso.
+  - `lease_expires_at`: Expiración temporal según el reloj relacional de PostgreSQL.
+  - `attempt_count`: Contador de generaciones de ejecución consumidas (máximo 3).
+  - `processing_deadline_at`: Límite máximo de procesamiento (300s desde primer claim).
+  - `recovery_signaled_at`: Marca temporal de señalización de recuperación.
+- **Tablas durables**:
+  - `diagnosis_outbox`: Registro transaccional de eventos salientes (`DiagnosisRequested` v2, `DiagnosisFinished` v1) con `UNIQUE(diagnosis_id, event_type, attempt_number)` e `ix_diagnosis_outbox_publishable`.
+  - `diagnosis_inbox`: Deduplicación de eventos consumidos (`DiagnosisAnalyzed` v1) con `UNIQUE(consumer, event_id)` e índice por diagnóstico y lease.
+  - `diagnosis_quarantine_messages`: Aislamiento seguro de mensajes corruptos o no conformes sin almacenar cargas útiles crudas.
+
+### AI Inference (`ai_inference_0002`)
+- **Tablas de dominio técnico**:
+  - `inference_jobs`: Seguimiento de trabajos por diagnóstico (`UNIQUE(diagnosis_id)`), estado y reclamo local exclusivo.
+  - `inference_inbox`: Deduplicación de eventos entrantes (`DiagnosisRequested` v1/v2) con `UNIQUE(consumer, event_id)`.
+  - `inference_results`: Resultados del análisis técnico con `UNIQUE(diagnosis_id, lease_token)`.
+  - `inference_outbox`: Registro transaccional de eventos salientes (`DiagnosisAnalyzed` v1) con `UNIQUE(diagnosis_id, lease_token)` e `ix_inference_outbox_publishable`.
+  - `inference_quarantine_messages`: Aislamiento seguro de mensajes defectuosos.
+  - `inference_audit_logs`: Registro transaccional de auditoría operativa con sanitización de credenciales.
+
+### Políticas de Cuarentena y Rollback
+Para la especificación detallada de los campos conservados en cuarentena, el protocolo de reconstrucción segura de mensajes sin replay ciego y la política de rollback conservador ante contingencias, consultar [Operación de Cuarentena y Reconstrucción](operations/quarantine-and-reconstruction.md).
 
 ## Dominio de Diagnosis y Catálogo Candidato (Incremento 2)
 

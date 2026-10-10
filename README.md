@@ -2,7 +2,7 @@
 
 Plataforma web de apoyo para analizar fotografías de papa y maíz. Muestra una condición visual probable solo cuando la clase está validada y la evidencia es suficiente. En los demás casos devuelve **NO_CONCLUYENTE** y orienta al usuario para repetir la fotografía. No reemplaza una evaluación profesional.
 
-> Estado: Incrementos 0 (base técnica y contratos), 1 (identidad y autorización) y 2 (diagnósticos, catálogo y almacenamiento privado) implementados y auditados. La inferencia asíncrona (Incremento 3), entrenamiento (Incremento 4) y despliegue final (Incremento 5) continúan pendientes.
+> Estado: incrementos 0–3 implementados y verificados. El flujo asíncrono del incremento 3 usa un worker sintético solo en pruebas aisladas; no existe modelo real todavía. Entrenamiento y validación (incremento 4) y notificaciones/despliegue final (incremento 5) siguen pendientes. [Evidencia del cierre del incremento 3](docs/evidence/INCREMENTO-3-CIERRE.md).
 
 ## Alcance comprometido
 
@@ -101,4 +101,4 @@ Historial de corrección: [primera ejecución fallida 36743640034](https://githu
 Cierre de tareas del Incremento 0: [Application CI aprobada](https://github.com/RonaldoMarquina/agrodiagnostico_V1/actions/runs/36749372314) sobre `97472b1`. [Evidencia remota](docs/evidence/INCREMENTO-0-GRUPO-7-REMOTO.md). Los cinco deltas se sincronizaron y el cambio se archivó el 2026-09-30.
 
 
-Estado posterior del Incremento 1: Identity implementa las 12 operaciones de negocio; la revisión posterior al archivo exigió un correctivo de claves, Origin/CSRF, auditoría y evidencia multi-instancia. El estado vigente y sus límites están en [INCREMENTO-1-CORRECCION](docs/evidence/INCREMENTO-1-CORRECCION.md). Las referencias previas al Incremento 0 son históricas. Diagnosis implementa el incremento 2; los incrementos 3–5 siguen pendientes. Véase la [corrección del cierre del incremento 2](docs/evidence/INCREMENTO-2-CORRECCION.md).
+Estado posterior del Incremento 1: Identity implementa las 12 operaciones de negocio; la revisión posterior al archivo exigió un correctivo de claves, Origin/CSRF, auditoría y evidencia multi-instancia. El estado vigente y sus límites están en [INCREMENTO-1-CORRECCION](docs/evidence/INCREMENTO-1-CORRECCION.md). Las referencias previas al Incremento 0 son históricas. Diagnosis implementa los incrementos 2 y 3; los incrementos 4–5 siguen pendientes. Véase la [corrección del cierre del incremento 2](docs/evidence/INCREMENTO-2-CORRECCION.md).

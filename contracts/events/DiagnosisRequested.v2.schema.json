@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DiagnosisRequested v2",
+  "allOf": [
+    {
+      "$ref": "envelope.v2.schema.json"
+    },
+    {
+      "properties": {
+        "event_type": {
+          "const": "DiagnosisRequested"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "diagnosis_id": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "owner_id": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "object_key": {
+              "type": "string",
+              "pattern": "^diagnoses/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}|original\\.(jpg|png|webp))$",
+              "description": "Clave privada opaca; diagnoses/{UUID}/{UUID} o diagnoses/{UUID}/original.(jpg|png|webp); sin URL, querystring, credenciales ni nombre del usuario."
+            }
+          },
+          "required": [
+            "diagnosis_id",
+            "owner_id",
+            "object_key"
+          ],
+          "additionalProperties": false
+        }
+      }
+    }
+  ]
+}
+

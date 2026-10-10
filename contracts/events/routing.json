@@ -27,6 +27,19 @@
       "implementation_increment": 3
     },
     {
+      "event_type": "DiagnosisRequested",
+      "schema_version": 2,
+      "schema": "DiagnosisRequested.v2.schema.json",
+      "producer": "diagnosis",
+      "consumer": "ai_inference",
+      "routing_key": "diagnosis.requested.v2",
+      "queue": "ai_inference.diagnosis-requested.v2",
+      "durable_queue": true,
+      "dlq": "ai_inference.diagnosis-requested.v2.dlq",
+      "ack": "after-local-commit",
+      "implementation_increment": 3
+    },
+    {
       "event_type": "DiagnosisAnalyzed",
       "schema_version": 1,
       "schema": "DiagnosisAnalyzed.v1.schema.json",

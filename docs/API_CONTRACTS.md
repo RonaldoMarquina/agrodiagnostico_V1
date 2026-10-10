@@ -1,6 +1,6 @@
 # Contratos de API y eventos
 
-Los contratos iniciales del grupo 2 están en [contracts](../contracts/README.md): cuatro OpenAPI 3.1.1, componentes comunes y tres eventos JSON Schema 2020-12. Este documento explica su semántica; no sustituye esos archivos. El grupo4 implementa las ocho operaciones internas de salud; las diecinueve operaciones de negocio siguen **contract-only**. Actualiza OpenSpec, ADR cuando corresponda y pruebas al cambiar una interfaz.
+Los contratos iniciales del grupo 2 están en [contracts](../contracts/README.md): cuatro OpenAPI 3.1.1, componentes comunes y tres eventos JSON Schema 2020-12. Este documento explica su semántica; no sustituye esos archivos. Los incrementos 0–3 implementan ocho operaciones de salud, doce de identidad, veinte de negocio de Diagnosis y tres internas de trabajo. Las operaciones de Notification siguen **contract-only**. Actualiza OpenSpec, ADR cuando corresponda y pruebas al cambiar una interfaz.
 
 ## Convenciones comunes
 
@@ -122,8 +122,14 @@ Conforme a design.md y ADR-0006, se formalizan en OpenAPI 3.1 (`contracts/openap
 | `diagnosis_admin_list_diagnoses` | GET `/api/v1/admin/diagnoses` | ADMIN | `admin-diagnoses-list` | 5.4 |
 | `diagnosis_submit_feedback` | POST `/api/v1/diagnoses/{id}/feedback` | USER | `diagnosis-feedback-create`, `diagnosis-feedback-update` | 7.1, 7.2 |
 
-- **Carga y fallos 503**: `POST /api/v1/diagnoses` añade respuestas 503 `STORAGE_UNAVAILABLE` y `PERSISTENCE_UNAVAILABLE` ante fallos transitorios en el almacenamiento de objetos o en el commit de persistencia.
-- **Ciclo de vida y PENDIENTE sin worker**: En el Incremento 2 no existe worker de inferencia activo; las cargas aceptadas permanecen en `PENDIENTE`. Al habilitar el procesamiento en el Incremento 3, se requerirá un outbox transaccional y un proceso de backfill para publicar `DiagnosisRequested` y transicionar diagnósticos previos según la política que defina ese cambio.
+- **Carga, fallos 503 y garantías de 202 Accepted**: `POST /api/v1/diagnoses` añade respuestas 503 `STORAGE_UNAVAILABLE` y `PERSISTENCE_UNAVAILABLE` ante fallos transitorios en el almacenamiento de objetos o en el commit de persistencia. La respuesta **HTTP 202 Accepted** garantiza que:
+  1. La imagen fue validada, decodificada y almacenada exitosamente en el almacenamiento privado de objetos (S3).
+  2. El registro de diagnóstico fue persistido durablemente en PostgreSQL en estado `PENDIENTE`.
+  3. La clave de idempotencia fue registrada para prevenir duplicados.
+  4. El evento `DiagnosisRequested` v2 fue confirmado en la tabla `diagnosis_outbox` dentro de la **misma transacción SQL atómica**.
+  5. El 202 se emite exitosamente **incluso si RabbitMQ está caído**, permaneciendo el evento en el outbox para publicación asíncrona posterior.
+  6. **No garantiza**: conectividad inmediata del broker ni finalización inmediata del análisis técnico.
+- **Ciclo de vida y PENDIENTE sin worker**: En el Incremento 2 no existe worker de inferencia activo; las cargas aceptadas permanecen en `PENDIENTE`. Al habilitar el procesamiento en el Incremento 3, se cuenta con el outbox transaccional y la herramienta de backfill para publicar `DiagnosisRequested` v2 y transicionar diagnósticos previos según la política vigente.
 - **Cancelación atómica y no revertible**: `POST /api/v1/diagnoses/{id}/cancel` actualiza condicionalmente filas propias en `PENDIENTE` no borradas hacia `CANCELADO` (200 `DiagnosisCancelled`). Una carrera concurrente otorga exactamente un éxito y 409 `DIAGNOSIS_NOT_CANCELABLE` a la solicitud competidora. Cualquier estado no cancelable (`PROCESANDO`, `COMPLETADO`, `NO_CONCLUYENTE`, `FALLIDO`, `CANCELADO`) responde 409. Recursos ajenos, inexistentes o con borrado lógico devuelven 404 genérico. La cancelación nunca emite evento `DiagnosisFinished`.
 - **Borrado lógico vs. Cancelación**: `DELETE /api/v1/diagnoses/{id}` aplica borrado lógico idempotente (`204 No Content` para primer borrado y repeticiones propias). No cancela el diagnóstico, no altera estados terminales ni elimina el archivo en S3. Los tombstones (`deleted_at IS NOT NULL`) son completamente invisibles (404) en detalle, imagen, cancelación, feedback y listados.
 - **Detalle contractual privado**: `GET /api/v1/diagnoses/{id}` devuelve únicamente metadatos según el estado:
@@ -157,8 +163,33 @@ Login valida Origin contra allowlist y devuelve access_token, token_type Bearer,
 
 El access bearer se usa en recursos propios; AI utiliza credencial de servicio con audience interna distinta, nunca bearer de usuario o lease como autorización. Firma, issuer/audience, duraciones reales, revocación de access y secretos se configuran mediante ADR de seguridad antes de implementar Identity. expires_in=600 en ejemplo es ilustrativo, no política de producción. Las pruebas de esquema no comprueban navegador, rotación ni RBAC en runtime; HTTP local del scaffold no demuestra sesiones Secure.
 
-## Eventos y compatibilidad comprobable
+## Decisiones contractuales del Incremento 3 (Flujo Asíncrono Confiable y Leases Internos)
 
-[Contratos y transacciones](../contracts/events/README.md) fija routing y variantes PREDICTION/ABSTENTION/FAILURE. El envelope y payloads son cerrados; los campos de ejecución se admiten todos null cuando no hubo inferencia en abstención/fallo. No hay clases/score fabricados ni recomendaciones de AI. Un campo nuevo en esquema cerrado puede romper compatibilidad y exige revisar/versionar, aunque sea aditivo. Diagnóstico y eventos conservan versiones independientes del modelo.
+Conforme a [ADR-0008](adr/0008-flujo-asincrono-confiable-y-leases-internos.md), se formalizan y verifican en runtime las operaciones asíncronas e internas entre Diagnosis y AI Inference:
 
-Verificación local: `bash scripts/check_contracts.sh`. Valida referencias, estructura OpenAPI, ejemplos, formatos y negativos; la evidencia del grupo2 no acredita outbox/inbox, permisos, idempotencia ni límites de archivos funcionando. Sus pruebas reales permanecen en incrementos1–5.
+- **Operaciones internas verificadas en runtime**:
+  - `POST /internal/diagnoses/{id}/claim`: Reclamo atómico de un diagnóstico en estado `PENDIENTE` por un worker autenticado con token Ed25519 interno (kid en registro de confianza). Otorga un lease con duración finita (`lease_token`, `lease_owner`, `expires_at`).
+  - `POST /internal/diagnoses/{id}/lease/renew`: Renovación con verificación de fencing (status `PROCESANDO`, coincidencia de `lease_token` e `instance_id`, y reloj relacional de base de datos no vencido). Falla con 409 `STALE_LEASE` ante token obsoleto o estado no renovable.
+  - `GET /internal/diagnoses/{id}/image`: Descarga de imagen original del objeto privado mediante encabezado `X-Lease-Token` y autenticación de servicio. Falla con 409 si el lease es inválido o no coincide.
+- **Topología AMQP y Eventos JSON Schema**:
+  - Exchange: `agrodiagnostico.events` (topic, durable).
+  - `DiagnosisRequested` v2: Publicado transaccionalmente en outbox de Diagnosis; enrutado a `ai_inference.diagnosis-requested.v2` con DLQ `ai_inference.diagnosis-requested.v2.dlq`.
+  - `DiagnosisAnalyzed` v1: Publicado por worker en `inference_outbox`; enrutado a `diagnosis.diagnosis-analyzed.v1` con DLQ `diagnosis.diagnosis-analyzed.v1.dlq`. Variantes cerradas: `PREDICTION`, `ABSTENTION`, `FAILURE`.
+  - `DiagnosisFinished` v1: Publicado por `diagnosis-publisher` hacia `notification.diagnosis-finished.v1`.
+- **Invariante de cola DiagnosisFinished y Notificaciones**:
+  - La cola durable `notification.diagnosis-finished.v1` acumula los eventos terminales sin consumidor en V1 (0 consumidores activos). El procesamiento de notificaciones por correo queda diferido a `services/notification` en el Incremento 5.
+- **Inferencia técnica provisional**:
+  - En Incremento 3 la inferencia de visión se ejecuta con simulador determinista (`APP_ENV=local` o `test` con `ENABLE_SIMULATED_INFERENCE="true"`). El despliegue de pesos reales de Machine Learning (MobileNetV3/EfficientNet) y artefactos de evaluación se formaliza en el Incremento 4 (`ml/`).
+- **Aislamiento en Cuarentena y Replay Operativo**:
+  - Mensajes con esquema inválido o colisiones de integridad se aíslan en `diagnosis_quarantine_messages` / `inference_quarantine_messages` emitiendo descriptores DLQ en `agrodiagnostico.dlq`.
+  - Replay operativo auditado mediante CLI (`app.quarantine_replay`) e invariante estricta: diagnósticos terminales (`COMPLETADO`, `NO_CONCLUYENTE`, `FALLIDO`, `CANCELADO`) nunca se revierten a `PROCESANDO`.
+
+## Verificación y compatibilidad comprobable
+
+Verificación local: `bash scripts/check_contracts.sh`. Valida referencias, estructura OpenAPI, ejemplos, formatos y negativos; la suite de aceptación asíncrona (`scripts/check_async_acceptance.py`) valida E2E el flujo distribuido completo con Docker Compose, PostgreSQL 16, RabbitMQ 4.2, SeaweedFS S3 y Nginx.
+
+### Verificación del incremento 3
+
+`diagnosis_claim`, `diagnosis_renew` y `diagnosis_internal_image` están implementadas. La aceptación usa llamadas HTTP reales, dos workers y credenciales separadas; el proxy no expone las rutas internas. Los elementos de `http-scenarios.json` siguen siendo ejemplos declarativos (`runtime_verified=false`); la evidencia ejecutada se conserva en las pruebas y el informe de CI, sin atribuir ejecución a un ejemplo JSON.
+
+El 409 terminal de claim incluye `details=[{"field":"status","code":"TERMINAL"}]`. Un 409 sin esa señal y los errores transitorios conservan la entrega para recuperación.

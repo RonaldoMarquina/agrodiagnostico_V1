@@ -26,8 +26,19 @@ EXPECTED_TABLES = {
         'image_upload_intents',
         'diagnosis_feedback',
         'diagnosis_audit_logs',
+        'diagnosis_outbox',
+        'diagnosis_inbox',
+        'diagnosis_quarantine_messages',
     },
-    'ai_inference': {'alembic_version'},
+    'ai_inference': {
+        'alembic_version',
+        'inference_jobs',
+        'inference_inbox',
+        'inference_results',
+        'inference_outbox',
+        'inference_quarantine_messages',
+        'inference_audit_logs',
+    },
     'notification': {'alembic_version'},
 }
 checks = []

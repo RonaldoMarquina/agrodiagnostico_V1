@@ -35,6 +35,20 @@ def get_current_principal(
             detail={"code": "UNAUTHORIZED", "message": "Bearer token requerido."},
         )
 
+    # Check if this is an internal service token attempting to access user routes
+    try:
+        import jwt as pyjwt
+        unverified = pyjwt.decode(auth.credentials, options={"verify_signature": False})
+        if unverified.get("iss") == "agrodiagnostico-internal" or unverified.get("aud") == "diagnosis-internal":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail={"code": "FORBIDDEN", "message": "Operación no autorizada."},
+            )
+    except HTTPException:
+        raise
+    except Exception:
+        pass
+
     verifier = get_token_verifier()
     try:
         payload = verifier.decode_access_token(auth.credentials)
@@ -58,6 +72,48 @@ def get_current_principal(
     role = payload["role"]
     token_id = str(payload.get("jti", ""))
     return Principal(id=user_id, role=role, token_id=token_id)
+
+
+def require_internal_service(
+    auth: Optional[HTTPAuthorizationCredentials] = Depends(bearer_scheme),
+):
+    """Authenticate internal worker instances using dedicated Ed25519 service keys."""
+    if not auth or not auth.credentials:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail={"code": "UNAUTHORIZED", "message": "Autenticación requerida o inválida."},
+        )
+
+    # If it is a valid user token (USER or ADMIN from Identity), return 403 FORBIDDEN
+    try:
+        user_verifier = get_token_verifier()
+        try:
+            user_verifier.decode_access_token(auth.credentials)
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail={"code": "FORBIDDEN", "message": "Operación no autorizada."},
+            )
+        except (TokenExpiredError, TokenInvalidError, TokenError):
+            pass
+    except HTTPException:
+        raise
+    except Exception:
+        pass
+
+    from app.infrastructure.internal_auth import (
+        InternalAuthError,
+        InternalTokenExpiredError,
+        InternalTokenInvalidError,
+        verify_internal_token,
+    )
+
+    try:
+        return verify_internal_token(auth.credentials)
+    except (InternalTokenExpiredError, InternalTokenInvalidError, InternalAuthError):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail={"code": "UNAUTHORIZED", "message": "Autenticación requerida o inválida."},
+        )
 
 
 def require_admin(principal: Principal = Depends(get_current_principal)) -> Principal:

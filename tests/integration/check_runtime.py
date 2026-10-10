@@ -48,6 +48,9 @@ def health(degraded=None):
                 '/api/v1/admin/problems/{code}',
                 '/api/v1/admin/recommendations',
                 '/api/v1/admin/recommendations/{id}',
+                '/internal/diagnoses/{id}/claim',
+                '/internal/diagnoses/{id}/lease/renew',
+                '/internal/diagnoses/{id}/image',
             }
             assert set(actual['paths']) == expected_diag_paths
         else:

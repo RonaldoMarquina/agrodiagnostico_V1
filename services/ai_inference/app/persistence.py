@@ -32,6 +32,30 @@ def engine():
                                        "options": "-c statement_timeout=3000 -c lock_timeout=3000"})
 
 
+_ENGINE = None
+
+
+def get_engine():
+    global _ENGINE
+    if _ENGINE is None:
+        _ENGINE = engine()
+    return _ENGINE
+
+
+def get_sessionmaker():
+    from sqlalchemy.orm import sessionmaker
+    return sessionmaker(autocommit=False, autoflush=False, bind=get_engine())
+
+
+def get_db():
+    maker = get_sessionmaker()
+    db = maker()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
 def schema_ready():
     """Fail closed; no DDL. Group 4 must combine this with other dependencies."""
     db = None

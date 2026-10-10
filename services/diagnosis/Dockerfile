@@ -6,6 +6,7 @@ WORKDIR /service
 COPY services/diagnosis/pyproject.toml services/diagnosis/uv.lock ./
 RUN uv sync --locked --no-dev --no-install-project
 COPY services/diagnosis/app ./app
+COPY contracts ./contracts
 COPY services/diagnosis/alembic.ini ./
 COPY services/diagnosis/migrations ./migrations
 ENV PATH="/service/.venv/bin:$PATH"

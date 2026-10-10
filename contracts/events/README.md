@@ -1,20 +1,34 @@
 # Eventos v1 y entrega futura
 
-Contrato del grupo 2. Los schemas y fixtures se validan ahora; ningún broker, outbox, inbox, consumidor, reintento o lease se ejecuta aquí. [ADR-0002](../../docs/adr/0002-interfaces-y-eventos-v1.md) conserva las decisiones y [routing.json](routing.json) fija nombres y escenarios de aceptación futuros.
+Contrato de eventos del sistema. [ADR-0002](../../docs/adr/0002-interfaces-y-eventos-v1.md) conserva las decisiones de interfaz iniciales, [ADR-0008](../../docs/adr/0008-flujo-asincrono-confiable-y-leases-internos.md) formaliza la arquitectura del flujo asíncrono confiable, leases de trabajo y dead-letter exchanges del Incremento 3, y [routing.json](routing.json) fija topología, nombres y escenarios de aceptación.
 
 ## Mensajes
 
-| Evento | Productor → consumidor | Routing key | Cola durable / DLQ |
-| --- | --- | --- | --- |
-| DiagnosisRequested | Diagnosis → AI Inference | diagnosis.requested.v1 | ai_inference.diagnosis-requested.v1 / sufijo .dlq |
-| DiagnosisAnalyzed | AI Inference → Diagnosis | diagnosis.analyzed.v1 | diagnosis.diagnosis-analyzed.v1 / sufijo .dlq |
-| DiagnosisFinished | Diagnosis → Notification | diagnosis.finished.v1 | notification.diagnosis-finished.v1 / sufijo .dlq |
+| Evento | Versión | Productor → consumidor | Routing key | Cola durable / DLQ |
+| --- | --- | --- | --- | --- |
+| DiagnosisRequested | v1 | Diagnosis → AI Inference | diagnosis.requested.v1 | ai_inference.diagnosis-requested.v1 / sufijo .dlq |
+| DiagnosisRequested | v2 | Diagnosis → AI Inference | diagnosis.requested.v2 | ai_inference.diagnosis-requested.v2 / sufijo .dlq |
+| DiagnosisAnalyzed | v1 | AI Inference → Diagnosis | diagnosis.analyzed.v1 | diagnosis.diagnosis-analyzed.v1 / sufijo .dlq |
+| DiagnosisFinished | v1 | Diagnosis → Notification | diagnosis.finished.v1 | notification.diagnosis-finished.v1 / sufijo .dlq |
 
 Exchange `agrodiagnostico.events`, tipo topic, durable; mensajes persistentes, publicación mandatory con confirms. Mensaje devuelto por falta de ruta, nack o timeout no marca outbox enviado, aunque haya confirmación de recepción del exchange. La configuración de colas/DLQ/retry y los ensayos con caídas pertenecen al incremento 3; el consumidor real de Notification y correo se completa en 5.
 
-Todos llevan event_id UUID único por evento lógico, event_type exacto, schema_version numérico 1, occurred_at UTC Z, correlation_id UUID y payload cerrado. Un reenvío del mismo outbox conserva event_id, contenido y occurred_at. La correlación se conserva a través del flujo; no es credencial.
+> **Invariante de la cola DiagnosisFinished**: La cola durable `notification.diagnosis-finished.v1` y su DLQ `notification.diagnosis-finished.v1.dlq` se aprovisionan en el broker con durabilidad estricta. Durante el Incremento 3, los eventos `DiagnosisFinished` v1 se publican y persisten durablemente en dicha cola sin un consumidor activo, acumulándose de manera segura hasta la implementación de `services/notification` en el Incremento 5. Está estrictamente prohibido drenar o descartar estos mensajes mediante consumidores ficticios.
 
-`DiagnosisRequested` lleva diagnosis_id, owner_id y object_key opaco `diagnoses/{uuid}/{uuid}`. No es URL ni concede acceso: el worker obtiene imagen a través de API interna autorizada y lease vigente. No registrar payloads completos.
+Todos llevan event_id UUID único por evento lógico, event_type exacto, schema_version numérico (1 para v1, 2 para v2), occurred_at UTC Z, correlation_id UUID y payload cerrado. Un reenvío del mismo outbox conserva event_id, contenido y occurred_at. La correlación se conserva a través del flujo; no es credencial.
+
+`DiagnosisRequested` lleva diagnosis_id, owner_id y object_key opaco.
+- En **v1**, object_key sigue el patrón `diagnoses/{uuid}/{uuid}`.
+- En **v2**, object_key admite tanto `diagnoses/{uuid}/{uuid}` como las claves de almacenamiento real generadas por servidor `diagnoses/{uuid}/original.(jpg|png|webp)`.
+No es URL ni concede acceso: el worker obtiene la imagen a través de API interna autorizada (`/internal/diagnoses/{id}/image`) y lease vigente. No registrar payloads completos.
+
+### Orden normativo: Consumidor antes que Productor (Consumer-Before-Producer)
+
+Para cualquier evolución de esquema, versión de evento o cambio de routing key, el despliegue DEBE seguir rigurosamente el orden:
+1. **Paso 1: Despliegue de consumidores compatibles (Lectores duales)**: Se despliegan e inicializan los consumidores con validadores capaces de procesar tanto la versión anterior (v1) como la nueva versión (v2), declarando e interconectando las colas y bindings correspondientes.
+2. **Paso 2: Convivencia y drenaje**: Los consumidores procesan concurrentemente mensajes en tránsito de la versión anterior sin pérdida ni rechazo.
+3. **Paso 3: Despliegue de productores (Emisión nueva)**: Una vez confirmado que todos los consumidores activos admiten la nueva versión, se despliegan los productores para emitir la nueva versión (v2).
+4. **Paso 4: Retiro ordenado de versiones deprecadas**: Una versión antigua sólo se retira tras verificar que ninguna cola contiene mensajes pendientes y que ningún productor activo emite dicha versión. Versiones no reconocidas nunca se asumen como v1 por defecto y se aíslan en cuarentena/DLQ.
 
 `DiagnosisAnalyzed` lleva diagnosis_id y lease_token UUID de fencing, **sin autoridad de autenticación**. Variantes cerradas:
 

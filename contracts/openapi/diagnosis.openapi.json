@@ -3,7 +3,7 @@
   "info": {
     "title": "AgroDiagn\u00f3stico diagnosis",
     "version": "1.0.0",
-    "description": "Contrato inicial: salud t\u00e9cnica implementada; operaciones de negocio contract-only. Sin servidores p\u00fablicos inventados."
+    "description": "Contrato de Diagnosis: operaciones de usuario, cat\u00e1logo e interfaces internas implementadas hasta el incremento 3; resultados sint\u00e9ticos solo en pruebas aisladas."
   },
   "paths": {
     "/health/live": {
@@ -1229,7 +1229,7 @@
       "post": {
         "operationId": "diagnosis_claim",
         "summary": "Reclamar at\u00f3micamente trabajo",
-        "description": "Solo principal ai_inference; lease_owner lo deriva el servidor de identidad/instancia verificada. PENDIENTE\u2192PROCESANDO o recuperaci\u00f3n de PROCESANDO con lease vencido y presupuesto disponible; nuevo UUID de fencing. Vigente/terminal409. Duraci\u00f3n configurable: expires_at es autoridad, no duraci\u00f3n del ejemplo. CANCELADO nunca reclamable.",
+        "description": "Solo principal ai_inference; lease_owner lo deriva el servidor de identidad/instancia verificada. PENDIENTE\u2192PROCESANDO o recuperaci\u00f3n de PROCESANDO con lease vencido y presupuesto disponible; nuevo UUID de fencing. Vigente/terminal409. Duraci\u00f3n configurable: expires_at es autoridad, no duraci\u00f3n del ejemplo. CANCELADO nunca reclamable. El 409 terminal incluye details con field=status y code=TERMINAL; los dem\u00e1s conflictos conservan posibilidad de recuperaci\u00f3n y no autorizan descartar la entrega.",
         "security": [
           {
             "ServiceBearer": []
@@ -1258,7 +1258,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Respuesta prevista; a\u00fan no implementada.",
+            "description": "Respuesta del servicio interno verificada en el incremento 3.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -1436,15 +1436,52 @@
                   "$ref": "../schemas/common.schema.json#/$defs/Error"
                 },
                 "example": {
-                  "code": "CONFLICT",
-                  "message": "La operaci\u00f3n entra en conflicto con el estado actual.",
+                  "code": "DIAGNOSIS_NOT_CLAIMABLE",
+                  "message": "La operaci\u00f3n entra en conflicto con el estado actual o lease vigente.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111",
+                  "details": [
+                    {
+                      "field": "status",
+                      "code": "TERMINAL"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Persistencia temporalmente no disponible.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "PERSISTENCE_UNAVAILABLE",
+                  "message": "Persistencia temporalmente no disponible.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
             }
           }
         },
-        "x-status": "contract-only",
+        "x-status": "implemented",
         "x-owner": "diagnosis",
         "x-increment": 3
       }
@@ -1482,7 +1519,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Respuesta prevista; a\u00fan no implementada.",
+            "description": "Respuesta del servicio interno verificada en el incremento 3.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -1666,9 +1703,40 @@
                 }
               }
             }
+          },
+          "503": {
+            "description": "Persistencia temporalmente no disponible.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "PERSISTENCE_UNAVAILABLE",
+                  "message": "Persistencia temporalmente no disponible.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
           }
         },
-        "x-status": "contract-only",
+        "x-status": "implemented",
         "x-owner": "diagnosis",
         "x-increment": 3,
         "requestBody": {
@@ -1901,7 +1969,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Respuesta prevista; a\u00fan no implementada.",
+            "description": "Respuesta del servicio interno verificada en el incremento 3.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -2096,9 +2164,40 @@
                 }
               }
             }
+          },
+          "503": {
+            "description": "Almacenamiento temporalmente no disponible.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "STORAGE_UNAVAILABLE",
+                  "message": "Almacenamiento temporalmente no disponible.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
           }
         },
-        "x-status": "contract-only",
+        "x-status": "implemented",
         "x-owner": "diagnosis",
         "x-increment": 3
       }

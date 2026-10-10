@@ -229,7 +229,7 @@
     "method": "POST",
     "path": "/internal/diagnoses/{id}/claim",
     "operation_id": "diagnosis_claim",
-    "status": "contract-only",
+    "status": "implemented",
     "increment": 3,
     "authorization": "service"
   },
@@ -238,7 +238,7 @@
     "method": "POST",
     "path": "/internal/diagnoses/{id}/lease/renew",
     "operation_id": "diagnosis_renew",
-    "status": "contract-only",
+    "status": "implemented",
     "increment": 3,
     "authorization": "service"
   },
@@ -256,7 +256,7 @@
     "method": "GET",
     "path": "/internal/diagnoses/{id}/image",
     "operation_id": "diagnosis_internal_image",
-    "status": "contract-only",
+    "status": "implemented",
     "increment": 3,
     "authorization": "service"
   },
