@@ -124,8 +124,16 @@ class TestAsyncOperationsAndResilience(unittest.TestCase):
         compose_path = Path(__file__).resolve().parents[3] / "docker-compose.yml"
         self.assertTrue(compose_path.is_file(), f"Missing {compose_path}")
 
+        # Render only: use committed defaults, never the developer's .env or
+        # exported simulation/profile settings. No daemon or real secrets needed.
+        compose_env = {key: os.environ[key] for key in ("PATH", "HOME") if key in os.environ}
+        compose_command = [
+            "docker", "compose", "--env-file", str(compose_path.parent / ".env.example"),
+            "-f", str(compose_path),
+        ]
         proc = subprocess.run(
-            ["docker", "compose", "-f", str(compose_path), "--profile", "async-test", "config", "--format", "json"],
+            [*compose_command, "--profile", "async-test", "config", "--format", "json"],
+            env=compose_env,
             cwd=str(compose_path.parent),
             capture_output=True,
             text=True,
@@ -169,7 +177,8 @@ class TestAsyncOperationsAndResilience(unittest.TestCase):
             self.assertIn("async-test", worker["profiles"])
             self.assertEqual(worker["environment"]["APP_ENV"], "test")
         normal = subprocess.run(
-            ["docker", "compose", "-f", str(compose_path), "config", "--services"],
+            [*compose_command, "config", "--services"],
+            env=compose_env,
             cwd=str(compose_path.parent), capture_output=True, text=True, check=True,
         ).stdout.splitlines()
         self.assertNotIn("ai_inference-worker-1", normal)

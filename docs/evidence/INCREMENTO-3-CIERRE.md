@@ -42,3 +42,25 @@ Los hashes del informe corresponden al código probado antes de sincronizar y ar
 ## Límites
 
 No existe modelo ML entrenado o calibrado en este incremento. No se activan semillas ordinarias como clases validadas. Notification, correo, métricas de producción, GPU, entrenamiento y despliegue público continúan pendientes. La validación local no acredita una ejecución remota de GitHub Actions. No se ejecuta backfill sobre datos reales ni se migran los volúmenes de desarrollo durante estas pruebas.
+
+## Correctivo de CI remoto — 2026-10-10
+
+La ejecución GitHub Actions `38023116598` falló en la prueba de topología
+`test_docker_compose_only_proxy_published_and_topology_complete`: invocaba
+Compose sin configuración explícita y dependía del `.env` local, ausente en un
+checkout limpio. La reproducción sin variables confirmó el rechazo de
+interpolación de `APP_ENV` obligatorio.
+
+La prueba ahora utiliza `.env.example` versionado para ambas consultas de
+Compose y un entorno limitado a PATH/HOME, sin heredar perfiles ni opciones de
+simulación del desarrollador. Solo renderiza configuración; no inicia servicios
+ni requiere secretos reales. Se conservan las comprobaciones de puertos,
+procesos, perfil aislado y simulación desactivada por defecto.
+
+Verificación del correctivo: las 213 pruebas de Diagnosis aprobaron en una copia
+de los archivos versionados con el correctivo, sin `.env`, usando el entorno
+Python local de Diagnosis. Se inyectaron `ENABLE_SIMULATED_INFERENCE=true` y
+`COMPOSE_PROFILES=async-test` en el proceso padre para comprobar el aislamiento.
+Log local: `.local/ci/inc3-compose-fix/diagnosis-clean.log`. No se repitió el
+pipeline integral; los 17/17 anteriores son evidencia histórica. La nueva
+validación remota queda pendiente del push de este correctivo.
