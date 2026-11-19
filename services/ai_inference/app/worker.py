@@ -49,9 +49,66 @@ from app.infrastructure.quarantine import (
     record_audit_log,
     record_quarantine_message,
 )
-from app.simulator import run_simulated_inference
+from app.inference_adapter import (
+    InferenceAdapter,
+    RealModelInferenceAdapter,
+    SimulatedInferenceAdapter,
+)
+from app.simulator import is_simulation_permitted, ensure_simulation_permitted, run_simulated_inference
 
 logger = logging.getLogger("ai_inference.worker")
+
+
+def create_configured_inference_adapter() -> InferenceAdapter:
+    """Selecciona e inicializa el adaptador de inferencia según configuración del entorno."""
+    import os
+    from pathlib import Path
+    mode = os.environ.get("INFERENCE_MODE", "").lower()
+
+    if not mode:
+        if is_simulation_permitted():
+            mode = "simulated"
+        elif os.environ.get("MODEL_BUNDLE_PATH"):
+            mode = "real"
+        else:
+            raise RuntimeError(
+                "No inference mode configured. For real mode set INFERENCE_MODE='real' "
+                "and MODEL_BUNDLE_PATH='/path/to/bundle.json'. For simulation set "
+                "INFERENCE_MODE='simulated' with APP_ENV='test' and ENABLE_SIMULATED_INFERENCE='true'."
+            )
+
+    if mode == "real":
+        raise RuntimeError(
+            "REAL_RUNTIME_NOT_IMPLEMENTED: JSON fixture adapters are not validated models. "
+            "Real processing remains disabled until increment 4 runtime is implemented."
+        )
+
+    if mode == "fixture":
+        if not is_simulation_permitted():
+            raise RuntimeError("Fixture runtime requires APP_ENV=test and ENABLE_SIMULATED_INFERENCE=true")
+        bundle_path_str = os.environ.get("MODEL_BUNDLE_PATH")
+        if not bundle_path_str:
+            raise RuntimeError(
+                "INFERENCE_MODE='real' requires MODEL_BUNDLE_PATH to be configured with the path to the model bundle"
+            )
+        weights_dir_str = os.environ.get("MODEL_WEIGHTS_DIR")
+        bundle_path = Path(bundle_path_str)
+        weights_dir = Path(weights_dir_str) if weights_dir_str else None
+
+        logger.info("Initializing RealModelInferenceAdapter from bundle: %s", bundle_path)
+        try:
+            return RealModelInferenceAdapter.from_bundle_file(bundle_path, weights_dir)
+        except Exception as exc:
+            # Regla D5: Artefacto ausente/corrupto/incompatible impide iniciar consumo sin activar simulación
+            raise RuntimeError(f"Failed to initialize real model bundle: {exc}") from exc
+
+    elif mode == "simulated":
+        ensure_simulation_permitted()
+        logger.info("Initializing SimulatedInferenceAdapter (test environment guard verified)")
+        return SimulatedInferenceAdapter()
+
+    else:
+        raise RuntimeError(f"Unknown INFERENCE_MODE: '{mode}'. Expected 'real' or 'simulated'.")
 
 
 class InferenceWorker:
@@ -65,6 +122,7 @@ class InferenceWorker:
         http_client: Optional[httpx.Client] = None,
         local_lease_seconds: int = 60,
         heartbeat_seconds: float = 20,
+        inference_adapter: Optional[InferenceAdapter] = None,
     ):
         if local_lease_seconds <= 0 or not 0 < heartbeat_seconds < local_lease_seconds:
             raise ValueError("Heartbeat must be positive and shorter than the local lease")
@@ -74,6 +132,7 @@ class InferenceWorker:
         self.http_client = http_client or httpx.Client(timeout=10.0)
         self.local_lease_seconds = local_lease_seconds
         self.heartbeat_seconds = heartbeat_seconds
+        self.inference_adapter = inference_adapter or SimulatedInferenceAdapter()
 
     def process_message(
         self,
@@ -342,9 +401,11 @@ class InferenceWorker:
 
             image_bytes = image_resp.content
 
-            # Step 6: Technical inference execution (simulator in test environment)
+            # Step 6: Technical inference execution (via configured adapter)
             try:
-                inference = run_simulated_inference(diagnosis_id=diagnosis_id, image_bytes=image_bytes)
+                inference = self.inference_adapter.run_inference(
+                    diagnosis_id=diagnosis_id, image_bytes=image_bytes
+                )
             except Exception as ex:
                 self._handle_execution_failure(diagnosis_id, correlation_id, f"INFERENCE_ERROR: {str(ex)[:150]}", local_claim_token)
                 channel.basic_nack(delivery_tag=delivery_tag, requeue=True)
@@ -659,8 +720,7 @@ def main() -> int:
     signer = InternalTokenSigner.from_environment()
     if signer is None:
         raise RuntimeError("A configured internal worker signing key is required")
-    from app.simulator import ensure_simulation_permitted
-    ensure_simulation_permitted()
+    adapter = create_configured_inference_adapter()
 
     credentials = pika.PlainCredentials(rabbit_user, rabbit_pw) if rabbit_pw else None
     params = pika.ConnectionParameters(
@@ -676,6 +736,7 @@ def main() -> int:
         token_signer=signer,
         local_lease_seconds=int(os.environ.get("LEASE_DURATION_SECONDS", "60")),
         heartbeat_seconds=float(os.environ.get("LEASE_HEARTBEAT_SECONDS", "20")),
+        inference_adapter=adapter,
     )
     stopping = Event()
 

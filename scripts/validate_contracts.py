@@ -113,7 +113,11 @@ def validate_package(root):
                 v['increment'], v['status']) for v in index]
     if len(indexed) != len(set(indexed)) or set(indexed) != set(operations):
         raise ValueError('Operation inventory differs from OpenAPI')
-    schemas = sorted((root / 'schemas').glob('*.schema.json')) + sorted((root / 'events').glob('*.schema.json'))
+    schemas = (
+        sorted((root / 'schemas').glob('*.schema.json'))
+        + sorted((root / 'events').glob('*.schema.json'))
+        + sorted((root / 'ml').glob('*.schema.json'))
+    )
     if len(schemas) < 5:
         raise ValueError('Missing common/event schemas')
     for path in schemas:

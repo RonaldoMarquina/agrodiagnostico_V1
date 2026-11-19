@@ -52,3 +52,7 @@ El [inventario versionado](../ml/manifests/README.md) registra referencias prima
 `bash scripts/check_dataset.sh` valida estructura, elegibilidad, correspondencia con contratos y separación por hash/grupo entre cada par de TRAIN/VAL/TEST/EXTERNAL, con positivos y negativos sintéticos. No modifica filas ni descarga imágenes. Manifiesto real inicialmente sin filas; fixtures separados no acreditan datos ni métricas.
 
 La [política de cuarentena y agrupamiento](../ml/manifests/README.md#partición-cuarentena-y-privacidad) exige relacionar planta/sesión/sitio/fuente y copias entre fuentes antes de particionar. Sin separación fiable, excluir o mantener fuera del manifiesto admitido. El control automático no verifica bytes, etiquetas, consentimiento ni casi duplicados visuales; esa curación y el test sellado pertenecen al incremento 4. No hay entrenamiento ni reutilización automática de imágenes de usuarios. [Evidencia](evidence/INCREMENTO-0-GRUPO-5.md).
+
+## Estado del incremento 4 (2026-10-15)
+
+G0–G3 pendientes. Se retiraron afirmaciones de aprobación y aceptación sin evidencia. Los clasificadores actuales son fixtures lineales; el runtime real y pipeline experimental requieren implementación adicional. Ver [estado rectificado](evidence/INCREMENTO-4-ACEPTACION-INTEGRADA.md).

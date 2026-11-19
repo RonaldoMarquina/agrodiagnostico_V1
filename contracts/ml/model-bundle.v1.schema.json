@@ -1,0 +1,331 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "model-bundle.v1.schema.json",
+  "title": "ModelBundleV1",
+  "description": "Contrato inmutable de empaquetado de modelo de inferencia agronómica V1 para AgroDiagnóstico.",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "bundle_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "model_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_-]{2,63}$",
+      "description": "Identificador único y canónico del modelo (e.g. agrodiagnostico-mobilenetv3-cpu)."
+    },
+    "model_version": {
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-[0-9A-Za-z.-]+)?$",
+      "description": "Versión semántica del modelo."
+    },
+    "dataset_version": {
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-[0-9A-Za-z.-]+)?$",
+      "description": "Versión semántica del dataset con el que fue entrenado."
+    },
+    "architecture": {
+      "type": "string",
+      "enum": [
+        "mobilenet_v3_small",
+        "mobilenet_v3_large",
+        "resnet18",
+        "resnet34",
+        "efficientnet_b0"
+      ],
+      "description": "Arquitectura de red neuronal permitida para ejecución en CPU."
+    },
+    "weights": {
+      "type": "object",
+      "properties": {
+        "filename": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_.-]+\\.(pt|pth|safetensors)$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "Digest SHA-256 en minúsculas del archivo binario de pesos."
+        },
+        "format": {
+          "type": "string",
+          "enum": [
+            "safetensors",
+            "state_dict_weights_only",
+            "torchscript"
+          ]
+        },
+        "size_bytes": {
+          "type": "integer",
+          "minimum": 1024,
+          "maximum": 524288000
+        }
+      },
+      "required": [
+        "filename",
+        "sha256",
+        "format",
+        "size_bytes"
+      ],
+      "additionalProperties": false
+    },
+    "manifest_checksums": {
+      "type": "object",
+      "properties": {
+        "train_manifest_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "val_manifest_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "test_manifest_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "train_manifest_sha256",
+        "val_manifest_sha256",
+        "test_manifest_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "class_map": {
+      "type": "object",
+      "patternProperties": {
+        "^[0-9]+$": {
+          "type": "object",
+          "properties": {
+            "class_code": {
+              "type": "string",
+              "enum": [
+                "POTATO_HEALTHY",
+                "POTATO_EARLY_BLIGHT",
+                "POTATO_LATE_BLIGHT",
+                "MAIZE_HEALTHY",
+                "MAIZE_COMMON_RUST",
+                "MAIZE_LEAF_BLIGHT",
+                "MAIZE_GRAY_LEAF_SPOT"
+              ]
+            },
+            "crop_code": {
+              "type": "string",
+              "enum": [
+                "POTATO",
+                "MAIZE"
+              ]
+            }
+          },
+          "required": [
+            "class_code",
+            "crop_code"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false,
+      "description": "Mapeo de índice numérico de salida a códigos contractuales."
+    },
+    "preprocessing": {
+      "type": "object",
+      "properties": {
+        "input_size": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 64,
+            "maximum": 1024
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "channels": {
+          "type": "integer",
+          "const": 3
+        },
+        "color_space": {
+          "type": "string",
+          "const": "RGB"
+        },
+        "mean": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "std": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 1
+          },
+          "minItems": 3,
+          "maxItems": 3
+        }
+      },
+      "required": [
+        "input_size",
+        "channels",
+        "color_space",
+        "mean",
+        "std"
+      ],
+      "additionalProperties": false
+    },
+    "rejection_components": {
+      "type": "object",
+      "properties": {
+        "min_confidence_threshold": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "crop_detection_threshold": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "min_dimension": {
+          "type": "integer",
+          "minimum": 64
+        },
+        "max_dimension": {
+          "type": "integer",
+          "maximum": 10000
+        }
+      },
+      "required": [
+        "min_confidence_threshold",
+        "crop_detection_threshold",
+        "min_dimension",
+        "max_dimension"
+      ],
+      "additionalProperties": false
+    },
+    "calibration": {
+      "type": "object",
+      "properties": {
+        "method": {
+          "type": "string",
+          "enum": [
+            "TEMPERATURE_SCALING",
+            "PLATT_SCALING",
+            "ISOTONIC_REGRESSION",
+            "SCALAR_AFFINE"
+          ]
+        },
+        "parameters_per_class": {
+          "type": "object",
+          "patternProperties": {
+            "^[A-Z][A-Z0-9_]+$": {
+              "type": "object",
+              "properties": {
+                "slope": {
+                  "type": "number"
+                },
+                "intercept": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "slope",
+                "intercept"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "method",
+        "parameters_per_class"
+      ],
+      "additionalProperties": false
+    },
+    "runtime_environment": {
+      "type": "object",
+      "properties": {
+        "python_version": {
+          "type": "string",
+          "pattern": "^3\\.1[0-9](\\.[0-9]+)?$"
+        },
+        "framework": {
+          "type": "string",
+          "enum": [
+            "pytorch",
+            "onnxruntime"
+          ]
+        },
+        "framework_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target_device": {
+          "type": "string",
+          "const": "cpu"
+        }
+      },
+      "required": [
+        "python_version",
+        "framework",
+        "framework_version",
+        "target_device"
+      ],
+      "additionalProperties": false
+    },
+    "governance": {
+      "type": "object",
+      "properties": {
+        "g0_protocol_version": {
+          "type": "string"
+        },
+        "g2_approval_id": {
+          "type": "string"
+        },
+        "approved_by": {
+          "type": "string"
+        },
+        "approved_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "g0_protocol_version",
+        "g2_approval_id",
+        "approved_by",
+        "approved_at"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "schema_version",
+    "bundle_id",
+    "model_id",
+    "model_version",
+    "dataset_version",
+    "architecture",
+    "weights",
+    "manifest_checksums",
+    "class_map",
+    "preprocessing",
+    "rejection_components",
+    "calibration",
+    "runtime_environment",
+    "governance"
+  ],
+  "additionalProperties": false
+}

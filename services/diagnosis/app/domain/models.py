@@ -107,6 +107,29 @@ class Recommendation(Base):
     )
 
 
+class PublicationPolicy(Base):
+    __tablename__ = "publication_policies"
+
+    id = Column(Uuid, primary_key=True, default=uuid.uuid4)
+    policy_version = Column(String(50), nullable=False)
+    model_id = Column(String(128), nullable=False)
+    model_version = Column(String(128), nullable=False)
+    dataset_version = Column(String(128), nullable=False)
+    bundle_digest = Column(String(64), nullable=False)
+    payload = Column(JSON, nullable=False)
+    active = Column(Boolean, nullable=False, default=False)
+    created_at = Column(DateTime(timezone=True), nullable=False, default=utc_now)
+    activated_at = Column(DateTime(timezone=True), nullable=True)
+    retired_at = Column(DateTime(timezone=True), nullable=True)
+
+    diagnoses = relationship("Diagnosis", back_populates="policy")
+
+    __table_args__ = (
+        Index("ix_publication_policies_active", "active"),
+        Index("ix_publication_policies_model_dataset", "model_id", "model_version", "dataset_version"),
+    )
+
+
 class Diagnosis(Base):
     __tablename__ = "diagnoses"
 
@@ -124,9 +147,13 @@ class Diagnosis(Base):
     crop_code = Column(String(50), ForeignKey("crops.code", ondelete="SET NULL"), nullable=True)
     class_code = Column(String(50), ForeignKey("problems.code", ondelete="SET NULL"), nullable=True)
     raw_score = Column(Float, nullable=True)
+    calibrated_confidence = Column(Float, nullable=True)
     model_id = Column(String(128), nullable=True)
     model_version = Column(String(128), nullable=True)
     dataset_version = Column(String(128), nullable=True)
+    policy_id = Column(Uuid, ForeignKey("publication_policies.id", ondelete="SET NULL"), nullable=True)
+    policy_version = Column(String(50), nullable=True)
+    policy_digest = Column(String(64), nullable=True)
     recommendation_id = Column(Uuid, ForeignKey("recommendations.id", ondelete="SET NULL"), nullable=True)
     catalog_version = Column(String(128), nullable=True)
     recommendation_text = Column(Text, nullable=True)
@@ -153,9 +180,18 @@ class Diagnosis(Base):
     crop = relationship("Crop", back_populates="diagnoses")
     problem = relationship("Problem", back_populates="diagnoses")
     recommendation = relationship("Recommendation", back_populates="diagnoses")
+    policy = relationship("PublicationPolicy", back_populates="diagnoses")
     feedback = relationship("DiagnosisFeedback", back_populates="diagnosis", uselist=False, cascade="all, delete-orphan")
     idempotency_keys = relationship("IdempotencyKey", back_populates="diagnosis", cascade="all, delete-orphan")
     outbox_events = relationship("DiagnosisOutbox", back_populates="diagnosis", cascade="all, delete-orphan")
+
+    @property
+    def estimated_confidence(self) -> Optional[float]:
+        return self.calibrated_confidence
+
+    @estimated_confidence.setter
+    def estimated_confidence(self, value: Optional[float]) -> None:
+        self.calibrated_confidence = value
 
     __table_args__ = (
         CheckConstraint(

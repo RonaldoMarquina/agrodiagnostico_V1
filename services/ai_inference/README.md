@@ -36,3 +36,29 @@ La revisión base crea solo los metadatos `alembic_version`, sin tablas o seeds 
 [Operación con Docker, secretos y aceptación](../../docs/PERSISTENCE.md). El contenedor de migración usa solo la credencial de este servicio; bootstrap usa un job separado con credencial privilegiada. Las APIs de salud ya se ejecutan en grupo4; negocio sigue pendiente.
 
 Salud integrada: GET /health/live y /health/ready internos, sin publicación por Nginx. La preparación, configuración APP_ENV y ejecución se detallan en [DEVELOPMENT](../../docs/DEVELOPMENT.md). No hay endpoints de negocio implementados.
+
+
+## Modos de Ejecución del Worker Asíncrono (Incremento 4)
+
+El worker asíncrono (`app.worker`) procesa eventos `DiagnosisRequested` (v1 y v2) consumiendo de RabbitMQ, reclamando diagnósticos en `Diagnosis` vía API interna, obteniendo la imagen por lease token y produciendo eventos `DiagnosisAnalyzed` (v1).
+
+Dispone de dos perfiles de ejecución estrictamente aislados:
+
+### 1. Perfil de Prueba (`async-test`)
+- **Adaptador**: `SimulatedInferenceAdapter`.
+- **Doble guardia mandatoria**: Requiere explícitamente `APP_ENV=test` y `ENABLE_SIMULATED_INFERENCE=true`. En cualquier otro entorno falla inmediatamente al arranque.
+- **Uso**: Pruebas de integración automatizadas y suites de CI.
+- **Activación**:
+  ```bash
+  docker compose --profile async-test up -d ai_inference-worker-1
+  ```
+
+### 2. Modo real pendiente
+
+`INFERENCE_MODE=real` rechaza iniciar con `REAL_RUNTIME_NOT_IMPLEMENTED`.
+El adaptador actual es un fixture lineal JSON, no MobileNet/ResNet ni un cargador
+PyTorch/safetensors. La existencia del perfil `ml-real` no acredita funcionalidad.
+No activarlo para usuarios; implementar y verificar el runtime real según el cambio.
+
+`INFERENCE_MODE=fixture` sirve únicamente para pruebas con APP_ENV=test y
+ENABLE_SIMULATED_INFERENCE=true. No es un fallback de producción.

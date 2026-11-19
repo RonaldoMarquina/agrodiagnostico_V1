@@ -749,7 +749,36 @@
                         "recommendation": {
                           "catalog_version": "fixture-1",
                           "recommendation_id": "22222222-2222-4222-8222-222222222222",
-                          "text": "Texto sint\u00e9tico del cat\u00e1logo; no constituye orientaci\u00f3n cl\u00ednica."
+                          "text": "Texto sintético del catálogo; no constituye orientación clínica."
+                        }
+                      }
+                    }
+                  },
+                  "COMPLETADO_CON_POLITICA_FIXTURE": {
+                    "value": {
+                      "id": "11111111-1111-4111-8111-111111111111",
+                      "status": "COMPLETADO",
+                      "created_at": "2026-09-28T12:00:00Z",
+                      "updated_at": "2026-09-28T12:00:00Z",
+                      "result": {
+                        "crop_code": "POTATO",
+                        "class_code": "POTATO_EARLY_BLIGHT",
+                        "raw_score": 0.88,
+                        "estimated_confidence": 0.91,
+                        "model": {
+                          "model_id": "fixture-model",
+                          "model_version": "0.1.0-fixture",
+                          "dataset_version": "fixture-dataset"
+                        },
+                        "policy_snapshot": {
+                          "policy_id": "33333333-3333-4333-8333-333333333333",
+                          "policy_version": "1.0.0",
+                          "policy_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                        },
+                        "recommendation": {
+                          "catalog_version": "1.0.0",
+                          "recommendation_id": "22222222-2222-4222-8222-222222222222",
+                          "text": "Texto sintético de prueba; no constituye orientación agronómica."
                         }
                       }
                     }

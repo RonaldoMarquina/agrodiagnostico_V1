@@ -5,7 +5,7 @@ import re
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
-REQUIRED = {'workflow', 'python-lint', 'ci-tests', 'contracts', 'dataset', 'backend',
+REQUIRED = {'workflow', 'python-lint', 'ci-tests', 'contracts', 'dataset', 'ml-contracts-and-runtime', 'backend',
             'frontend-install', 'frontend-lint', 'frontend-types', 'frontend-tests',
             'frontend-build', 'openspec', 'persistence', 'environment', 'identity-integration', 'diagnosis-integration', 'async-integration'}
 
@@ -20,6 +20,9 @@ def validate_plan(plan):
     async_step = next(s for s in plan['steps'] if s['id'] == 'async-integration')
     if async_step['command'] != ['python3', 'scripts/check_async_acceptance.py']:
         raise ValueError('Async integration must execute the acceptance suite')
+    ml_step = next(s for s in plan['steps'] if s['id'] == 'ml-contracts-and-runtime')
+    if ml_step['command'] != ['bash', 'scripts/check_ml_runtime.sh']:
+        raise ValueError('ML contracts and runtime must execute scripts/check_ml_runtime.sh')
     for step in plan['steps']:
         if not step.get('command') or not 1 <= step.get('timeout_seconds', 0) <= 1800:
             raise ValueError('CI command or timeout missing')

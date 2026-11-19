@@ -79,9 +79,9 @@ def main():
         revision = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True, capture_output=True)
         report['revision'] = revision.stdout.strip() if revision.returncode == 0 else 'sin commit'
         # File allowlist excludes private datasets, environments, caches and secret files.
-        paths = [p for folder in ('scripts', 'tests', 'contracts', 'services', 'frontend', 'tooling/ci', 'openspec', 'infra', 'ml/manifests')
+        paths = [p for folder in ('scripts', 'tests', 'contracts', 'services', 'frontend', 'tooling/ci', 'openspec', 'infra', 'ml/manifests', 'ml/src', 'ml/configs')
                  for p in (ROOT/folder).rglob('*') if p.is_file() and not any(x in p.parts for x in ('node_modules', '.venv', '__pycache__', 'dist', 'bin'))]
-        paths += [ROOT/'docker-compose.yml', ROOT/'.github/workflows/application-ci.yml']
+        paths += [ROOT/'docker-compose.yml', ROOT/'.github/workflows/application-ci.yml', ROOT/'ml/pyproject.toml', ROOT/'ml/uv.lock', ROOT/'ml/evaluation/protocol-g0.v1.json']
         report['sha256'] = {str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(set(paths))}
         for step in plan['steps']:
             print('CI '+step['id']+'...', flush=True)

@@ -421,7 +421,7 @@ def get_diagnosis_detail(
     if diag.status in ("NO_CONCLUYENTE", "FALLIDO"):
         data["reason_code"] = diag.reason_code
     elif diag.status == "COMPLETADO":
-        data["result"] = {
+        res = {
             "crop_code": diag.crop_code,
             "class_code": diag.class_code,
             "raw_score": diag.raw_score,
@@ -436,6 +436,15 @@ def get_diagnosis_detail(
                 "text": diag.recommendation_text,
             },
         }
+        if getattr(diag, "estimated_confidence", None) is not None:
+            res["estimated_confidence"] = diag.estimated_confidence
+        if getattr(diag, "policy_id", None) is not None:
+            res["policy_snapshot"] = {
+                "policy_id": str(diag.policy_id),
+                "policy_version": getattr(diag, "policy_version", ""),
+                "policy_digest": getattr(diag, "policy_digest", ""),
+            }
+        data["result"] = res
 
     return data
 

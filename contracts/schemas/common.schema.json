@@ -622,6 +622,42 @@
                   ],
                   "additionalProperties": false,
                   "description": "Snapshot de catálogo revisado, nunca texto generado por AI. Ejemplos sintéticos sin tratamientos."
+                },
+                "estimated_confidence": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 1,
+                  "description": "Nivel de confianza estimado mediante calibración escalar por clase de la política activa. Null en históricos sin calibración."
+                },
+                "policy_snapshot": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "properties": {
+                    "policy_id": {
+                      "$ref": "#/$defs/UUID"
+                    },
+                    "policy_version": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128
+                    },
+                    "policy_digest": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    }
+                  },
+                  "required": [
+                    "policy_id",
+                    "policy_version",
+                    "policy_digest"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Snapshot de la política de publicación activa al momento de la finalización."
                 }
               },
               "required": [

@@ -29,6 +29,7 @@ EXPECTED_TABLES = {
         'diagnosis_outbox',
         'diagnosis_inbox',
         'diagnosis_quarantine_messages',
+        'publication_policies',
     },
     'ai_inference': {
         'alembic_version',

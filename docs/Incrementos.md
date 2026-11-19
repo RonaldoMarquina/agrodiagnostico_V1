@@ -1,6 +1,6 @@
 # Incrementos de AgroDiagnóstico V1
 
-Estado actual: incrementos 0–3 implementados y verificados. El cierre del incremento 2 tiene un correctivo posterior a la auditoría; véase la evidencia de corrección. Los incrementos 4–5 siguen pendientes.
+Estado actual: incrementos 0–3 implementados y verificados. Incremento 4 en corrección técnica y pendiente de aprobación humana/datos/modelo reales. Incremento 5 pendiente.
 
 | Incremento | Resultado previsto | Estado |
 | --- | --- | --- |
@@ -8,7 +8,7 @@ Estado actual: incrementos 0–3 implementados y verificados. El cierre del incr
 | 1 | Registro, sesiones, roles, perfil, cambio y recuperación de contraseña, autorización | Implementado y revisado mediante correctivo posterior; 12 operaciones de identidad. Véase evidencia INCREMENTO-1-CORRECCION |
 | 2 | Imágenes privadas, validación y formatos, diagnósticos, catálogo, historial, feedback | Implementado; cierre original rectificado por [corrección](evidence/INCREMENTO-2-CORRECCION.md). 20 operaciones de negocio de Diagnosis |
 | 3 | RabbitMQ, outbox/inbox, lease, worker provisional e idempotencia | Verificado y archivado; CI local 17/17. [Evidencia](evidence/INCREMENTO-3-CIERRE.md). Resultados sintéticos, sin modelo real |
-| 4 | Dataset autorizado, cultivo automático, entrenamiento, evaluación y modelo validado | Pendiente; siete clases candidatas |
+| 4 | Dataset autorizado, cultivo automático, entrenamiento, evaluación y modelo validado | En corrección; no hay G0–G3 acreditadas. [Estado rectificado](evidence/INCREMENTO-4-ACEPTACION-INTEGRADA.md) |
 | 5 | Notificaciones, lectura de avisos, interfaz final, observabilidad, recuperación, pruebas y despliegue con dominio, HTTPS, Cloudflare y CDN | Pendiente |
 
 Gemini, voz, PWA y detector de plagas son extensiones posteriores opcionales.
@@ -28,3 +28,5 @@ La auditoría posterior y sus correcciones se registran en [INCREMENTO-2-CORRECC
 CI de cierre del incremento 2 (2026-10-07): 16/16 etapas locales aprobadas, incluidas persistencia, entorno Compose e integraciones Identity/Diagnosis. [Informe](evidence/INCREMENTO-2-CI-LOCAL.json). La verificación remota de este correctivo queda pendiente de publicación autenticada.
 
 Cierre del incremento 3 (2026-10-09): 33/33 tareas, cinco capacidades sincronizadas y [CI local completo](evidence/INCREMENTO-3-CI-LOCAL.json). [Tareas archivadas](../openspec/changes/archive/2026-10-09-incremento-3-flujo-asincrono-confiable/tasks.md). La comprobación remota de GitHub Actions permanece pendiente; el siguiente incremento es el 4 (datos autorizados y modelo validado).
+
+Estado del incremento 4 rectificado el 2026-10-15: se retira la declaración de 36/40 completadas y la aceptación real. Persisten trabajo técnico, permisos, revisión docente, entrenamiento y evaluación. No archivar.

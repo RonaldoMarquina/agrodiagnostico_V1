@@ -34,7 +34,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.application.internal_diagnoses import ensure_utc, get_db_now
-from app.infrastructure.publication_policy import prediction_rejection
+from app.infrastructure.publication_policy import evaluate_publication, prediction_rejection
 from app.domain.models import (
     Crop,
     Diagnosis,
@@ -309,7 +309,7 @@ class DiagnosisAnalyzedConsumer:
                 model_version = payload.get("model_version")
                 dataset_version = payload.get("dataset_version")
 
-                # Validate Agricultural Catalog support
+                # 1. Validate Agricultural Catalog crop support
                 crop = session.execute(
                     select(Crop).where(Crop.code == crop_code, Crop.active.is_(True))
                 ).scalar_one_or_none()
@@ -320,47 +320,34 @@ class DiagnosisAnalyzedConsumer:
                     diag.status = final_status
                     diag.reason_code = reason_code
                 else:
-                    problem = session.execute(
-                        select(Problem).where(
-                            Problem.code == class_code,
-                            Problem.crop_code == crop_code,
-                            Problem.active.is_(True),
-                        )
-                    ).scalar_one_or_none()
-
-                    if problem is None or not problem.model_supported:
+                    # 2. Evaluate publication policy (exact tuple, approved class, calibration, frontier threshold, catalog)
+                    decision = evaluate_publication(session=session, payload=payload)
+                    if not decision.accepted:
                         final_status = "NO_CONCLUYENTE"
-                        reason_code = "UNSUPPORTED_CLASS"
+                        reason_code = decision.reason_code
                         diag.status = final_status
                         diag.reason_code = reason_code
-                    elif rejection := prediction_rejection(payload):
-                        final_status = "NO_CONCLUYENTE"
-                        reason_code = rejection
-                        diag.status = final_status
-                        diag.reason_code = reason_code
+                        if decision.calibrated_confidence is not None:
+                            diag.calibrated_confidence = decision.calibrated_confidence
+                        if decision.policy_id is not None:
+                            diag.policy_id = decision.policy_id
+                            diag.policy_version = decision.policy_version
+                            diag.policy_digest = decision.policy_digest
                     else:
-                        # Find active recommendation
-                        rec = session.execute(
-                            select(Recommendation)
-                            .where(
-                                Recommendation.problem_code == class_code,
-                                Recommendation.active.is_(True),
-                            )
-                            .order_by(Recommendation.version.desc())
-                        ).scalars().first()
-
-                        if rec is None:
-                            final_status = "NO_CONCLUYENTE"
-                            reason_code = "CATALOG_UNAVAILABLE"
-                            diag.status = final_status
-                            diag.reason_code = reason_code
-                        else:
-                            final_status = "COMPLETADO"
-                            diag.status = final_status
-                            diag.reason_code = None
+                        final_status = "COMPLETADO"
+                        diag.status = final_status
+                        diag.reason_code = None
+                        rec = decision.recommendation
+                        if rec is not None:
                             diag.recommendation_id = rec.id
                             diag.catalog_version = str(rec.version)
                             diag.recommendation_text = rec.summary
+                        if decision.calibrated_confidence is not None:
+                            diag.calibrated_confidence = decision.calibrated_confidence
+                        if decision.policy_id is not None:
+                            diag.policy_id = decision.policy_id
+                            diag.policy_version = decision.policy_version
+                            diag.policy_digest = decision.policy_digest
 
                 diag.crop_code = crop_code
                 diag.class_code = class_code

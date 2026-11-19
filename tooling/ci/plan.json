@@ -47,6 +47,14 @@
       "timeout_seconds": 300
     },
     {
+      "id": "ml-contracts-and-runtime",
+      "command": [
+        "bash",
+        "scripts/check_ml_runtime.sh"
+      ],
+      "timeout_seconds": 300
+    },
+    {
       "id": "backend",
       "command": [
         "bash",

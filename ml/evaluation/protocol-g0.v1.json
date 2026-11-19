@@ -1,0 +1,58 @@
+{
+  "protocol_version": "1.0.0",
+  "approved_at": null,
+  "reviewer_role": null,
+  "responsible": null,
+  "status": "PENDING_REVIEW",
+  "candidate_classes": [
+    "POTATO_HEALTHY",
+    "POTATO_EARLY_BLIGHT",
+    "POTATO_LATE_BLIGHT",
+    "MAIZE_HEALTHY",
+    "MAIZE_COMMON_RUST",
+    "MAIZE_LEAF_BLIGHT",
+    "MAIZE_GRAY_LEAF_SPOT"
+  ],
+  "partition_minimums": {
+    "train": {
+      "min_samples_per_class": 150,
+      "min_groups_per_class": 50
+    },
+    "val": {
+      "min_samples_per_class": 40,
+      "min_groups_per_class": 20
+    },
+    "test": {
+      "min_samples_per_class": 30,
+      "min_groups_per_class": 15
+    },
+    "external": {
+      "min_samples_per_class": 20,
+      "min_groups_per_class": 10
+    }
+  },
+  "metrics_thresholds": {
+    "macro_f1_val_min": 0.8,
+    "macro_f1_test_min": 0.8,
+    "class_f1_test_min": 0.7,
+    "crop_accuracy_min": 0.9,
+    "unsupported_crop_abstention_min": 0.95,
+    "negative_samples_fpr_max": 0.05,
+    "negative_samples_rejection_min": 0.95,
+    "calibration_ece_max": 0.15
+  },
+  "compute_budget_cpu": {
+    "latency_median_ms_max": 1000,
+    "latency_p95_ms_max": 2500,
+    "latency_hard_limit_ms": 4000,
+    "max_rss_mb": 1024
+  },
+  "increment_closure_rule": {
+    "required_crops": [
+      "POTATO",
+      "MAIZE"
+    ],
+    "min_approved_diseases_per_crop": 1
+  },
+  "review_note": "Propuesta no aprobada. Cifras heredadas sin evidencia docente: no utilizarlas para promoción."
+}

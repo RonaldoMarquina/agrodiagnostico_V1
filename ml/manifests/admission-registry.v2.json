@@ -1,0 +1,57 @@
+{
+  "schema_version": 2,
+  "reviewed_at": null,
+  "reviewer": null,
+  "protocol_reference": "ml/evaluation/protocol-g0.v1.json",
+  "dossier_reference": "docs/evidence/INCREMENTO-4-EXPEDIENTE-FUENTES.md",
+  "decisions": [
+    {
+      "source_id": "plantvillage",
+      "decision": "PENDING",
+      "admitted_for": [],
+      "license": "CC-BY-SA-3.0",
+      "verified_license_status": "PENDING_REVIEW",
+      "capture_context": "CONTROLLED_LEAF",
+      "restrictions": "Atribución requerida. Agrupamiento obligatorio por planta/sesión para evitar fugas.",
+      "classes_admitted": [],
+      "local_inventory_status": "NOT_ADMITTED",
+      "local_count": null,
+      "reason": "Admisión sin evidencia verificable; requiere revisión humana."
+    },
+    {
+      "source_id": "plantdoc",
+      "decision": "PENDING",
+      "admitted_for": [],
+      "license": "CC-BY-4.0",
+      "verified_license_status": "PENDING_REVIEW",
+      "capture_context": "FIELD_COMPLEX_BACKGROUND",
+      "restrictions": "Requiere filtrado previo de calidad y detección de casi duplicados con PlantVillage.",
+      "classes_admitted": [],
+      "local_inventory_status": "NOT_ADMITTED",
+      "local_count": null,
+      "reason": "Admisión sin evidencia verificable; requiere revisión humana."
+    },
+    {
+      "source_id": "plantseg",
+      "decision": "PENDING",
+      "reason": "Admisión sin evidencia verificable; requiere revisión humana.",
+      "license": "CC-BY-NC-4.0",
+      "verified_license_status": "PENDING_REVIEW",
+      "local_count": null,
+      "admitted_for": [],
+      "classes_admitted": [],
+      "local_inventory_status": "NOT_ADMITTED"
+    },
+    {
+      "source_id": "ayacucho_external",
+      "decision": "PENDING",
+      "reason": "Admisión sin evidencia verificable; requiere revisión humana.",
+      "license": "NONE",
+      "verified_license_status": "PENDING_REVIEW",
+      "local_count": null,
+      "admitted_for": [],
+      "classes_admitted": [],
+      "local_inventory_status": "NOT_ADMITTED"
+    }
+  ]
+}

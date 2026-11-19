@@ -2,6 +2,7 @@
 """Validación offline del inventario y manifiestos CSV; nunca descarga ni modifica datos."""
 import argparse
 import csv
+import hashlib
 import json
 import re
 import sys
@@ -165,14 +166,136 @@ def validate_manifest(path, schema, classes, sources, synthetic=False, allow_emp
     return count
 
 
+def validate_sources_v2(document, synthetic=False):
+    require(document.get('schema_version') == 2, 'sources v2: versión inválida')
+    sources = document.get('sources')
+    require(isinstance(sources, list) and sources, 'sources: lista vacía o ausente')
+    seen = set()
+    for source in sources:
+        for field in ('source_id', 'name', 'version', 'reference', 'consulted_at',
+                      'eligibility_reason', 'restrictions', 'capture_context',
+                      'label_review', 'duplicates', 'exclusions'):
+            require(nonempty(source.get(field)), f'source: falta {field}')
+        sid = source['source_id']
+        require(sid not in seen, f'source duplicada: {sid}')
+        seen.add(sid)
+        require(isinstance(source.get('authors'), list) and source['authors']
+                and all(nonempty(x) for x in source['authors']), f'{sid}: autores ausentes')
+        date.fromisoformat(source['consulted_at'])
+        require(source.get('eligibility') in ('PENDING', 'EXCLUDED', 'ELIGIBLE'), f'{sid}: elegibilidad inválida')
+        lic = source.get('license', {})
+        require(isinstance(lic, dict) and 'identifier' in lic and isinstance(lic.get('evidence'), list), f'{sid}: licencia incompleta')
+        if source['eligibility'] == 'ELIGIBLE':
+            require(nonempty(lic['identifier']) and lic['evidence'], f'{sid}: elegible sin evidencia de permiso')
+            expected = 'SYNTHETIC_ONLY' if synthetic else 'VERIFIED_FOR_PROJECT'
+            require(lic.get('status') == expected, f'{sid}: permiso no verificado para proyecto')
+        if not synthetic:
+            require(sid != 'synthetic' and source['capture_context'] != 'SYNTHETIC', 'fixture en inventario real')
+            if sid not in ('ayacucho_external',):
+                require(source['reference'].startswith('https://') or source['reference'].startswith('docs/'), f'{sid}: referencia primaria ausente')
+        for count in [source.get('reported_total'), source.get('local_total')]:
+            validate_count(count, sid)
+    return {s['source_id']: s for s in sources}
+
+
+def validate_taxonomy_v2(taxonomy, schema):
+    require(taxonomy.get('schema_version') == 2 and taxonomy.get('version') == '2.0.0', 'taxonomía v2: versión inválida')
+    classes = taxonomy.get('classes', [])
+    codes = [c['class_code'] for c in classes]
+    require(len(codes) == 7 and len(set(codes)) == 7, 'taxonomía: siete códigos únicos requeridos')
+    require(set(codes) == set(schema['properties']['class_code']['enum']), 'taxonomía/schema desalineados')
+    require('NO_CONCLUYENTE' not in codes, 'NO_CONCLUYENTE no es clase')
+    retired = taxonomy.get('retired_codes')
+    require(isinstance(retired, list) and not set(codes) & set(retired), 'código retirado reciclado')
+    for c in classes:
+        require(c['crop_code'] in ('POTATO', 'MAIZE') and c['class_code'].startswith(c['crop_code']+'_'), 'taxonomía: cultivo incompatible')
+        require(c.get('status') == 'CANDIDATE', 'inventario no acredita soporte definitivo')
+        require(c.get('definition_status') in ('PENDING_REVIEW', 'REVIEWED'), 'estado de revisión inválido')
+        require(nonempty(c.get('name')) and nonempty(c.get('definition')) and nonempty(c.get('definition_note')), 'definición incompleta')
+    return {c['class_code']: c for c in classes}
+
+
+def validate_inventory_v2(base=BASE):
+    schema = read_json(base / 'manifest-row.schema.json')
+    Draft202012Validator.check_schema(schema)
+    classes = validate_taxonomy_v2(read_json(base / 'taxonomy.v2.json'), schema)
+    codes = set(classes)
+    for contract in [ROOT/'contracts/schemas/common.schema.json', ROOT/'contracts/events/DiagnosisAnalyzed.v1.schema.json']:
+        require(codes in list(contract_enums(read_json(contract))), f'taxonomía diverge de {contract.name}')
+    document = read_json(base / 'sources.v2.json')
+    sources = validate_sources_v2(document)
+    require({'plantvillage', 'plantdoc', 'plantseg'} <= set(sources), 'faltan fuentes candidatas en v2')
+
+    mappings = read_json(base / 'label-mappings.v2.json')
+    require(mappings.get('schema_version') == 2, 'mappings v2: versión inválida')
+    for m in mappings['mappings']:
+        require(m['source'] in sources and m['class_code'] in classes, 'mapeo desconocido')
+        require(m.get('status') in ('PROVISIONAL', 'UNMAPPED', 'APPROVED'), 'estado de mapeo inválido')
+        require(nonempty(m.get('reference')) and nonempty(m.get('note')), 'mapeo sin evidencia/límite')
+
+    registry = read_json(base / 'admission-registry.v2.json')
+    require(registry.get('schema_version') == 2, 'admission-registry: versión inválida')
+    for decision in registry.get('decisions', []):
+        if decision.get('decision') == 'ADMITTED':
+            require(nonempty(registry.get('reviewed_at')) and nonempty(registry.get('reviewer')), 'admission-registry incompleto')
+            source = sources.get(decision.get('source_id'), {})
+            require(source.get('eligibility') == 'ELIGIBLE', 'admisión sin fuente elegible')
+    for source in sources.values():
+        if source.get('eligibility') == 'ELIGIBLE':
+            require(any(d.get('source_id') == source['source_id'] and d.get('decision') == 'ADMITTED'
+                        for d in registry.get('decisions', [])), 'fuente elegible sin admisión')
+    return schema, classes, sources
+
+
+def validate_manifest_v2(path, schema, classes, sources, images_dir=None, synthetic=False, allow_empty=True):
+    count = validate_manifest(path, schema, classes, sources, synthetic=synthetic, allow_empty=allow_empty)
+    if count and not synthetic:
+        with Path(path).open(newline='', encoding='utf-8') as handle:
+            for row in csv.DictReader(handle):
+                require(classes[row['class_code']].get('definition_status') == 'REVIEWED', 'definición pendiente de revisión')
+    if images_dir and count > 0:
+        images_dir = Path(images_dir)
+        require(images_dir.is_dir(), f'Directorio de imágenes no encontrado: {images_dir}')
+        try:
+            from PIL import Image
+        except ImportError:
+            Image = None
+        require(Image is not None, 'Pillow requerido para verificación de bytes de imágenes')
+
+        with Path(path).open(newline='') as stream:
+            reader = csv.DictReader(stream)
+            for line, row in enumerate(reader, 2):
+                img_path = images_dir / f"{row['image_id']}.jpg"
+                if not img_path.is_file():
+                    img_path = images_dir / f"{row['image_id']}.png"
+                require(img_path.is_file(), f"fila {line}: imagen no encontrada en disco: {img_path}")
+                raw_bytes = img_path.read_bytes()
+                computed_hash = hashlib.sha256(raw_bytes).hexdigest().lower()
+                require(computed_hash == row['sha256'].lower(), f"fila {line}: hash de bytes no coincide con {computed_hash}")
+                with Image.open(img_path) as img:
+                    img.verify()
+    return count
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--manifest', type=Path, help='CSV real ya autorizado; un archivo vacío no pasa')
+    parser.add_argument('--v2', action='store_true', help='Validar inventario y manifiestos versión 2')
+    parser.add_argument('--images-dir', type=Path, help='Directorio opcional para comprobar bytes locales reales contra SHA-256')
     args = parser.parse_args()
     try:
-        schema, classes, sources = validate_inventory()
-        count = validate_manifest(args.manifest or BASE/'images.v1.csv', schema, classes, sources, allow_empty=args.manifest is None)
-        print(f'PASS dataset inventory: 3 fuentes, 7 clases candidatas, 21 mapeos; filas reales={count}; sin entrenamiento')
+        is_v2 = args.v2 or (args.manifest and 'v2' in str(args.manifest))
+        if is_v2:
+            schema, classes, sources = validate_inventory_v2()
+            manifest_path = args.manifest or BASE/'images.v2.csv'
+            count = validate_manifest_v2(manifest_path, schema, classes, sources, images_dir=args.images_dir, allow_empty=args.manifest is None)
+            admitted = sum(s['eligibility'] == 'ELIGIBLE' for s in sources.values())
+            reviewed = sum(c['definition_status'] == 'REVIEWED' for c in classes.values())
+            print(f'PASS dataset inventory v2: {len(sources)} fuentes ({admitted} elegibles), {len(classes)} clases ({reviewed} revisadas); filas reales={count}; validación estructural, no aprobación')
+        else:
+            schema, classes, sources = validate_inventory()
+            count = validate_manifest(args.manifest or BASE/'images.v1.csv', schema, classes, sources, allow_empty=args.manifest is None)
+            print(f'PASS dataset inventory: 3 fuentes, 7 clases candidatas, 21 mapeos; filas reales={count}; sin entrenamiento')
         return 0
     except (InventoryError, ValueError, KeyError, TypeError, OSError) as error:
         print(f'FAIL dataset: {error}', file=sys.stderr)

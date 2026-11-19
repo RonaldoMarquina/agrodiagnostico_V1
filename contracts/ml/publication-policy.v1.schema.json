@@ -1,0 +1,194 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "publication-policy.v1.schema.json",
+  "title": "PublicationPolicyV1",
+  "description": "Contrato inmutable de política de publicación para el servicio Diagnosis.",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "policy_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "policy_version": {
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-[0-9A-Za-z.-]+)?$",
+      "description": "Versión semántica de la política."
+    },
+    "target_model": {
+      "type": "object",
+      "properties": {
+        "model_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]{2,63}$"
+        },
+        "model_version": {
+          "type": "string",
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-[0-9A-Za-z.-]+)?$"
+        },
+        "dataset_version": {
+          "type": "string",
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-[0-9A-Za-z.-]+)?$"
+        },
+        "bundle_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "Digest SHA-256 del artefacto bundle correspondiente."
+        }
+      },
+      "required": [
+        "model_id",
+        "model_version",
+        "dataset_version",
+        "bundle_digest"
+      ],
+      "additionalProperties": false
+    },
+    "approved_classes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "class_code": {
+            "type": "string",
+            "enum": [
+              "POTATO_HEALTHY",
+              "POTATO_EARLY_BLIGHT",
+              "POTATO_LATE_BLIGHT",
+              "MAIZE_HEALTHY",
+              "MAIZE_COMMON_RUST",
+              "MAIZE_LEAF_BLIGHT",
+              "MAIZE_GRAY_LEAF_SPOT"
+            ]
+          },
+          "crop_code": {
+            "type": "string",
+            "enum": [
+              "POTATO",
+              "MAIZE"
+            ]
+          },
+          "min_confidence_threshold": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "calibration_params": {
+            "type": "object",
+            "properties": {
+              "slope": {
+                "type": "number"
+              },
+              "intercept": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "slope",
+              "intercept"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "class_code",
+          "crop_code",
+          "min_confidence_threshold",
+          "calibration_params"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "unsupported_classes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "class_code": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "class_code",
+          "reason"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "catalog_requirements": {
+      "type": "object",
+      "properties": {
+        "require_reviewed_catalog": {
+          "type": "boolean",
+          "const": true
+        }
+      },
+      "required": [
+        "require_reviewed_catalog"
+      ],
+      "additionalProperties": false
+    },
+    "governance": {
+      "type": "object",
+      "properties": {
+        "g0_protocol_version": {
+          "type": "string"
+        },
+        "g2_approval_reference": {
+          "type": "string"
+        },
+        "approved_by": {
+          "type": "string"
+        },
+        "approved_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "g0_protocol_version",
+        "g2_approval_reference",
+        "approved_by",
+        "approved_at"
+      ],
+      "additionalProperties": false
+    },
+    "audit": {
+      "type": "object",
+      "properties": {
+        "imported_by": {
+          "type": "string"
+        },
+        "imported_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "imported_by",
+        "imported_at"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "schema_version",
+    "policy_id",
+    "policy_version",
+    "target_model",
+    "approved_classes",
+    "unsupported_classes",
+    "catalog_requirements",
+    "governance",
+    "audit"
+  ],
+  "additionalProperties": false
+}
