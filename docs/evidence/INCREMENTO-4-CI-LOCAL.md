@@ -8,4 +8,4 @@ Etapas aprobadas: `workflow`, `python-lint`, `ci-tests`, `contracts`, `dataset`,
 
 Antes de esta corrida, dos fallos de integración de pruebas se corrigieron: import del preflight G3 bajo los paquetes `app` de servicios distintos, y activación de política en un fixture antes de crear sus clases de catálogo. Las etapas ML y backend se repitieron por separado y pasaron antes de la CI completa. Esto acredita las comprobaciones técnicas locales; **no aprueba G3** ni corrige la falsa aceptación de papa sana del bundle v1.2.0.
 
-**9.3 permanece abierta:** falta publicar el commit y registrar una ejecución remota identificada de GitHub Actions sobre ese SHA. El responsable indicó que hará el `git push`; Codex crea el commit local. No se atribuye a la CI remota un resultado que todavía no existe.
+**Estado al terminar esta corrida local:** 9.3 permanecía abierta porque faltaba publicar el commit y registrar una ejecución remota identificada. El responsable publicó `bda7eb3` posteriormente; la [evidencia remota](INCREMENTO-4-CI-REMOTA-BDA7EB3.md) cierra 9.3, sin cerrar G3.

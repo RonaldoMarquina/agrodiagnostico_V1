@@ -41,7 +41,7 @@ El p95 observado queda bajo la meta de flujo completo ≤ 30 s. El pico de memor
 - **7.5 cerrada:** fuentes, revisión del responsable, contenido sin productos ni dosis y publicación vía API administrativa verificadas en el proyecto aislado.
 - **9.1 abierta:** falla el rechazo de papa sana; G3 no aprobado.
 - **9.2 cerrada:** fallos con runtime real y mediciones locales documentados arriba; no acreditan G3 por sí solos.
-- **9.3 abierta:** [CI local completa 18/18](INCREMENTO-4-CI-LOCAL.md); falta ejecución remota identificada de esta revisión. El responsable hará el `git push` tras el commit de Codex.
+- **9.3 cerrada después de esta aceptación:** [CI local 18/18](INCREMENTO-4-CI-LOCAL.md) y [run remoto de `bda7eb3` exitoso](INCREMENTO-4-CI-REMOTA-BDA7EB3.md), incluidos limpieza y artefacto. No corrige el fallo G3.
 - **9.4 abierta:** requiere 9.1–9.3, revisión G3 y cierre sin pendientes.
 
-El plan correctivo añade 10.1–10.4 al cambio OpenSpec; con 7.5 y 9.2 cerradas el avance pasa a **37/44**. Las cuatro tareas nuevas siguen abiertas hasta nueva aprobación G0, admisión G1, evaluación G2 y repetición de 9.1.
+En el plan previo, 10.1–10.4 figuraban dentro de este cambio y el avance era **37/44**. El 2026-11-20 esas cuatro tareas se trasladaron al [nuevo cambio v1.3.0](../../openspec/changes/incremento-4-v1-3-rechazo-papa-sana/tasks.md) para conservar ciclos independientes. Tras cerrar 9.3, el cambio histórico queda **38/40**: 9.1 y 9.4 permanecen abiertas hasta nueva aprobación G0/G1/G2 y aceptación G3.

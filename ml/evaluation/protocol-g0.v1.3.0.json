@@ -1,0 +1,69 @@
+{
+  "protocol_version": "1.3.0",
+  "status": "APPROVED_G0_DESIGN",
+  "proposed_at": "2026-11-20",
+  "approved_at": "2026-11-20",
+  "decision_author_role": "PROJECT_OWNER",
+  "decision_scope": "G0 v1.3.0 aprobado por el responsable: cuatro estratos técnicos, dos tizones publicables, mínimos por fotos y grupos, rechazo por estrato, métricas, CPU y TEST nuevo independiente.",
+  "supersedes_for_new_cycle": "1.2.0",
+  "change_reason": "Cuatro de cuatro controles de papa sana fueron publicados como tizón tardío en G3 local v1.2.0; se exige un TEST independiente nuevo.",
+  "pilot_input": "Fotografía de una hoja de papa previamente identificada por el usuario",
+  "publishable_classes": ["POTATO_EARLY_BLIGHT", "POTATO_LATE_BLIGHT"],
+  "technical_rejection_targets": ["POTATO_HEALTHY", "OTHER_CROP"],
+  "technical_outcomes": {
+    "POTATO_HEALTHY": "NO_CONCLUYENTE/UNSUPPORTED_CLASS; nunca diagnóstico publicable de tizón ni afirmación de sanidad",
+    "OTHER_CROP": "NO_CONCLUYENTE/UNSUPPORTED_CROP"
+  },
+  "negative_strata": ["POTATO_HEALTHY", "OTHER_CROP"],
+  "partition_minimums_per_stratum": {
+    "train": {"min_samples": 150, "min_independent_groups": 50},
+    "val": {"min_samples": 40, "min_independent_groups": 20},
+    "test": {"min_samples": 30, "min_independent_groups": 15},
+    "external_if_available": {"min_samples": 20, "min_independent_groups": 10}
+  },
+  "metrics_thresholds": {
+    "macro_f1_val_min": 0.8,
+    "macro_f1_test_min": 0.85,
+    "class_recall_test_min": 0.8,
+    "class_f1_test_min": 0.7,
+    "macro_f1_external_target": 0.75,
+    "negative_fpr_per_stratum_max": 0.05,
+    "negative_rejection_per_stratum_min": 0.95,
+    "negative_acceptance_per_stratum_max": 0.1,
+    "calibration_ece_max": 0.15,
+    "selective_coverage_min": 0.7,
+    "selective_error_max": 0.1
+  },
+  "metric_definitions": {
+    "selective_coverage": "diagnósticos visibles aceptados de uno de los dos tizones / todas las imágenes válidas de ambos tizones; las abstenciones permanecen en el denominador",
+    "selective_error": "diagnósticos visibles aceptados incorrectos de imágenes válidas de los dos tizones / todos los diagnósticos visibles aceptados de esas imágenes; cero aceptados no cumple",
+    "class_recall": "diagnósticos visibles correctos de esa clase / todas las imágenes válidas de esa clase; toda abstención es falso negativo",
+    "negative_fpr_per_stratum": "imágenes válidas del estrato negativo con diagnóstico visible aceptado de uno de los dos tizones / todas las imágenes válidas evaluadas de ese mismo estrato",
+    "negative_rejection_per_stratum": "imágenes válidas del estrato negativo sin diagnóstico visible de tizón / todas las imágenes válidas evaluadas de ese mismo estrato",
+    "reporting": "publicar numerador, denominador, tasa y exclusiones por clase y por estrato; denominador cero no acredita un umbral"
+  },
+  "threshold_selection": {"selected_on": "VAL", "freeze_before": "NEW_TEST", "value": null, "g3_failed_controls_allowed": false},
+  "data_independence": {
+    "new_test_required": true,
+    "v1_2_test_and_results": "IMMUTABLE_HISTORICAL_EVIDENCE",
+    "v1_2_test_allowed_for_v1_3_selection_or_evaluation": false,
+    "g3_failed_control_images_allowed_for_training_threshold_selection_or_evaluation": false,
+    "g3_exposed_leaf_groups_excluded_from_all_v1_3_partitions": true,
+    "g1_admission_required_before_training": true
+  },
+  "inventory_gap_estimate": {
+    "historical_conditional_before_control_exclusion": {"new_original_images": 190, "new_independent_groups": 100},
+    "operational_lower_bound_after_excluding_three_exposed_leaf_groups": {"new_original_images": 202, "new_independent_groups": 103},
+    "is_acceptance_threshold": false,
+    "note": "Son faltantes del inventario actual sujetos a admisión G1, no un criterio de rendimiento ni imágenes ya admitidas. Los mínimos por partición de G0 permanecen iguales."
+  },
+  "compute_budget_cpu": {"latency_median_ms_max": 1000, "latency_p95_ms_max": 2500, "latency_hard_limit_ms": 4000, "max_rss_mb": 1024},
+  "full_diagnosis_p95_seconds_target": 30,
+  "external_status": "NOT_AVAILABLE",
+  "gates": {"G0": "CLOSED_APPROVED", "G1": "OPEN_PREPARATION", "G2": "NOT_MEASURED", "G3": "OPEN"},
+  "approval": {
+    "approved_at": "2026-11-20",
+    "approved_by_role": "PROJECT_OWNER",
+    "decision_evidence": "Instrucción explícita del responsable en la conversación del 2026-11-20: aprobar G0 v1.3.0 con los mínimos y límites del protocolo propuesto, TEST nuevo independiente y rechazo técnico de POTATO_HEALTHY."
+  }
+}

@@ -1,4 +1,4 @@
-> Estado actual del piloto G0 v1.2.0: G1 cerrado para dos tizones de papa y negativos de tomate, con manifiestos privados en `.local/pv-g1/pilot-v1.2/`. TEST está sellado. Las tablas históricas siguientes describen el inventario anterior. [Evidencia](../../docs/evidence/INCREMENTO-4-G1-PILOTO-V1.2.md).
+> Estado actual: G1 v1.2.0 cerrado históricamente para dos tizones y tomate; su TEST ya se evaluó una vez y sus manifiestos privados permanecen en `.local/pv-g1/pilot-v1.2/`. El [nuevo G0 v1.3.0](../evaluation/protocol-g0.v1.3.0.json) está aprobado, pero [G1 v1.3.0 sigue abierto](../../docs/evidence/INCREMENTO-4-G1-V1.3-PREPARACION.md). La [lista de exclusión G3](g1-v1.3-exposure-blocklist.json) bloquea cuatro controles sanos y todas las vistas de sus tres hojas; no admite ninguna imagen. Las tablas históricas siguientes describen el inventario anterior. [Evidencia G1 v1.2.0](../../docs/evidence/INCREMENTO-4-G1-PILOTO-V1.2.md).
 
 # Inventario inicial v1
 
