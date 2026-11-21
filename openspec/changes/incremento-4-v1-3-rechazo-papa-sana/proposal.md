@@ -1,5 +1,9 @@
 # Proposal
 
+> Estado vigente 2026-11-21: [G0 v1.3.2 aprobado](../../../docs/evidence/INCREMENTO-4-G0-V1.3.2-APROBACION.md) fija el conteo de rechazo sano sobre el [G1 v1.3.1 admitido y sellado](../../../docs/evidence/INCREMENTO-4-G1-V1.3.1-ADMISION.md). G1 sigue cerrado tras [revalidación](../../../scripts/verify_g0_v1_3_2.py); no hay entrenamiento ni evaluación TEST v1.3.2. La nota siguiente conserva la secuencia anterior.
+
+> Actualización del 2026-11-21: el inventario G1 motivó una [tabla reducida G0 v1.3.1 aprobada](../../../docs/evidence/INCREMENTO-4-G0-V1.3.1-APROBACION.md). [G1 v1.3.1 cerró](../../../docs/evidence/INCREMENTO-4-G1-V1.3.1-ADMISION.md) tras admisión individual y sello de TEST. Las referencias inferiores a v1.3.0 conservan la decisión histórica; v1.2.0 permanece inalterado. No se entrenó ni evaluó TEST nuevo.
+
 ## Why
 
 La aceptación real del piloto G0 v1.2.0 publicó como tizón tardío cuatro de cuatro controles de papa sana. G3 no puede cerrarse con ese bundle: el rechazo de una hoja de papa fuera de las dos enfermedades publicables necesita datos, criterios y evaluación independientes.

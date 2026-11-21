@@ -1,6 +1,6 @@
 # Incrementos de AgroDiagnóstico V1
 
-Estado actual: incrementos 0–3 implementados y verificados. Incremento 4 con G0/G1/G2 v1.2.0 históricos; [catálogo revisado](evidence/INCREMENTO-4-CATALOGO-PILOTO-V1.md) publicado solo en aceptación aislada. La [prueba local real](evidence/INCREMENTO-4-G3-ACEPTACION-LOCAL.md) falló en rechazo de papa sana. [G0 v1.3.0](evidence/INCREMENTO-4-G0-V1.3-APROBACION.md) está aprobado, [G1 v1.3.0](evidence/INCREMENTO-4-G1-V1.3-PREPARACION.md) abierto; G3 y la activación para usuarios siguen pendientes. Incremento 5 pendiente.
+Estado actual: incrementos 0–3 implementados y verificados. Incremento 4 con G0/G1/G2 v1.2.0 históricos; [catálogo revisado](evidence/INCREMENTO-4-CATALOGO-PILOTO-V1.md) publicado solo en aceptación aislada. La [prueba local real](evidence/INCREMENTO-4-G3-ACEPTACION-LOCAL.md) falló en rechazo de papa sana. [G0 v1.3.2](evidence/INCREMENTO-4-G0-V1.3.2-APROBACION.md) fue aprobado por el responsable con metas sanas 3/32 y 29/32; [G1 v1.3.1](evidence/INCREMENTO-4-G1-V1.3.1-ADMISION.md) permanece cerrado tras revalidación de 2.391 fotos/606 grupos y TEST nuevo sellado sin evaluar. G2/G3 y la activación para usuarios siguen pendientes; no se ha entrenado v1.3.2. Incremento 5 pendiente.
 
 | Incremento | Resultado previsto | Estado |
 | --- | --- | --- |

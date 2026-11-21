@@ -1,0 +1,206 @@
+{
+  "protocol_version": "1.3.2",
+  "status": "APPROVED_G0_DESIGN",
+  "proposed_at": "2026-11-21",
+  "approved_at": "2026-11-21",
+  "decision_author_role": "PROJECT_OWNER",
+  "decision_scope": "G0 v1.3.2 aprobado por el responsable el 2026-11-21 antes de entrenar: conserva exactamente los mínimos reales de v1.3.1 para los cuatro estratos y reemplaza solo los criterios TEST de papa sana por máximo 3/32 publicaciones de tizón y mínimo 29/32 NO_CONCLUYENTE. FPR <=0.05 y rechazo >=0.95 permanecen para OTHER_CROP; tizones, calibración y CPU sin cambio. No acredita resultados.",
+  "supersedes_for_new_cycle": "1.3.1",
+  "change_reason": "El lote G1 v1.3.1 admitido y sellado acredita 140 fotos originales de papa sana en 35 grupos independientes verificables: TRAIN 80/20, VAL 28/7 y TEST 32/8. El umbral de rechazo sano se define por conteos enteros sobre las 32 fotos antes de entrenar y sin usar TEST para elegir pesos o umbral. Ocho hojas en TEST limitan precisión estadística y generalización.",
+  "pilot_input": "Fotografía de una hoja de papa previamente identificada por el usuario",
+  "publishable_classes": [
+    "POTATO_EARLY_BLIGHT",
+    "POTATO_LATE_BLIGHT"
+  ],
+  "technical_rejection_targets": [
+    "POTATO_HEALTHY",
+    "OTHER_CROP"
+  ],
+  "technical_outcomes": {
+    "POTATO_HEALTHY": "NO_CONCLUYENTE/UNSUPPORTED_CLASS; nunca diagnóstico publicable de tizón ni afirmación de sanidad",
+    "OTHER_CROP": "NO_CONCLUYENTE/UNSUPPORTED_CROP"
+  },
+  "negative_strata": [
+    "POTATO_HEALTHY",
+    "OTHER_CROP"
+  ],
+  "metrics_thresholds": {
+    "macro_f1_val_min": 0.8,
+    "macro_f1_test_min": 0.85,
+    "class_recall_test_min": 0.8,
+    "class_f1_test_min": 0.7,
+    "macro_f1_external_target": 0.75,
+    "negative_acceptance_per_stratum_max": 0.1,
+    "calibration_ece_max": 0.15,
+    "selective_coverage_min": 0.7,
+    "selective_error_max": 0.1,
+    "negative_fpr_other_crop_max": 0.05,
+    "negative_rejection_other_crop_min": 0.95,
+    "potato_healthy_test_max_visible_blight_count": 3,
+    "potato_healthy_test_min_no_concluyente_count": 29,
+    "potato_healthy_test_denominator": 32,
+    "potato_healthy_test_visible_blight_rate_max": 0.09375,
+    "potato_healthy_test_no_concluyente_rate_min": 0.90625
+  },
+  "metric_definitions": {
+    "selective_coverage": "diagnósticos visibles aceptados de uno de los dos tizones / todas las imágenes válidas de ambos tizones; las abstenciones permanecen en el denominador",
+    "selective_error": "diagnósticos visibles aceptados incorrectos de imágenes válidas de los dos tizones / todos los diagnósticos visibles aceptados de esas imágenes; cero aceptados no cumple",
+    "class_recall": "diagnósticos visibles correctos de esa clase / todas las imágenes válidas de esa clase; toda abstención es falso negativo",
+    "negative_fpr_per_stratum": "POTATO_HEALTHY: fotos sanas del TEST sellado con diagnóstico visible aceptado de cualquiera de los dos tizones / 32 fotos sanas selladas; máximo 3/32. OTHER_CROP: imágenes válidas de ese estrato con diagnóstico visible aceptado de tizón / todas las imágenes válidas evaluadas de OTHER_CROP; máximo 0.05.",
+    "negative_rejection_per_stratum": "POTATO_HEALTHY: respuestas finales NO_CONCLUYENTE / 32 fotos sanas del TEST sellado; mínimo 29/32. Otra respuesta sin tizón, como FALLIDO, no cuenta para este mínimo. OTHER_CROP: imágenes válidas sin diagnóstico visible de tizón / todas las imágenes válidas evaluadas de OTHER_CROP; mínimo 0.95.",
+    "reporting": "Publicar numerador, denominador, tasa y exclusiones por clase y estrato. Para papa sana TEST, denominador fijo 32; también publicar grupos 8 y abstenciones NO_CONCLUYENTE. Denominador cero o lote incompleto no acredita un umbral. Los límites son metas, no resultados.",
+    "healthy_test_completeness": "Evaluar una vez las 32 fotos sanas selladas con bundle y umbral congelados; si falta respuesta final válida o se excluye una foto después del sello, el criterio de 32 no se acredita. Publicar conteos por foto y por leaf_id; las cuatro vistas de una hoja no son grupos independientes."
+  },
+  "threshold_selection": {
+    "selected_on": "VAL",
+    "freeze_before": "NEW_TEST",
+    "value": null,
+    "g3_failed_controls_allowed": false
+  },
+  "data_independence": {
+    "new_test_required": true,
+    "v1_2_test_and_results": "IMMUTABLE_HISTORICAL_EVIDENCE",
+    "v1_2_test_allowed_for_v1_3_selection_or_evaluation": false,
+    "g3_failed_control_images_allowed_for_training_threshold_selection_or_evaluation": false,
+    "g3_exposed_leaf_groups_excluded_from_all_v1_3_partitions": true,
+    "g1_admission_required_before_training": true
+  },
+  "inventory_gap_estimate": {
+    "status": "SUPERSEDED_FOR_THIS_PROPOSAL",
+    "note": "El faltante 202/103 era anterior al inventario fijado y al split oficial. G1 v1.3.1 documenta la distribución real admitida y sellada."
+  },
+  "compute_budget_cpu": {
+    "latency_median_ms_max": 1000,
+    "latency_p95_ms_max": 2500,
+    "latency_hard_limit_ms": 4000,
+    "max_rss_mb": 1024
+  },
+  "full_diagnosis_p95_seconds_target": 30,
+  "external_status": "NOT_AVAILABLE",
+  "gates": {
+    "G0": "CLOSED_APPROVED",
+    "G1": "CLOSED_PREVIOUS_ADMISSION_REVALIDATED",
+    "G2": "NOT_MEASURED",
+    "G3": "OPEN"
+  },
+  "approval": {
+    "approved_at": "2026-11-21",
+    "approved_by_role": "PROJECT_OWNER",
+    "decision_evidence": "Instrucción expresa del responsable del proyecto en la conversación del 2026-11-21: «Corrige el protocolo antes de entrenar mediante G0 v1.3.2. Apruebo esta distribución real de papa sana como la nueva mínima ... Máximo 3/32 fotos sanas publicadas como tizón. Mínimo 29/32 fotos sanas como NO_CONCLUYENTE». Otros criterios conservados."
+  },
+  "partition_minimums_by_stratum": {
+    "POTATO_EARLY_BLIGHT": {
+      "train": {
+        "min_samples": 150,
+        "min_independent_groups": 50
+      },
+      "val": {
+        "min_samples": 40,
+        "min_independent_groups": 20
+      },
+      "test": {
+        "min_samples": 30,
+        "min_independent_groups": 15
+      },
+      "external_if_available": {
+        "min_samples": 20,
+        "min_independent_groups": 10
+      }
+    },
+    "POTATO_LATE_BLIGHT": {
+      "train": {
+        "min_samples": 150,
+        "min_independent_groups": 50
+      },
+      "val": {
+        "min_samples": 40,
+        "min_independent_groups": 20
+      },
+      "test": {
+        "min_samples": 30,
+        "min_independent_groups": 15
+      },
+      "external_if_available": {
+        "min_samples": 20,
+        "min_independent_groups": 10
+      }
+    },
+    "POTATO_HEALTHY": {
+      "train": {
+        "min_samples": 80,
+        "min_independent_groups": 20
+      },
+      "val": {
+        "min_samples": 28,
+        "min_independent_groups": 7
+      },
+      "test": {
+        "min_samples": 32,
+        "min_independent_groups": 8
+      },
+      "external_if_available": {
+        "min_samples": 20,
+        "min_independent_groups": 10
+      }
+    },
+    "OTHER_CROP": {
+      "train": {
+        "min_samples": 150,
+        "min_independent_groups": 50
+      },
+      "val": {
+        "min_samples": 40,
+        "min_independent_groups": 20
+      },
+      "test": {
+        "min_samples": 30,
+        "min_independent_groups": 15
+      },
+      "external_if_available": {
+        "min_samples": 20,
+        "min_independent_groups": 10
+      }
+    }
+  },
+  "reduction_evidence": {
+    "source": "docs/evidence/INCREMENTO-4-G1-V1.3.1-ADMISION.md",
+    "healthy_available_after_g3_exclusions": {
+      "images": 140,
+      "groups": 35
+    },
+    "healthy_proposed_totals": {
+      "min_samples": 140,
+      "min_independent_groups": 35
+    },
+    "unchanged_strata": [
+      "POTATO_EARLY_BLIGHT",
+      "POTATO_LATE_BLIGHT",
+      "OTHER_CROP"
+    ],
+    "no_slack_for_additional_healthy_exclusions": true,
+    "historical_g0_v1_3_0": "IMMUTABLE",
+    "healthy_admitted_partition_counts": {
+      "train": {
+        "photos": 80,
+        "groups": 20
+      },
+      "val": {
+        "photos": 28,
+        "groups": 7
+      },
+      "test": {
+        "photos": 32,
+        "groups": 8
+      }
+    },
+    "other_strata_unchanged_from_v1_3_1": true
+  },
+  "g1_reuse": {
+    "admission_protocol_version": "1.3.1",
+    "admission_protocol_sha256": "b906af38323103144de780e24a1289ff69a84ef0661cc5e30aa941b5842ba7a1",
+    "private_report_sha256": "71c4e34c60eb1b635da58af934b05fd1683728f895e955d8027f7652e91c7a75",
+    "manifest_sha256": "3c74f6ebb846eb8dd8e2460d96e8043135db8a93cb28ee56f171f2cd3796eb53",
+    "test_seal_sha256": "4f0872f62b58b35df908de8dae3f0577dc425f871e0e74e7fbf26a1afe9489bc",
+    "reason": "Mismos mínimos y estratos; cambio solo de criterio de aceptación TEST sano. No se reabren, reparten ni evalúan archivos TEST."
+  }
+}

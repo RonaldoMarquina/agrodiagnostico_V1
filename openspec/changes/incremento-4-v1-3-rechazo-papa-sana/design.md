@@ -1,5 +1,9 @@
 # Design — ciclo G0 v1.3.0 aprobado
 
+> Estado vigente 2026-11-21: [G0 v1.3.2](../../../docs/evidence/INCREMENTO-4-G0-V1.3.2-APROBACION.md) sustituye el criterio TEST de papa sana antes de entrenar; [G1 v1.3.1](../../../docs/evidence/INCREMENTO-4-G1-V1.3.1-ADMISION.md) sigue cerrado con el mismo sello. El diseño histórico de v1.3.0 y la decisión v1.3.1 se conservan abajo.
+
+> Actualización del 2026-11-21: [G0 v1.3.1 aprobado](../../../docs/evidence/INCREMENTO-4-G0-V1.3.1-APROBACION.md) reduce **solo** mínimos de papa sana tras el inventario real G1. [G1 v1.3.1 cerrado](../../../docs/evidence/INCREMENTO-4-G1-V1.3.1-ADMISION.md) admite el lote privado y sella un nuevo TEST. D2 y el resto del diseño conservan el protocolo v1.3.0 histórico; para el ciclo nuevo manda v1.3.1. No se ha entrenado ni evaluado TEST nuevo.
+
 Fecha: 2026-11-20 (America/Lima). Estado: **G0 v1.3.0 aprobado por el responsable; G1 abierto**. Véanse [proposal.md](proposal.md), las dos especificaciones delta y el [protocolo aprobado](../../../ml/evaluation/protocol-g0.v1.3.0.json). La aprobación fija mínimos y límites antes del entrenamiento; no admite imágenes ni acredita resultados.
 
 ## Context
@@ -32,6 +36,12 @@ G1 v1.3.0 revisará cada foto mediante revisión de distribución, ruta y SHA-25
 
 La implementación posterior versionará el bundle y su política de rechazo para los cuatro objetivos técnicos; el validador deberá impedir que `POTATO_HEALTHY` o `OTHER_CROP` entren en el mapa publicable. `DiagnosisAnalyzed.v1` puede transportar abstención `UNSUPPORTED_CLASS`, sujeto a pruebas de compatibilidad. La evaluación reportará F1/recall por enfermedad, confusión, abstenciones, cobertura, error selectivo, ECE, latencia, memoria y FPR por cada negativo con numeradores/denominadores. Tras congelar bundle, protocolo y manifiestos se ejecutará un solo TEST nuevo. G2 del responsable y prueba G3 posterior son necesarias antes de activar otra política.
 
+### D5. Criterio G0 v1.3.2 sobre el G1 ya sellado
+
+El responsable aprobó el 2026-11-21 los mínimos reales sanos 80/20 TRAIN, 28/7 VAL y 32/8 TEST (total 140/35), basados en hojas verificables disponibles. El TEST sano exige como máximo **3/32** diagnósticos visibles de tizón y al menos **29/32** estados finales `NO_CONCLUYENTE`. `FALLIDO` no cuenta como abstención. Las 32 fotos permanecen en el denominador; el reporte separa fotos y ocho hojas. Los límites históricos FPR ≤0,05 y rechazo ≥0,95 se aplican a `OTHER_CROP`, y el límite general de aceptación errónea ≤0,10 sigue vigente. F1, recall, cobertura, error selectivo, ECE, CPU y p95 del flujo mantienen los valores v1.3.1.
+
+El [G1 v1.3.1](../../../docs/evidence/INCREMENTO-4-G1-V1.3.1-ADMISION.md) permanece cerrado porque el nuevo protocolo no altera particiones ni mínimos. La [revalidación](../../../scripts/verify_g0_v1_3_2.py) compara hashes del protocolo anterior, reporte privado y sello; después verifica los archivos G1. No vuelve a sellar TEST ni consulta predicciones. G2/G3 siguen abiertos. Las cuatro vistas por hoja y ocho hojas sanas de TEST limitan la inferencia de generalización.
+
 ## Riesgos / Trade-offs
 
 - **Insuficiencia de imágenes sanas y TEST nuevo** → mantener G1 abierto y buscar fuente original con derechos, etiquetas y grupos verificables; no reducir mínimos después del fallo.
@@ -48,5 +58,7 @@ La implementación posterior versionará el bundle y su política de rechazo par
 5. Activar política v1.3.0 mediante CLI auditada únicamente tras G2 y catálogo revisado. Retirar con rollback de política si falla; no sobrescribir historiales ni artefactos v1.2.0.
 
 ## Datos faltantes exactos
+
+Para el ciclo vigente v1.3.2, los mínimos de fotos y grupos ya están cubiertos por G1 v1.3.1. El texto inferior registra el déficit histórico anterior a su admisión.
 
 El [expediente de déficit](../../../docs/evidence/INCREMENTO-4-CICLO-RECHAZO-PAPA-SANA.md) conserva el **límite inferior condicional histórico** de 190 fotos originales y 100 grupos nuevos, calculado antes de excluir los controles G3. Con la exclusión de las 12 fotos de sus tres grupos completos, el **faltante mínimo operativo** es 202 fotos originales y 103 grupos, bajo las mismas hipótesis de admisión y reutilización auditada de TRAIN/VAL. Esta corrección de inventario no modifica ningún mínimo G0 aprobado. Ningún archivo del déficit está admitido por este diseño.

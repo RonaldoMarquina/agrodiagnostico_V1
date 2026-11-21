@@ -1,0 +1,177 @@
+{
+  "protocol_version": "1.3.1",
+  "status": "APPROVED_G0_DESIGN",
+  "proposed_at": "2026-11-21",
+  "approved_at": "2026-11-21",
+  "decision_author_role": "PROJECT_OWNER",
+  "decision_scope": "G0 v1.3.1 aprobado por el responsable el 2026-11-21: reducción únicamente de mínimos de POTATO_HEALTHY a TRAIN 80/20, VAL 28/7 y TEST 32/8; otros tres estratos y métricas/CPU sin cambio. La aprobación no admite imágenes ni acredita resultados.",
+  "supersedes_for_new_cycle": "1.3.0",
+  "change_reason": "El inventario reproducible de G1 del 2026-11-21 verifica solo 140 fotos/35 grupos sanos de PlantVillage tras excluir tres hojas G3; ninguna fuente adicional examinada acredita a la vez etiqueta sana y grupo independiente. La tabla propuesta usa grupos no expuestos y el split oficial del autor; reduce potencia estadística de rechazo sano.",
+  "pilot_input": "Fotografía de una hoja de papa previamente identificada por el usuario",
+  "publishable_classes": [
+    "POTATO_EARLY_BLIGHT",
+    "POTATO_LATE_BLIGHT"
+  ],
+  "technical_rejection_targets": [
+    "POTATO_HEALTHY",
+    "OTHER_CROP"
+  ],
+  "technical_outcomes": {
+    "POTATO_HEALTHY": "NO_CONCLUYENTE/UNSUPPORTED_CLASS; nunca diagnóstico publicable de tizón ni afirmación de sanidad",
+    "OTHER_CROP": "NO_CONCLUYENTE/UNSUPPORTED_CROP"
+  },
+  "negative_strata": [
+    "POTATO_HEALTHY",
+    "OTHER_CROP"
+  ],
+  "metrics_thresholds": {
+    "macro_f1_val_min": 0.8,
+    "macro_f1_test_min": 0.85,
+    "class_recall_test_min": 0.8,
+    "class_f1_test_min": 0.7,
+    "macro_f1_external_target": 0.75,
+    "negative_fpr_per_stratum_max": 0.05,
+    "negative_rejection_per_stratum_min": 0.95,
+    "negative_acceptance_per_stratum_max": 0.1,
+    "calibration_ece_max": 0.15,
+    "selective_coverage_min": 0.7,
+    "selective_error_max": 0.1
+  },
+  "metric_definitions": {
+    "selective_coverage": "diagnósticos visibles aceptados de uno de los dos tizones / todas las imágenes válidas de ambos tizones; las abstenciones permanecen en el denominador",
+    "selective_error": "diagnósticos visibles aceptados incorrectos de imágenes válidas de los dos tizones / todos los diagnósticos visibles aceptados de esas imágenes; cero aceptados no cumple",
+    "class_recall": "diagnósticos visibles correctos de esa clase / todas las imágenes válidas de esa clase; toda abstención es falso negativo",
+    "negative_fpr_per_stratum": "imágenes válidas del estrato negativo con diagnóstico visible aceptado de uno de los dos tizones / todas las imágenes válidas evaluadas de ese mismo estrato",
+    "negative_rejection_per_stratum": "imágenes válidas del estrato negativo sin diagnóstico visible de tizón / todas las imágenes válidas evaluadas de ese mismo estrato",
+    "reporting": "publicar numerador, denominador, tasa y exclusiones por clase y por estrato; denominador cero no acredita un umbral"
+  },
+  "threshold_selection": {
+    "selected_on": "VAL",
+    "freeze_before": "NEW_TEST",
+    "value": null,
+    "g3_failed_controls_allowed": false
+  },
+  "data_independence": {
+    "new_test_required": true,
+    "v1_2_test_and_results": "IMMUTABLE_HISTORICAL_EVIDENCE",
+    "v1_2_test_allowed_for_v1_3_selection_or_evaluation": false,
+    "g3_failed_control_images_allowed_for_training_threshold_selection_or_evaluation": false,
+    "g3_exposed_leaf_groups_excluded_from_all_v1_3_partitions": true,
+    "g1_admission_required_before_training": true
+  },
+  "inventory_gap_estimate": {
+    "status": "SUPERSEDED_FOR_THIS_PROPOSAL",
+    "note": "El faltante 202/103 era del inventario previo al split color_test oficial. No define un umbral G0 ni acredita admisión. La propuesta reduce solo el estrato sano para el lote auditado."
+  },
+  "compute_budget_cpu": {
+    "latency_median_ms_max": 1000,
+    "latency_p95_ms_max": 2500,
+    "latency_hard_limit_ms": 4000,
+    "max_rss_mb": 1024
+  },
+  "full_diagnosis_p95_seconds_target": 30,
+  "external_status": "NOT_AVAILABLE",
+  "gates": {
+    "G0": "CLOSED_APPROVED",
+    "G1": "OPEN_REVIEW",
+    "G2": "NOT_MEASURED",
+    "G3": "OPEN"
+  },
+  "approval": {
+    "approved_at": "2026-11-21",
+    "approved_by_role": "PROJECT_OWNER",
+    "decision_evidence": "Respuesta explícita del responsable del proyecto en la conversación del 2026-11-21: «Apruebo exactamente esta tabla» para TRAIN 80 fotos/20 hojas, VAL 28/7 y TEST nuevo 32/8 de POTATO_HEALTHY; otros estratos y métricas/CPU sin cambios."
+  },
+  "partition_minimums_by_stratum": {
+    "POTATO_EARLY_BLIGHT": {
+      "train": {
+        "min_samples": 150,
+        "min_independent_groups": 50
+      },
+      "val": {
+        "min_samples": 40,
+        "min_independent_groups": 20
+      },
+      "test": {
+        "min_samples": 30,
+        "min_independent_groups": 15
+      },
+      "external_if_available": {
+        "min_samples": 20,
+        "min_independent_groups": 10
+      }
+    },
+    "POTATO_LATE_BLIGHT": {
+      "train": {
+        "min_samples": 150,
+        "min_independent_groups": 50
+      },
+      "val": {
+        "min_samples": 40,
+        "min_independent_groups": 20
+      },
+      "test": {
+        "min_samples": 30,
+        "min_independent_groups": 15
+      },
+      "external_if_available": {
+        "min_samples": 20,
+        "min_independent_groups": 10
+      }
+    },
+    "POTATO_HEALTHY": {
+      "train": {
+        "min_samples": 80,
+        "min_independent_groups": 20
+      },
+      "val": {
+        "min_samples": 28,
+        "min_independent_groups": 7
+      },
+      "test": {
+        "min_samples": 32,
+        "min_independent_groups": 8
+      },
+      "external_if_available": {
+        "min_samples": 20,
+        "min_independent_groups": 10
+      }
+    },
+    "OTHER_CROP": {
+      "train": {
+        "min_samples": 150,
+        "min_independent_groups": 50
+      },
+      "val": {
+        "min_samples": 40,
+        "min_independent_groups": 20
+      },
+      "test": {
+        "min_samples": 30,
+        "min_independent_groups": 15
+      },
+      "external_if_available": {
+        "min_samples": 20,
+        "min_independent_groups": 10
+      }
+    }
+  },
+  "reduction_evidence": {
+    "source": "docs/evidence/INCREMENTO-4-G1-V1.3-INVENTARIO-2026-11-21.md",
+    "healthy_available_after_g3_exclusions": {
+      "images": 140,
+      "groups": 35
+    },
+    "healthy_proposed_totals": {
+      "min_samples": 140,
+      "min_independent_groups": 35
+    },
+    "unchanged_strata": [
+      "POTATO_EARLY_BLIGHT",
+      "POTATO_LATE_BLIGHT",
+      "OTHER_CROP"
+    ],
+    "no_slack_for_additional_healthy_exclusions": true,
+    "historical_g0_v1_3_0": "IMMUTABLE"
+  }
+}

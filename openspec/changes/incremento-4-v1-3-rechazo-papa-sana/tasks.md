@@ -1,18 +1,20 @@
-# Tasks — ciclo v1.3.0
+# Tasks — ciclo v1.3.2 (v1.3.0 y v1.3.1 históricos)
 
-Estado al 2026-11-20: **1/19; G0 v1.3.0 cerrado, G1 abierto**. Las aprobaciones G0/G1/G2 v1.2.0 son históricas. El TEST conocido v1.2.0 y los cuatro controles sanos G3 solo justifican el nuevo ciclo. Los tres grupos de hoja de esos controles están excluidos de todas las particiones v1.3.0. No entrenar ni abrir TEST hasta cerrar G1 de esta versión.
+Estado al 2026-11-21: **7/21; G0 v1.3.2 aprobado y G1 v1.3.1 revalidado y cerrado**. Las aprobaciones G0/G1/G2 v1.2.0 son históricas. El TEST conocido v1.2.0 y los cuatro controles sanos G3 solo justifican el nuevo ciclo; sus tres grupos de hoja quedaron excluidos. La [aprobación de los criterios sanos 3/32 y 29/32](../../../docs/evidence/INCREMENTO-4-G0-V1.3.2-APROBACION.md) conserva la [admisión privada de 2.391 fotos/606 grupos](../../../docs/evidence/INCREMENTO-4-G1-V1.3.1-ADMISION.md) sin repartición ni nuevo sello. El TEST nuevo está sellado, sin evaluación; no hay entrenamiento v1.3.2 ni G2. No usar TEST para seleccionar arquitectura, umbral o pesos.
 
 ## 1. G0 — protocolo aprobado
 
 - [x] 1.1 Obtener aprobación explícita del responsable para G0 v1.3.0, incluidos mínimos por estrato, rechazo por estrato y presupuesto CPU; registrar fecha, versión y justificación antes de entrenar. Verificados [protocolo completo](../../../ml/evaluation/protocol-g0.v1.3.0.json) y [acta de decisión](../../../docs/evidence/INCREMENTO-4-G0-V1.3-APROBACION.md); G1 y resultados siguen abiertos.
 - [ ] 1.2 Actualizar taxonomía y ADR para dos tizones publicables, `POTATO_HEALTHY` técnico y `OTHER_CROP` técnico; comprobar que ninguna pantalla o contrato trate papa sana como diagnóstico confirmado y que el catálogo no recomiende para ella.
+- [x] 1.3 Obtener aprobación explícita de la [tabla G0 v1.3.1](../../../docs/evidence/INCREMENTO-4-G0-V1.3.1-APROBACION.md) antes de admitir definitivamente el lote reducido, entrenar o sellar TEST; conservar v1.3.0 y v1.2.0 históricos y registrar la pérdida de diversidad independiente.
+- [x] 1.4 Versionar y aprobar G0 v1.3.2 antes de entrenar: conservar mínimos sanos 80/20, 28/7 y 32/8, fijar TEST sano en máximo 3/32 diagnósticos visibles de tizón y mínimo 29/32 `NO_CONCLUYENTE`, mantener FPR ≤0,05 y rechazo ≥0,95 para `OTHER_CROP` y todos los demás límites. [Acta, protocolo y revalidación G1](../../../docs/evidence/INCREMENTO-4-G0-V1.3.2-APROBACION.md) con hashes; no medir TEST ni presentar metas como resultados.
 
 ## 2. G1 — imágenes y particiones nuevas
 
-- [ ] 2.1 Auditar por SHA-256, ruta, licencia, etiqueta, calidad y `leaf_id` las 120 fotos sanas inventariadas; aplicar la [lista de exclusión de los tres grupos expuestos](../../../ml/manifests/g1-v1.3-exposure-blocklist.json) a todas las particiones y registrar admitidas, excluidas y pendientes. Verificar registro por archivo y procedencia experta distinguida de revisión independiente. [Preparación G1](../../../docs/evidence/INCREMENTO-4-G1-V1.3-PREPARACION.md) no acredita admisión.
-- [ ] 2.2 Conseguir y admitir las fotos/grupos adicionales de papa sana para TRAIN/VAL según G0 aprobado; verificar mínimos por partición y ausencia de fuga entre grupos/pares visuales.
-- [ ] 2.3 Conseguir y admitir un TEST independiente nuevo de ambos tizones y negativos `OTHER_CROP`; verificar fuente, derechos, etiquetas, grupos, SHA-256 y exclusión del TEST v1.2.0 abierto.
-- [ ] 2.4 Completar el estrato sano del TEST nuevo, sellar los cuatro estratos y cerrar G1 solo si cada uno cumple mínimos y no solapa TRAIN, VAL, controles expuestos ni TEST histórico. Verificar sello y prueba negativa de alteración/fuga sin abrir TEST para selección.
+- [x] 2.1 Auditar por SHA-256, ruta, licencia, etiqueta, calidad y `leaf_id` las fotos sanas de la revisión fijada; aplicar la [lista de exclusión de los tres grupos expuestos](../../../ml/manifests/g1-v1.3-exposure-blocklist.json) a todas las particiones y registrar admitidas, excluidas y pendientes. [Auditoría](../../../docs/evidence/INCREMENTO-4-G1-V1.3-INVENTARIO-2026-11-21.md) y [admisión por archivo](../../../docs/evidence/INCREMENTO-4-G1-V1.3.1-ADMISION.md) separan procedencia experta y control interno de una revisión agronómica independiente.
+- [x] 2.2 Conseguir y admitir las fotos/grupos de papa sana para TRAIN/VAL según [G0 v1.3.1 aprobado](../../../docs/evidence/INCREMENTO-4-G0-V1.3.1-APROBACION.md): 80/20 y 28/7. [Verificador independiente](../../../scripts/verify_g1_v1_3_1.py) confirma grupos y pares visuales resueltos por exclusión.
+- [x] 2.3 Conseguir y admitir un TEST independiente nuevo de ambos tizones y negativos `OTHER_CROP`: 80/20 cada uno desde `color_test.txt` oficial. [Expediente G1](../../../docs/evidence/INCREMENTO-4-G1-V1.3.1-ADMISION.md) registra derechos, etiquetas, grupos, SHA-256 y exclusión del TEST v1.2.0 abierto.
+- [x] 2.4 Completar el estrato sano del TEST nuevo (32/8), sellar los cuatro estratos y cerrar G1 solo si cada uno cumple mínimos y no solapa TRAIN, VAL, controles expuestos ni TEST histórico. [Sello y verificación independiente](../../../docs/evidence/INCREMENTO-4-G1-V1.3.1-ADMISION.md), con pruebas negativas de fuga y alteración. TEST no se usó para selección.
 
 ## 3. Contratos y comportamiento técnico
 
@@ -22,19 +24,19 @@ Estado al 2026-11-20: **1/19; G0 v1.3.0 cerrado, G1 abierto**. Las aprobaciones 
 
 ## 4. TRAIN/VAL y congelamiento
 
-- [ ] 4.1 Entrenar candidatos solo con TRAIN G1 v1.3.0 y documentar semilla, hashes, arquitectura, dependencias, CPU/RAM y tiempo; verificar reproducción y registro de acceso sin TEST.
+- [ ] 4.1 Entrenar candidatos solo con TRAIN G1 v1.3.1 bajo G0 v1.3.2 y documentar semilla, hashes, arquitectura, dependencias, CPU/RAM y tiempo; verificar reproducción y registro de acceso sin TEST.
 - [ ] 4.2 Comparar en VAL al menos dos rutas de rechazo con preprocesado/presupuesto iguales; registrar F1, recall, cobertura, error selectivo, FPR de sana y otro cultivo por separado, calibración y latencia con numeradores/denominadores.
 - [ ] 4.3 Elegir pesos, calibración y umbral solo con VAL, congelar bundle, protocolo y manifiestos antes de TEST; verificar hashes, carga independiente preliminar y rechazo de alteraciones.
 
 ## 5. TEST nuevo y G2
 
-- [ ] 5.1 Ejecutar una evaluación única del TEST v1.3.0 sellado y nuevo; publicar reporte por clase y estrato, abstenciones, confusión, ECE, latencia, memoria, numeradores/denominadores y comparación con G0 aprobado.
+- [ ] 5.1 Ejecutar una evaluación única del TEST G1 v1.3.1 sellado contra G0 v1.3.2; publicar por clase y estrato, incluidas ≤3/32 publicaciones erróneas sanas y ≥29/32 `NO_CONCLUYENTE` como criterios, abstenciones, confusión, ECE, latencia, memoria, numeradores/denominadores y grupos. No ajustar el modelo con TEST.
 - [ ] 5.2 Verificar carga independiente y checksums del bundle; obtener revisión G2 explícita del responsable solo si se cumplen criterios, documentando EXTERNAL ausente y límites sin modificar resultados v1.2.0.
 
 ## 6. Repetición de aceptación y G3
 
-- [ ] 6.1 Importar/activar política v1.3.0 auditada en aceptación aislada solo tras G2 y catálogo revisado; verificar `dry-run`, actor, motivo, rollback e historial inmutable.
+- [ ] 6.1 Importar/activar política v1.3.2 auditada en aceptación aislada solo tras G2 y catálogo revisado; verificar `dry-run`, actor, motivo, rollback e historial inmutable.
 - [ ] 6.2 Repetir 9.1 con hojas de ambos tizones, sanas, otro cultivo, autorización, estados y catálogo; verificar rechazo sano y conservar muestras/denominadores del recorrido real.
 - [ ] 6.3 Repetir fallos/redelivery y mediciones de flujo completo/CPU para nuevo bundle; verificar resultado único, limpieza y diferencias frente a metas sin extrapolar a producción.
-- [ ] 6.4 Ejecutar CI local y remota sobre la revisión que incorpore v1.3.0; registrar commit, URL, fecha, etapas y conclusión, incluidas limpieza y artefactos.
+- [ ] 6.4 Ejecutar CI local y remota sobre la revisión que incorpore v1.3.2; registrar commit, URL, fecha, etapas y conclusión, incluidas limpieza y artefactos.
 - [ ] 6.5 Revisar matriz G0–G3, README, Incrementos y OpenSpec con resultados reales; verificar `openspec validate --strict` y cerrar G3/9.1/9.4 del cambio anterior solo si todos los criterios pasan.

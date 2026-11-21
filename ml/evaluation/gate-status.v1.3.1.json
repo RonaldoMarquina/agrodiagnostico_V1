@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-11-21",
+  "protocol_version": "1.3.1",
+  "approved_protocol_sha256": "b906af38323103144de780e24a1289ff69a84ef0661cc5e30aa941b5842ba7a1",
+  "G0": "CLOSED_APPROVED_BY_PROJECT_OWNER",
+  "G1": "CLOSED_ADMITTED_AND_TEST_SEALED",
+  "G1_private_report_sha256": "71c4e34c60eb1b635da58af934b05fd1683728f895e955d8027f7652e91c7a75",
+  "G2": "OPEN_NOT_TRAINED_OR_MEASURED",
+  "G3": "OPEN",
+  "status_note": "El bloque gates dentro del protocolo aprobado es una instantánea del momento G0; este archivo registra el cierre G1 posterior sin modificar el hash G0."
+}

@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "protocol_version": "1.3.1",
+  "source": "PlantVillage color, revisión 9e97599868962bd0079b8db4b7f1efa9185fa1e7",
+  "review": "Proveniencia experta de PlantVillage + control interno de calidad y ambigüedad; sin nueva revisión agronómica independiente",
+  "approved_by_role": "PROJECT_OWNER",
+  "approved_at": "2026-11-21",
+  "source_labels": {
+    "Potato___Early_blight": "POTATO_EARLY_BLIGHT",
+    "Potato___Late_blight": "POTATO_LATE_BLIGHT",
+    "Potato___healthy": "POTATO_HEALTHY",
+    "Tomato___healthy": "OTHER_CROP"
+  },
+  "publishable_classes": ["POTATO_EARLY_BLIGHT", "POTATO_LATE_BLIGHT"],
+  "technical_rejection_targets": ["POTATO_HEALTHY", "OTHER_CROP"],
+  "scope_note": "Estas equivalencias son solo para la admisión G1 del lote fijado; los objetivos de rechazo no son diagnósticos publicables."
+}

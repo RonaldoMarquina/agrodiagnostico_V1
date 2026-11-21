@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-11-21",
+  "protocol_version": "1.3.2",
+  "approved_protocol_sha256": "533a8daddba598d810cf6e46cb072a41c54ae5478bfd9ed131b39eb703bfb397",
+  "G0": "CLOSED_APPROVED_BY_PROJECT_OWNER",
+  "G1": "CLOSED_PREVIOUS_ADMISSION_REVALIDATED",
+  "G1_admission_protocol_version": "1.3.1",
+  "G1_private_report_sha256": "71c4e34c60eb1b635da58af934b05fd1683728f895e955d8027f7652e91c7a75",
+  "G1_test_seal_sha256": "4f0872f62b58b35df908de8dae3f0577dc425f871e0e74e7fbf26a1afe9489bc",
+  "G2": "OPEN_NOT_TRAINED_OR_MEASURED",
+  "G3": "OPEN",
+  "status_note": "G0 v1.3.2 cambia únicamente el criterio TEST sano. El lote G1 v1.3.1 mantiene particiones y sello; G2 no tiene resultados v1.3.2."
+}

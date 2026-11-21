@@ -1,5 +1,7 @@
 # Tasks
 
+> Estado vigente del ciclo posterior (2026-11-21): [G0 v1.3.2 aprobado](../../../docs/evidence/INCREMENTO-4-G0-V1.3.2-APROBACION.md) y G1 v1.3.1 revalidado y cerrado; el TEST nuevo sigue sellado y sin evaluar. Las casillas históricas de este cambio v1.2.0 no se reinterpretan como aprobación G2/G3 v1.3.2. **9.1, 9.4 y G3 permanecen abiertos.** El [cambio activo de rechazo sano](../incremento-4-v1-3-rechazo-papa-sana/tasks.md) contiene las tareas siguientes.
+
 Plan ejecutado por Codex desde 2026-11-19. Estado rectificado el 2026-10-15: las casillas abiertas incluyen herramientas parciales y aprobaciones sin evidencia; una prueba con fixtures no completa la tarea real. Leer design.md D1–D7 y los cinco deltas antes de aplicar. G0/G1/G2/G3 son puertas verificables. El responsable define y aprueba G0; G1 exige derechos y revisión de imágenes concretas; G2 exige resultados medidos.
 
 Dependencias: 1.4 cierra el diseño G0; 1.2 y 1.3 conservan trabajo de fuente e imagen para G1, que cierra el grupo 3; grupos 4–5 requieren G0/G1 para experimentos reales; grupo 5 cierra G2 y grupo 9 cierra G3. Herramientas de 2–8 pueden desarrollarse con fixtures mientras faltan datos, respetando contratos, pero ninguna tarea de datos, entrenamiento real o aprobación puede marcarse cumplida por un fixture. No ejecutar tareas de producción ni descargas masivas durante la planificación.

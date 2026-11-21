@@ -1,5 +1,9 @@
 # G1 v1.3.0 — preparación de admisión, sin imágenes admitidas
 
+> **Actualización 2026-11-21:** [G0 v1.3.1 aprobado](INCREMENTO-4-G0-V1.3.1-APROBACION.md) sustituyó los mínimos sanos de este plan; [G1 v1.3.1 se cerró](INCREMENTO-4-G1-V1.3.1-ADMISION.md). El texto inferior conserva la preparación anterior.
+
+> Auditoría posterior del 2026-11-21: se verificó también el `color_test.txt` oficial de la misma revisión fijada. Aporta candidatos nuevos para los dos tizones y otro cultivo; papa sana sigue corta de grupos. Véanse [conteos reales, registro privado y fuentes evaluadas](INCREMENTO-4-G1-V1.3-INVENTARIO-2026-11-21.md). La tabla inferior conserva el **cálculo previo** de 202 fotos/103 grupos antes de inspeccionar ese split; no representa el faltante actualizado ni una admisión G1.
+
 Fecha: 2026-11-20 (America/Lima). [G0 v1.3.0 aprobado](INCREMENTO-4-G0-V1.3-APROBACION.md). **G1 abierto:** este expediente prepara el ingreso y particionado, pero no contiene fotos, manifiestos admitidos, particiones selladas ni evaluación. No se ha entrenado ni abierto TEST v1.3.0.
 
 ## Fuentes de auditoría y exclusión obligatoria
