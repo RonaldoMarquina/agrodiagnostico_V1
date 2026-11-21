@@ -16,9 +16,10 @@ import csv
 from dataclasses import asdict, dataclass
 import hashlib
 from pathlib import Path
+import re
 from typing import Any, Dict, List, Optional, Set
 
-from agro_ml.data.partitioning import verify_partition_leakage
+from agro_ml.data.partitioning import PartitionLeakageError, verify_partition_leakage
 
 
 ALLOWED_NEGATIVE_CATEGORIES = {
@@ -71,17 +72,19 @@ def load_negatives_manifest(csv_path: Path) -> List[NegativeRecord]:
     with path.open("r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         fields = reader.fieldnames or []
-        if set(fields) != set(NEGATIVE_CSV_HEADERS):
+        if len(fields) != len(NEGATIVE_CSV_HEADERS) or set(fields) != set(NEGATIVE_CSV_HEADERS):
             raise NegativeValidationError(
                 f"Cabeceras inválidas en CSV de negativos. Esperadas: {NEGATIVE_CSV_HEADERS}, obtenidas: {fields}"
             )
         for row in reader:
             if not row:
                 continue
+            if None in row or any(value is None for value in row.values()):
+                raise NegativeValidationError("Fila de negativos con columnas ausentes o extra")
             records.append(
                 NegativeRecord(
                     image_id=row["image_id"].strip(),
-                    sha256=row["sha256"].strip().lower(),
+                    sha256=row["sha256"].strip(),
                     negative_category=row["negative_category"].strip().upper(),
                     source=row["source"].strip(),
                     license=row["license"].strip(),
@@ -113,8 +116,16 @@ def validate_negatives(
             raise NegativeValidationError(f"Fila {idx}: image_id duplicado: {r.image_id}")
         seen_ids.add(r.image_id)
 
-        if len(r.sha256) != 64:
+        if not re.fullmatch(r"[0-9a-f]{64}", r.sha256):
             raise NegativeValidationError(f"Fila {idx}: sha256 inválido: {r.sha256}")
+        if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}", r.image_id):
+            raise NegativeValidationError(f"Fila {idx}: image_id inválido")
+        if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}", r.split_group):
+            raise NegativeValidationError(f"Fila {idx}: split_group inválido")
+        if r.split not in {"TRAIN", "VAL", "TEST", "EXTERNAL"}:
+            raise NegativeValidationError(f"Fila {idx}: partición inválida")
+        if not r.source or not r.license or r.capture_context not in {"CONTROLLED_LEAF", "WEB_FIELD_MIXED", "FIELD"}:
+            raise NegativeValidationError(f"Fila {idx}: procedencia, licencia o contexto inválido")
 
         if r.negative_category not in ALLOWED_NEGATIVE_CATEGORIES:
             raise NegativeValidationError(
@@ -131,14 +142,22 @@ def validate_negatives(
 
     # 1. Comprobar aislamiento interno entre particiones de negativos (0% fuga)
     dict_records = [r.to_dict() for r in records]
-    verify_partition_leakage(dict_records)
+    try:
+        verify_partition_leakage(dict_records)
+    except PartitionLeakageError as exc:
+        raise NegativeValidationError(str(exc)) from exc
 
     # 2. Comprobar no solapamiento con el conjunto positivo (si fue provisto)
     if positive_records:
         pos_hashes = {p["sha256"].lower() for p in positive_records if p.get("sha256")}
         pos_groups = {p["split_group"] for p in positive_records if p.get("split_group")}
+        pos_ids = {p["image_id"] for p in positive_records if p.get("image_id")}
 
         for r in records:
+            if r.image_id in pos_ids:
+                raise NegativeValidationError(
+                    f"Conflicto grave: image_id {r.image_id} aparece en positivos y negativos"
+                )
             if r.sha256 in pos_hashes:
                 raise NegativeValidationError(
                     f"Conflicto grave: hash {r.sha256} en negativos también está presente en el manifiesto positivo"

@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "purpose": "G1_G2_APPLICATION_TEMPLATE_ONLY",
+  "status": "BLOCKED_PENDING_G1_AND_G2_EVIDENCE",
+  "protocol_reference": "ml/evaluation/protocol-g0.v1.2.0.json",
+  "protocol_version": "1.2.0",
+  "protocol_design_status": "APPROVED_G0_DESIGN",
+  "approved_protocol_sha256": null,
+  "project_owner_approval_ref": "docs/adr/0009-modelo-validado-inferencia-y-politicas-de-publicacion.md",
+  "selected_image_rights_register_ref": null,
+  "dataset_version": null,
+  "minimums_application": {
+    "partition_counts_evidence_ref": null,
+    "required_fields_per_class_and_split": [
+      "required_samples",
+      "observed_samples",
+      "required_groups",
+      "observed_groups",
+      "meets_minimum"
+    ],
+    "class_checks": [
+      {
+        "class_code": "POTATO_EARLY_BLIGHT",
+        "train": null,
+        "val": null,
+        "test": null,
+        "external": null
+      },
+      {
+        "class_code": "POTATO_LATE_BLIGHT",
+        "train": null,
+        "val": null,
+        "test": null,
+        "external": null
+      }
+    ]
+  },
+  "exclusion_application": {
+    "automatic_label_mapping_exclusions_ref": "ml/evaluation/protocol-g0.v1.2.0.json#/automatic_label_mapping_exclusions",
+    "private_image_exclusion_register_ref": null,
+    "required_fields_per_excluded_image": [
+      "image_id",
+      "source_id",
+      "source_label",
+      "reason",
+      "review_evidence_ref",
+      "reviewer",
+      "reviewed_at"
+    ],
+    "excluded_classes_with_reason": null,
+    "review_evidence_ref": null
+  },
+  "cpu_budget_application": {
+    "hardware_description": null,
+    "measurement_command_ref": null,
+    "approved_median_ms_max": null,
+    "approved_p95_ms_max": null,
+    "approved_hard_limit_ms": null,
+    "approved_max_rss_mb": null,
+    "observed_median_ms": null,
+    "observed_p95_ms": null,
+    "observed_hard_limit_exceeded": null,
+    "observed_max_rss_mb": null,
+    "meets_approved_budget": null
+  },
+  "measured_model_results": {
+    "status": "NOT_MEASURED",
+    "val_report_ref": null,
+    "test_report_ref": null,
+    "external_report_ref": null,
+    "selective_coverage": {
+      "accepted_count": null,
+      "value": null,
+      "valid_pilot_class_count": null
+    },
+    "selective_error": {
+      "incorrect_accepted_count": null,
+      "accepted_count": null,
+      "value": null
+    },
+    "negative_acceptance": {
+      "accepted_supported_class_count": null,
+      "negative_evaluated_count": null,
+      "value": null
+    },
+    "per_class_numerators_denominators_ref": null,
+    "threshold_selected_on_val": null,
+    "threshold_frozen_before_test_ref": null
+  }
+}

@@ -13,7 +13,9 @@ In accordance with ADR-0009 and Section 8 of Incremento 4:
     * Missing governance / evidence
     * Non-finite calibration parameters
     * Out-of-bounds thresholds
-- Runs CPU inference with an explicitly labeled tensor fixture (never credited as agronomic evidence).
+- Runs the historical JSON-weight adapter fixture and separately exercises real
+  PyTorch/safetensors training and inference through the ML test suite. Neither
+  fixture constitutes agronomic evidence or an approved release.
 - Runs ML unit and integration test suites.
 - Clean execution from checkout without .env or private raw images.
 """
@@ -96,7 +98,7 @@ def _create_fixture_bundle(
     make_nan: bool = False,
     invalid_arch: bool = False,
 ) -> tuple[Path, str]:
-    """Creates a temporary, identified CPU tensor fixture bundle for testing."""
+    """Creates the historical JSON-weight fixture, not a safetensors model."""
     weights_path = target_dir / "model_weights.safetensors"
     if make_nan:
         weights_data = {
@@ -339,7 +341,7 @@ def test_policy_rejections():
 
 
 def test_cpu_runtime_inference():
-    print("[4/5] Testing Real-Mode CPU Runtime Adapter with Fixture...", flush=True)
+    print("[4/5] Testing legacy JSON-weight adapter with fixture (not real model weights)...", flush=True)
 
     with tempfile.TemporaryDirectory() as tmp_dir:
         valid_dir = Path(tmp_dir) / "valid"
@@ -362,7 +364,7 @@ def test_cpu_runtime_inference():
             assert res["class_code"] is not None
             assert res["raw_score"] is not None and 0.0 <= res["raw_score"] <= 1.0
 
-        print(f"  ✓ CPU inference executed in {res['inference_ms']}ms with outcome={res['outcome']}.")
+        print(f"  ✓ Legacy fixture adapter executed in {res['inference_ms']}ms with outcome={res['outcome']}.")
 
 
 def test_unit_suites():

@@ -1,17 +1,16 @@
 # AgroDiagnóstico V1
 
-Plataforma web de apoyo para analizar fotografías de papa y maíz. Muestra una condición visual probable solo cuando la clase está validada y la evidencia es suficiente. En los demás casos devuelve **NO_CONCLUYENTE** y orienta al usuario para repetir la fotografía. No reemplaza una evaluación profesional.
+Plataforma web de apoyo para analizar fotografías. El piloto de modelo real se limita a hoja de papa previamente identificada por el usuario. Muestra una condición visual probable solo cuando la clase está validada y la evidencia es suficiente. En los demás casos devuelve **NO_CONCLUYENTE** y orienta al usuario para repetir la fotografía. No reemplaza una evaluación profesional.
 
-> Estado: incrementos 0–3 implementados y verificados. Incremento 4 en corrección: herramientas parciales y fixtures; sin dataset admitido, protocolo docente aprobado ni modelo real validado. El modo real permanece bloqueado. Incremento 5 pendiente. [Estado del incremento 4](docs/evidence/INCREMENTO-4-ACEPTACION-INTEGRADA.md).
+> Estado: incrementos 0–3 implementados y verificados. Incremento 4 en desarrollo: G0 v1.2.0, [G1 del piloto](docs/evidence/INCREMENTO-4-G1-PILOTO-V1.2.md) y [bundle G2](docs/evidence/INCREMENTO-4-APROBACION-G2-PILOTO.md) aprobados para dos tizones de papa. La [aceptación real local](docs/evidence/INCREMENTO-4-G3-ACEPTACION-LOCAL.md) detectó publicación errónea de papa sana como tizón tardío; **G3 no está aprobado**. El worker y la política se activaron solo en un proyecto Compose efímero, ya eliminado. Se prepara una nueva versión del protocolo con rechazo verificable de papa sana antes de repetir entrenamiento y evaluación independiente. Incremento 5 pendiente.
 
-## Alcance comprometido
+## Alcance del piloto G0 v1.2.0
 
-| Cultivo | Clases candidatas para V1 |
+| Entrada | Clases candidatas |
 | --- | --- |
-| Papa | Sana, tizón temprano, tizón tardío o rancha |
-| Maíz | Sano, roya común, tizón foliar, mancha gris foliar |
+| Hoja de papa identificada previamente por el usuario | Tizón temprano, tizón tardío o rancha |
 
-Son siete clases previstas, sujetas a evaluación. La interfaz declarará como soportadas únicamente las clases que superen los criterios acordados con el docente. Gemini, voz, PWA y detección de plagas quedan como extensiones posteriores.
+El piloto aprobado G0 v1.2.0 evalúa tizón temprano y tardío en una hoja de papa previamente identificada. Los siete códigos originales se conservan como historial. La interfaz declarará como soportadas únicamente las clases que superen los criterios definidos y aprobados por el responsable del proyecto antes del entrenamiento y la evaluación independiente. Gemini, voz, PWA y detección de plagas quedan como extensiones posteriores.
 
 ## Arquitectura prevista
 
@@ -90,7 +89,7 @@ docker compose up -d --wait --wait-timeout 180
 
 Abrir `http://127.0.0.1:8080`. Solo se ofrece la página técnica, sin carga o diagnósticos. Verifica LOCAL_UID/GID y configuración en [DEVELOPMENT](docs/DEVELOPMENT.md). Parada conservando datos: `docker compose down`. Aceptación aislada: `python3 scripts/check_environment.py`. [Evidencia del grupo4](docs/evidence/INCREMENTO-0-GRUPO-4.md).
 
-Inventario del dataset: [fuentes, cantidades, taxonomía y límites](ml/manifests/README.md). Verificación: `bash scripts/check_dataset.sh`. Fuentes pendientes de admisión, sin imágenes descargadas ni entrenamiento.
+Inventario del dataset: [fuentes, cantidades, taxonomía y límites](ml/manifests/README.md). Verificación: `bash scripts/check_dataset.sh`. El lote privado PlantVillage v1.2.0 pasó G1 y se usó en entrenamiento y evaluación documentados; las otras fuentes siguen pendientes. Papa sana todavía no está admitida como negativo del siguiente ciclo.
 
 CI de aplicación: [workflow y reproducción local](docs/CI.md), con `bash scripts/prepare_ci.sh` y `python3 scripts/run_ci.py`. [Evidencia del grupo 6](docs/evidence/INCREMENTO-0-GRUPO-6.md).
 
@@ -101,4 +100,4 @@ Historial de corrección: [primera ejecución fallida 36743640034](https://githu
 Cierre de tareas del Incremento 0: [Application CI aprobada](https://github.com/RonaldoMarquina/agrodiagnostico_V1/actions/runs/36749372314) sobre `97472b1`. [Evidencia remota](docs/evidence/INCREMENTO-0-GRUPO-7-REMOTO.md). Los cinco deltas se sincronizaron y el cambio se archivó el 2026-09-30.
 
 
-Estado posterior del Incremento 1: Identity implementa las 12 operaciones de negocio; la revisión posterior al archivo exigió un correctivo de claves, Origin/CSRF, auditoría y evidencia multi-instancia. El estado vigente y sus límites están en [INCREMENTO-1-CORRECCION](docs/evidence/INCREMENTO-1-CORRECCION.md). Las referencias previas al Incremento 0 son históricas. Diagnosis implementa los incrementos 2 y 3. El Incremento 4 conserva herramientas y pruebas técnicas parciales, pero G0–G3, el entrenamiento y el runtime reales siguen pendientes. Véanse el [estado rectificado](docs/evidence/INCREMENTO-4-CORRECCION.md) y las [tareas abiertas](openspec/changes/incremento-4-datos-y-modelo-validado/tasks.md). El incremento 5 permanece separado.
+Estado posterior del Incremento 1: Identity implementa las 12 operaciones de negocio; la revisión posterior al archivo exigió un correctivo de claves, Origin/CSRF, auditoría y evidencia multi-instancia. El estado vigente y sus límites están en [INCREMENTO-1-CORRECCION](docs/evidence/INCREMENTO-1-CORRECCION.md). Las referencias previas al Incremento 0 son históricas. Diagnosis implementa los incrementos 2 y 3. El Incremento 4 tiene [G0 aprobado como diseño](docs/evidence/INCREMENTO-4-PROTOCOLO-G0.md), [G1 cerrado para el piloto v1.2.0](docs/evidence/INCREMENTO-4-G1-PILOTO-V1.2.md), [bundle piloto aprobado G2](docs/evidence/INCREMENTO-4-APROBACION-G2-PILOTO.md), [catálogo revisado](docs/evidence/INCREMENTO-4-CATALOGO-PILOTO-V1.md) y [aceptación integrada local fallida](docs/evidence/INCREMENTO-4-G3-ACEPTACION-LOCAL.md). G3 y la activación para usuarios siguen pendientes. Véanse las [tareas abiertas](openspec/changes/incremento-4-datos-y-modelo-validado/tasks.md). El incremento 5 permanece separado.

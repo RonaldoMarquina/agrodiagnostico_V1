@@ -3,6 +3,7 @@ import copy
 import csv
 import hashlib
 import importlib.util
+import json
 from pathlib import Path
 import tempfile
 import unittest
@@ -32,8 +33,11 @@ class TestDatasetValidationV2(unittest.TestCase):
     def test_inventory_v2_structure(self):
         _, classes, sources = v.validate_inventory_v2()
         self.assertEqual(len(classes), 7)
-        self.assertTrue(all(s['eligibility'] == 'PENDING' for s in sources.values()))
-        self.assertTrue(all(c['definition_status'] == 'PENDING_REVIEW' for c in classes.values()))
+        self.assertEqual(sources['plantvillage']['eligibility'], 'ELIGIBLE')
+        self.assertTrue(all(s['eligibility'] == 'PENDING' for name, s in sources.items()
+                            if name != 'plantvillage'))
+        self.assertEqual({code for code, item in classes.items() if item['definition_status'] == 'REVIEWED'},
+                         {'POTATO_EARLY_BLIGHT', 'POTATO_LATE_BLIGHT'})
 
     def test_manifest_v2_empty_allowed_for_initial_repo(self):
         count = v.validate_manifest_v2(
@@ -65,8 +69,8 @@ class TestDatasetValidationV2(unittest.TestCase):
                 writer.writeheader()
                 writer.writerow(row)
 
-            count = v.validate_manifest_v2(csv_path, self.schema, self.classes, self.sources)
-            self.assertEqual(count, 1)
+            with self.assertRaisesRegex(v.InventoryError, "--images-dir y --evidence"):
+                v.validate_manifest_v2(csv_path, self.schema, self.classes, self.sources)
 
     def test_manifest_v2_rejects_synthetic_fixture(self):
         row = {
@@ -205,20 +209,38 @@ class TestDatasetValidationV2(unittest.TestCase):
                 writer.writeheader()
                 writer.writerow(row)
 
-            # Debe pasar con byte_equivalence
-            count = v.validate_manifest_v2(csv_path, self.schema, self.classes, self.sources, images_dir=img_dir)
+            proof = Path(temp_dir) / "permission.txt"
+            proof.write_text("Comprobante sintético para prueba técnica")
+            evidence_path = Path(temp_dir) / "g1.json"
+            evidence_path.write_text(json.dumps({"schema_version": 1, "records": [{
+                "image_id": row["image_id"], "sha256": row["sha256"],
+                "decision": "ADMIT", "decision_by": "fixture-reviewer",
+                "decision_at": "2026-11-19", "decision_reason": "fixture técnico solamente",
+                "source": row["source"], "source_revision": self.sources[row["source"]]["version"],
+                "split_group": row["split_group"], "relative_path": img_file.name,
+                "source_label": "Potato___Early_blight", "class_code": row["class_code"],
+                "crop_code": row["crop_code"],
+                "rights": {"decision": "APPROVED", "allowed_uses": ["TRAINING"],
+                           "reviewer": "fixture-reviewer", "reviewed_at": "2026-11-19",
+                           "proof_path": proof.name, "attribution": "fixture", "restrictions": "fixture-only"},
+                "label_review": {"decision": "APPROVED", "source_label": "Potato___Early_blight",
+                                 "class_code": row["class_code"], "crop_code": row["crop_code"],
+                                 "reviewer": "fixture-reviewer", "reviewed_at": "2026-11-19",
+                                 "evidence_note": "etiqueta sintética revisada para prueba"}
+            }]}))
+            mappings = [{"source": "plantvillage", "class_code": row["class_code"],
+                         "source_label": "Potato___Early_blight", "status": "APPROVED"}]
+            count = v.validate_manifest_v2(csv_path, self.schema, self.classes, self.sources,
+                                           images_dir=img_dir, evidence_path=evidence_path,
+                                           mappings=mappings)
             self.assertEqual(count, 1)
 
-            # Si el hash en el CSV es erróneo, debe fallar
-            bad_row = dict(row)
-            bad_row["sha256"] = "0" * 64
-            with csv_path.open("w", newline="") as f:
-                writer = csv.DictWriter(f, fieldnames=self.schema["required"])
-                writer.writeheader()
-                writer.writerow(bad_row)
-
+            # El contenido local cambiado debe fallar aunque CSV y evidencia coincidan.
+            img_file.write_bytes(actual_bytes + b"tampered")
             with self.assertRaisesRegex(v.InventoryError, "hash de bytes no coincide"):
-                v.validate_manifest_v2(csv_path, self.schema, self.classes, self.sources, images_dir=img_dir)
+                v.validate_manifest_v2(csv_path, self.schema, self.classes, self.sources,
+                                       images_dir=img_dir, evidence_path=evidence_path,
+                                       mappings=mappings)
 
 
 if __name__ == "__main__":

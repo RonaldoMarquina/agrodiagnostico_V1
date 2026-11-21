@@ -53,12 +53,20 @@ Dispone de dos perfiles de ejecución estrictamente aislados:
   docker compose --profile async-test up -d ai_inference-worker-1
   ```
 
-### 2. Modo real pendiente
+### 2. Perfil real preparado (`ml-real`)
 
-`INFERENCE_MODE=real` rechaza iniciar con `REAL_RUNTIME_NOT_IMPLEMENTED`.
-El adaptador actual es un fixture lineal JSON, no MobileNet/ResNet ni un cargador
-PyTorch/safetensors. La existencia del perfil `ml-real` no acredita funcionalidad.
-No activarlo para usuarios; implementar y verificar el runtime real según el cambio.
+`INFERENCE_MODE=real` exige los SHA-256 del bundle y del acta G2 fijados al arranque.
+Valida esquema, acta, hashes, pesos `safetensors`, mapa de solo dos tizones y
+preprocesado antes de abrir RabbitMQ; una ausencia o corrupción impide el consumo.
+Cada inferencia se ejecuta en un proceso CPU separado con límite de 20 segundos,
+manteniendo el heartbeat del lease en el proceso del worker. El valor
+`identified_crop=POTATO` viaja desde `DiagnosisRequested` v2 al adaptador;
+sin esa identificación o con cultivo ajeno se abstiene sin ejecutar el modelo.
+El adaptador JSON histórico permanece únicamente para fixtures bajo doble guardia.
+
+El perfil está **sin activar**. G3, política de publicación y catálogo revisado
+siguen pendientes; la preparación técnica no autoriza diagnósticos para usuarios.
+Ver [operación del modelo](../../docs/operations/ai-model-operations.md).
 
 `INFERENCE_MODE=fixture` sirve únicamente para pruebas con APP_ENV=test y
 ENABLE_SIMULATED_INFERENCE=true. No es un fallback de producción.

@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "catalog_content_version": "1.0.0",
+  "scope": "G0-1.2.0-POTATO-BLIGHTS",
+  "review_basis": "Decisión y pautas textuales del responsable del proyecto recibidas el 2026-11-20; redacción contrastada con SENASA y CIP. No es una evaluación agronómica independiente.",
+  "reviewed_by": "Responsable del proyecto AgroDiagnostico V1",
+  "reviewed_at": "2026-11-20T20:29:08Z",
+  "review_reference": "PROJECT-OWNER-CATALOG-GUIDANCE-2026-11-20-V1",
+  "sources": [
+    {
+      "organization": "SENASA Peru",
+      "title": "Guía para la implementación de buenas prácticas agrícolas para el cultivo de papa",
+      "url": "https://www.senasa.gob.pe/senasa/descargasarchivos/2020/07/Guia-BPA-PAPA.pdf",
+      "consulted_at": "2026-11-20",
+      "relevant_sections": "3.7 rotación; 3.9 malezas; sección de principales enfermedades y prevención, páginas impresas 8, 11-12"
+    },
+    {
+      "organization": "Centro Internacional de la Papa (CIP)",
+      "title": "Manejo integrado del tizón tardío, hoja divulgativa 2",
+      "url": "https://cipotato.org/wp-content/uploads/2014/09/003858.pdf",
+      "consulted_at": "2026-11-20",
+      "relevant_sections": "Manejo integrado, selección de variedad y semilla, saneamiento, riego y consulta técnica"
+    }
+  ],
+  "recommendations": [
+    {
+      "problem_code": "POTATO_EARLY_BLIGHT",
+      "title": "Orientación general ante posible tizón temprano de papa",
+      "summary": "Esta es una orientación visual, no una confirmación de enfermedad. Confirme el diagnóstico en campo con SENASA o un profesional agrícola antes de tomar decisiones de control.",
+      "cultural_practices": [
+        "Revise otras plantas cercanas y registre cómo evolucionan los síntomas, con fecha y fotografías.",
+        "Para futuras siembras, use semilla sana y mantenga limpios los residuos vegetales del cultivo.",
+        "Planifique la rotación de cultivos y el control de malezas con asesoramiento local.",
+        "Maneje oportunamente el riego para evitar encharcamientos y mantenga limpias las herramientas de trabajo."
+      ],
+      "biological_control": [],
+      "preventive_measures": [
+        "Consulte a SENASA o a un profesional agrícola antes de aplicar cualquier producto."
+      ],
+      "source_refs": [
+        "https://www.senasa.gob.pe/senasa/descargasarchivos/2020/07/Guia-BPA-PAPA.pdf"
+      ]
+    },
+    {
+      "problem_code": "POTATO_LATE_BLIGHT",
+      "title": "Orientación general ante posible tizón tardío de papa",
+      "summary": "Esta es una orientación visual, no una confirmación de enfermedad. Confirme el diagnóstico en campo con SENASA o un profesional agrícola antes de tomar decisiones de control.",
+      "cultural_practices": [
+        "Revise otras plantas cercanas y registre cómo evolucionan los síntomas, con fecha y fotografías.",
+        "Para futuras siembras, use semilla sana y mantenga limpios los residuos vegetales del cultivo.",
+        "Planifique la rotación de cultivos y el control de malezas con asesoramiento local.",
+        "Maneje oportunamente el riego para evitar encharcamientos y mantenga limpias las herramientas de trabajo.",
+        "Considere un manejo integrado y seleccione variedades adecuadas para su zona con apoyo técnico."
+      ],
+      "biological_control": [],
+      "preventive_measures": [
+        "Solicite consulta técnica temprana ante sospecha de tizón tardío.",
+        "Consulte a SENASA o a un profesional agrícola antes de aplicar cualquier producto."
+      ],
+      "source_refs": [
+        "https://www.senasa.gob.pe/senasa/descargasarchivos/2020/07/Guia-BPA-PAPA.pdf",
+        "https://cipotato.org/wp-content/uploads/2014/09/003858.pdf"
+      ]
+    }
+  ]
+}

@@ -15,7 +15,7 @@ from sqlalchemy.pool import StaticPool
 from app.api.deps import get_db
 from app.application.reconcile import reconcile_upload_intents
 from app.domain.image import MAX_FILE_BYTES, MAX_TRANSPORT_BYTES
-from app.domain.models import Base, Diagnosis, IdempotencyKey, ImageUploadIntent
+from app.domain.models import Base, Diagnosis, DiagnosisOutbox, IdempotencyKey, ImageUploadIntent
 from app.infrastructure.tokens import (
     TokenVerifier,
     generate_ed25519_keypair,
@@ -312,6 +312,63 @@ class TestIngestionAndStorage(unittest.TestCase):
         resp = self.client.post("/api/v1/diagnoses", data=body, headers=headers)
         self.assertEqual(resp.status_code, 400)
         self.assertEqual(resp.json()["code"], "INVALID_REQUEST")
+
+    def test_pilot_identified_crop_is_persisted_and_bound_to_idempotency(self):
+        image = make_test_jpeg()
+        headers = {"Authorization": f"Bearer {self.token_user_a}",
+                   "Idempotency-Key": "pilot-crop",}
+        body, content_type = make_multipart_body(
+            fields={"identified_crop": "POTATO"},
+            files=[("image", "leaf.jpg", image, "image/jpeg")],
+        )
+        response = self.client.post("/api/v1/diagnoses", data=body,
+                                    headers={**headers, "Content-Type": content_type})
+        self.assertEqual(response.status_code, 202)
+        with self.SessionLocal() as session:
+            diagnosis = session.get(Diagnosis, uuid.UUID(response.json()["id"]))
+            self.assertEqual(diagnosis.identified_crop, "POTATO")
+            requested = session.query(DiagnosisOutbox).filter_by(diagnosis_id=diagnosis.id).one()
+            self.assertEqual(requested.envelope["payload"]["identified_crop"], "POTATO")
+        replay = self.client.post("/api/v1/diagnoses", data=body,
+                                  headers={**headers, "Content-Type": content_type})
+        self.assertEqual(replay.status_code, 202)
+        legacy_body, legacy_type = make_multipart_body(files=[("image", "leaf.jpg", image, "image/jpeg")])
+        conflict = self.client.post("/api/v1/diagnoses", data=legacy_body,
+                                    headers={**headers, "Content-Type": legacy_type})
+        self.assertEqual(conflict.status_code, 409)
+
+    def test_pilot_rejects_other_identified_crops(self):
+        headers = {"Authorization": f"Bearer {self.token_user_a}",
+                   "Idempotency-Key": "pilot-reject",}
+        for crop in ("MAIZE", "potato", "", "POTATO "):
+            with self.subTest(crop=crop):
+                body, content_type = make_multipart_body(
+                    fields={"identified_crop": crop},
+                    files=[("image", "leaf.jpg", make_test_jpeg(), "image/jpeg")],
+                )
+                response = self.client.post("/api/v1/diagnoses", data=body,
+                                            headers={**headers, "Content-Type": content_type})
+                self.assertEqual(response.status_code, 400)
+
+    def test_pilot_rejects_duplicate_identified_crop_field(self):
+        boundary = "pilot-duplicate-crop"
+        body, content_type = make_multipart_body(
+            fields={"identified_crop": "POTATO"},
+            files=[("image", "leaf.jpg", make_test_jpeg(), "image/jpeg")],
+            boundary=boundary,
+        )
+        duplicate = (
+            f'--{boundary}\r\nContent-Disposition: form-data; name="identified_crop"\r\n\r\n'
+            'POTATO\r\n'
+        ).encode("ascii")
+        body = body.replace(f"--{boundary}--\r\n".encode("ascii"),
+                            duplicate + f"--{boundary}--\r\n".encode("ascii"))
+        response = self.client.post(
+            "/api/v1/diagnoses", data=body,
+            headers={"Authorization": f"Bearer {self.token_user_a}",
+                     "Idempotency-Key": "pilot-duplicate", "Content-Type": content_type},
+        )
+        self.assertEqual(response.status_code, 400)
 
     def test_post_diagnoses_missing_image_rejected(self):
         img_bytes = make_test_jpeg()

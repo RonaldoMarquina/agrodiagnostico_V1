@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "model-bundle.v1.schema.json",
   "title": "ModelBundleV1",
-  "description": "Contrato inmutable de empaquetado de modelo de inferencia agronómica V1 para AgroDiagnóstico.",
+  "description": "Contrato inmutable de empaquetado de modelo de inferencia agronómica V1 para AgroDiagnóstico. El protocolo G0 v1.2.0 limita nuevas aprobaciones a los dos tizones de papa; los códigos históricos siguen legibles.",
   "type": "object",
   "properties": {
     "schema_version": {
@@ -94,6 +94,33 @@
         "val_manifest_sha256",
         "test_manifest_sha256"
       ],
+      "additionalProperties": false
+    },
+    "manifest_component_checksums": {
+      "type": "object",
+      "description": "Pares de manifiestos positivos y negativos usados por el piloto; cada digest combinado de manifest_checksums se deriva de estos pares.",
+      "properties": {
+        "train": {"$ref": "#/$defs/manifestPair"},
+        "val": {"$ref": "#/$defs/manifestPair"},
+        "test": {"$ref": "#/$defs/manifestPair"}
+      },
+      "required": ["train", "val", "test"],
+      "additionalProperties": false
+    },
+    "artifact_checksums": {
+      "type": "object",
+      "description": "SHA-256 de los componentes inmutables, incluida la evaluación TEST ya ejecutada.",
+      "properties": {
+        "config_sha256": {"$ref": "#/$defs/sha256"},
+        "calibration_sha256": {"$ref": "#/$defs/sha256"},
+        "thresholds_sha256": {"$ref": "#/$defs/sha256"},
+        "protocol_sha256": {"$ref": "#/$defs/sha256"},
+        "freeze_sha256": {"$ref": "#/$defs/sha256"},
+        "test_report_sha256": {"$ref": "#/$defs/sha256"},
+        "preprocessing_code_sha256": {"$ref": "#/$defs/sha256"},
+        "dependency_lock_sha256": {"$ref": "#/$defs/sha256"}
+      },
+      "required": ["config_sha256", "calibration_sha256", "thresholds_sha256", "protocol_sha256", "freeze_sha256", "test_report_sha256", "preprocessing_code_sha256", "dependency_lock_sha256"],
       "additionalProperties": false
     },
     "class_map": {
@@ -196,6 +223,14 @@
           "minimum": 0,
           "maximum": 1
         },
+        "identified_crop_required": {
+          "type": "string",
+          "const": "POTATO"
+        },
+        "technical_reject_policy": {
+          "type": "string",
+          "const": "OTHER_CROP_LOGIT_GTE_CANDIDATE"
+        },
         "min_dimension": {
           "type": "integer",
           "minimum": 64
@@ -207,7 +242,6 @@
       },
       "required": [
         "min_confidence_threshold",
-        "crop_detection_threshold",
         "min_dimension",
         "max_dimension"
       ],
@@ -327,5 +361,71 @@
     "runtime_environment",
     "governance"
   ],
-  "additionalProperties": false
+  "additionalProperties": false,
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "manifestPair": {
+      "type": "object",
+      "properties": {
+        "positives": {"$ref": "#/$defs/sha256"},
+        "negatives": {"$ref": "#/$defs/sha256"}
+      },
+      "required": ["positives", "negatives"],
+      "additionalProperties": false
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "type": "object",
+        "properties": {
+          "governance": {
+            "type": "object",
+            "properties": {
+              "g0_protocol_version": {
+                "const": "1.2.0"
+              }
+            }
+          }
+        },
+        "required": [
+          "governance"
+        ]
+      },
+      "then": {
+        "required": ["manifest_component_checksums", "artifact_checksums"],
+        "properties": {
+          "rejection_components": {
+            "required": ["identified_crop_required", "technical_reject_policy"],
+            "not": {"required": ["crop_detection_threshold"]}
+          },
+          "class_map": {
+            "type": "object",
+            "patternProperties": {
+              "^[0-9]+$": {
+                "type": "object",
+                "properties": {
+                  "class_code": {
+                    "enum": [
+                      "POTATO_EARLY_BLIGHT",
+                      "POTATO_LATE_BLIGHT"
+                    ]
+                  },
+                  "crop_code": {
+                    "const": "POTATO"
+                  }
+                },
+                "required": [
+                  "class_code",
+                  "crop_code"
+                ]
+              }
+            },
+            "minProperties": 2,
+            "maxProperties": 2
+          }
+        }
+      }
+    }
+  ]
 }

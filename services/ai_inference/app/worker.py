@@ -68,8 +68,6 @@ def create_configured_inference_adapter() -> InferenceAdapter:
     if not mode:
         if is_simulation_permitted():
             mode = "simulated"
-        elif os.environ.get("MODEL_BUNDLE_PATH"):
-            mode = "real"
         else:
             raise RuntimeError(
                 "No inference mode configured. For real mode set INFERENCE_MODE='real' "
@@ -78,10 +76,20 @@ def create_configured_inference_adapter() -> InferenceAdapter:
             )
 
     if mode == "real":
-        raise RuntimeError(
-            "REAL_RUNTIME_NOT_IMPLEMENTED: JSON fixture adapters are not validated models. "
-            "Real processing remains disabled until increment 4 runtime is implemented."
-        )
+        bundle_path = os.environ.get("MODEL_BUNDLE_PATH")
+        bundle_sha256 = os.environ.get("MODEL_BUNDLE_SHA256")
+        approval_sha256 = os.environ.get("MODEL_APPROVAL_SHA256")
+        if not bundle_path or not bundle_sha256 or not approval_sha256:
+            raise RuntimeError("Real mode requires MODEL_BUNDLE_PATH, MODEL_BUNDLE_SHA256 and MODEL_APPROVAL_SHA256")
+        if os.environ.get("ENABLE_SIMULATED_INFERENCE", "").lower() == "true":
+            raise RuntimeError("Real mode cannot run with simulation enabled")
+        from app.pilot_runtime import BoundedPilotInferenceAdapter
+        try:
+            timeout_seconds = float(os.environ.get("INFERENCE_TIMEOUT_SECONDS", "20"))
+            return BoundedPilotInferenceAdapter(
+                Path(bundle_path), bundle_sha256, approval_sha256, timeout_seconds)
+        except Exception as exc:
+            raise RuntimeError("Approved pilot bundle failed startup validation") from exc
 
     if mode == "fixture":
         if not is_simulation_permitted():
@@ -403,9 +411,10 @@ class InferenceWorker:
 
             # Step 6: Technical inference execution (via configured adapter)
             try:
-                inference = self.inference_adapter.run_inference(
-                    diagnosis_id=diagnosis_id, image_bytes=image_bytes
-                )
+                arguments = {"diagnosis_id": diagnosis_id, "image_bytes": image_bytes}
+                if getattr(self.inference_adapter, "requires_identified_crop", False):
+                    arguments["identified_crop"] = parsed["payload"].get("identified_crop")
+                inference = self.inference_adapter.run_inference(**arguments)
             except Exception as ex:
                 self._handle_execution_failure(diagnosis_id, correlation_id, f"INFERENCE_ERROR: {str(ex)[:150]}", local_claim_token)
                 channel.basic_nack(delivery_tag=delivery_tag, requeue=True)

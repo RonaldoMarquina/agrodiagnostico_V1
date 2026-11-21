@@ -14,7 +14,8 @@ trap 'rm -rf -- "$ml_check_dir"' EXIT
 python3 -m venv "$ml_check_dir/tools"
 "$ml_check_dir/tools/bin/python" -m pip --disable-pip-version-check install --quiet --require-hashes -r tooling/uv.requirements.txt
 UV_PYTHON_DOWNLOADS=never UV_PROJECT_ENVIRONMENT="$ml_check_dir/ml" \
-  "$ml_check_dir/tools/bin/uv" sync --project ml --locked --no-dev --no-install-project
-"$ml_check_dir/ml/bin/python" -c 'from PIL import Image; import jsonschema'
+  "$ml_check_dir/tools/bin/uv" sync --project ml --locked --no-dev
+"$ml_check_dir/ml/bin/python" -c 'from PIL import Image; import jsonschema, torch, torchvision, safetensors, agro_ml; assert not torch.cuda.is_available()'
+"$ml_check_dir/ml/bin/agro-ml" --help >/dev/null
 PYTHONPATH="$PWD/ml/src:$PWD/services/ai_inference" \
   "$ml_check_dir/ml/bin/python" scripts/check_ml_runtime.py

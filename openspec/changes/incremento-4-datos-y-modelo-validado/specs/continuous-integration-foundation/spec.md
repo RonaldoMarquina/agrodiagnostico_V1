@@ -12,7 +12,7 @@ El CI SHALL conservar etapas existentes y agregar validación de contratos ML, i
 - **THEN** se comprueban runtime y reglas técnicas con fixtures aislados sin omitir etapas existentes
 
 ### Requirement: Evidencia experimental separada del CI
-El cierre del incremento de modelo SHALL requerir aceptación adicional con release real aprobado y datos autorizados, resultados por ambos cultivos, negativos, catálogo revisado, acceso privado, leases y redelivery. SHALL registrar revisión de código, hashes de artefactos/datos, comandos, entorno y resultados; SHALL distinguir CI local/remoto de aprobación experimental.
+El cierre del incremento de modelo SHALL requerir aceptación adicional con release real aprobado y datos autorizados, resultados por ambos tizones de papa, negativos, catálogo revisado, acceso privado, leases y redelivery. SHALL registrar revisión de código, hashes de artefactos/datos, comandos, entorno y resultados; SHALL distinguir CI local/remoto de aprobación experimental.
 
 #### Scenario: CI verde sin dataset aprobado
 - **WHEN** pasan pruebas técnicas pero no existe evaluación real aprobada

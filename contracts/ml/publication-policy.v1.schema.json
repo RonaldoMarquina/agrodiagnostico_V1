@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "publication-policy.v1.schema.json",
   "title": "PublicationPolicyV1",
-  "description": "Contrato inmutable de política de publicación para el servicio Diagnosis.",
+  "description": "Contrato inmutable de política de publicación para el servicio Diagnosis. El protocolo G0 v1.2.0 limita nuevas aprobaciones a los dos tizones de papa; los códigos históricos siguen legibles.",
   "type": "object",
   "properties": {
     "schema_version": {
@@ -190,5 +190,51 @@
     "governance",
     "audit"
   ],
-  "additionalProperties": false
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "type": "object",
+        "properties": {
+          "governance": {
+            "type": "object",
+            "properties": {
+              "g0_protocol_version": {
+                "const": "1.2.0"
+              }
+            }
+          }
+        },
+        "required": [
+          "governance"
+        ]
+      },
+      "then": {
+        "properties": {
+          "approved_classes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "class_code": {
+                  "enum": [
+                    "POTATO_EARLY_BLIGHT",
+                    "POTATO_LATE_BLIGHT"
+                  ]
+                },
+                "crop_code": {
+                  "const": "POTATO"
+                }
+              },
+              "required": [
+                "class_code",
+                "crop_code"
+              ]
+            },
+            "maxItems": 2
+          }
+        }
+      }
+    }
+  ]
 }

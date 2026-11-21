@@ -16,6 +16,7 @@ import uuid
 from alembic import command
 from alembic.config import Config
 from sqlalchemy import create_engine, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import sessionmaker
 
 from app.domain.models import (
@@ -57,6 +58,20 @@ class TestPublicationPolicyMigrationAndModel(unittest.TestCase):
         }
         self.assertTrue(expected.issubset(cols))
 
+    def test_partial_unique_index_rejects_two_active_policies(self):
+        def policy(index):
+            return PublicationPolicy(
+                id=uuid.uuid4(), policy_version=f"{index}.0.0", model_id="fixture",
+                model_version="1.0.0", dataset_version="1.0.0",
+                bundle_digest=str(index) * 64, payload={}, active=True)
+
+        self.session.add(policy(1))
+        self.session.commit()
+        self.session.add(policy(2))
+        with self.assertRaises(IntegrityError):
+            self.session.commit()
+        self.session.rollback()
+
     def test_diagnosis_additive_columns_registered(self):
         diag_table = Base.metadata.tables["diagnoses"]
         cols = {c.name for c in diag_table.columns}
@@ -67,6 +82,20 @@ class TestPublicationPolicyMigrationAndModel(unittest.TestCase):
             "policy_digest",
         }
         self.assertTrue(expected.issubset(cols))
+
+    def test_identified_crop_constraint_accepts_only_potato_in_pilot(self):
+        diag = Diagnosis(
+            id=uuid.uuid4(), owner_id=uuid.uuid4(), status="PENDIENTE",
+            object_key="pilot/leaf.jpg", image_sha256="a" * 64,
+            image_content_type="image/jpeg", image_size_bytes=100,
+            identified_crop="POTATO",
+        )
+        self.session.add(diag)
+        self.session.commit()
+        diag.identified_crop = "MAIZE"
+        with self.assertRaises(IntegrityError):
+            self.session.commit()
+        self.session.rollback()
 
     def test_historical_diagnosis_compatibility_without_invented_calibration(self):
         """Historical diagnoses must have None for confidence and policy fields without synthetic invention."""
@@ -193,6 +222,11 @@ class TestPublicationPolicyMigrationAndModel(unittest.TestCase):
                 self.assertIn("policy_id", cols)
                 self.assertIn("policy_version", cols)
                 self.assertIn("policy_digest", cols)
+                self.assertIn("identified_crop", cols)
+                diagnoses_ddl = conn.execute(text(
+                    "SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'diagnoses'"
+                )).scalar_one()
+                self.assertIn("ck_diagnoses_identified_crop_pilot", diagnoses_ddl)
 
             test_engine.dispose()
 
@@ -211,9 +245,34 @@ class TestPublicationPolicyMigrationAndModel(unittest.TestCase):
                 self.assertNotIn("policy_id", cols)
                 self.assertNotIn("policy_version", cols)
                 self.assertNotIn("policy_digest", cols)
+                self.assertNotIn("identified_crop", cols)
 
             test_engine2.dispose()
 
+        finally:
+            if os.path.exists(db_path):
+                os.unlink(db_path)
+
+    def test_candidate_name_migration_preserves_support_and_code(self):
+        """Rename the original seed; no model approval is implied."""
+        with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as tmp_file:
+            db_path = tmp_file.name
+        try:
+            config = Config(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "alembic.ini")))
+            config.set_main_option("sqlalchemy.url", f"sqlite:///{db_path}")
+            command.upgrade(config, "diagnosis_0004")
+            engine = create_engine(f"sqlite:///{db_path}")
+            from sqlalchemy import text
+            with engine.connect() as connection:
+                old = connection.execute(text("SELECT name, model_supported FROM problems WHERE code = 'MAIZE_LEAF_BLIGHT'")).one()
+                self.assertEqual(old.name, "Tizón foliar del maíz")
+                self.assertFalse(old.model_supported)
+            command.upgrade(config, "diagnosis_0005")
+            with engine.connect() as connection:
+                current = connection.execute(text("SELECT name, model_supported FROM problems WHERE code = 'MAIZE_LEAF_BLIGHT'")).one()
+                self.assertEqual(current.name, "Tizón foliar del norte")
+                self.assertFalse(current.model_supported)
+            engine.dispose()
         finally:
             if os.path.exists(db_path):
                 os.unlink(db_path)

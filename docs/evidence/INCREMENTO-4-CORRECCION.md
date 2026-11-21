@@ -1,6 +1,8 @@
+> Alcance actual: G0 v1.2.0 aprueba únicamente los dos tizones de papa para el piloto. Las referencias a siete clases y maíz en esta evidencia describen el inventario o trabajo histórico. [G1](INCREMENTO-4-G1-PILOTO-V1.2.md) y [G2](INCREMENTO-4-APROBACION-G2-PILOTO.md) se cerraron después de esta corrección histórica; G3 sigue pendiente. [Decisión](../adr/0009-modelo-validado-inferencia-y-politicas-de-publicacion.md).
+
 # Corrección del incremento 4 — 2026-10-17
 
-El reporte anterior 36/40 se retira. Estado rectificado: 9 tareas completas y 31
+El reporte anterior 36/40 se retira. Estado al 2026-10-17: 9 tareas completas y 31
 pendientes, incluyendo desarrollo parcial. No existe modelo validado ni G0–G3
 acreditadas. No basta descargar imágenes para completar el incremento.
 
@@ -54,6 +56,10 @@ No se tocaron volúmenes/bases de desarrollo, no se descargaron fotos y no se
 publicaron cambios remotos. Si se importaron recomendaciones anteriores en una
 base, deben revisarse y desactivarse mediante el flujo administrativo existente.
 
+## Avance posterior — 2026-11-19
+
+La corrección histórica anterior permanece válida para los adaptadores lineales y las puertas de evidencia. Codex añadió un [recorrido técnico PyTorch CPU](INCREMENTO-4-CPU-SMOKE.md) separado: instalación desde lock, preprocesado tensorial compartido, entrenamiento de cabezas con fixtures geométricos, pesos safetensors y comparación VAL_FIXTURE. Se mantienen cerradas 4.1–4.2; por decisión posterior del responsable, 2.3 y 4.3 siguen abiertas hasta contar con pipeline y validación real. El worker real, bundle aprobado, datos admitidos y resultados agronómicos siguen ausentes. La etapa ML del wrapper pasó con 91 pruebas ML y 9 del adaptador en ese punto, sin acreditar CI remota ni G1–G3.
+
 ## Verificación adicional de dependencias ML
 
 La etapa ML ahora instala ml/uv.lock en un entorno efímero y exige Pillow, en vez
@@ -70,4 +76,8 @@ contenedores, redes, volúmenes ni imágenes residuales. Después se corrigió u
 afirmación obsoleta en README y se rotuló como fixture el ejemplo OpenAPI de
 política; `bash scripts/check_contracts.sh` volvió a pasar (17 pruebas), y
 `git diff --check` quedó limpio. El informe local se conserva en la ruta
-indicada; no demuestra CI remoto ni G0–G3. El cambio OpenSpec sigue abierto.
+indicada; no demuestra CI remoto ni G1–G3. El cambio OpenSpec sigue abierto.
+
+Actualización posterior del 2026-11-19: el responsable aprobó el [protocolo G0 v1.1.0](../../ml/evaluation/protocol-g0.v1.json) como diseño, con [justificación en ADR-0009](../adr/0009-modelo-validado-inferencia-y-politicas-de-publicacion.md). Las cifras de cobertura/error no son resultados medidos; G1–G3 y el cambio OpenSpec permanecen abiertos. El estado histórico del 2026-10-17 arriba no se reescribe como aceptación actual.
+
+Avance técnico posterior del mismo día: [2.3](../../openspec/changes/incremento-4-datos-y-modelo-validado/tasks.md) se cerró con comandos CPU de candidato, configuración versionada, procedencia de pesos aleatorios y prueba de instalación limpia desde el lock. El paquete queda sin G2. Se corrigieron métricas de abstención y denominadores con fixtures, pero 5.3 sigue abierta hasta el reporte real; 4.3 exige VAL autorizada. Véase [evidencia CPU](INCREMENTO-4-CPU-SMOKE.md).

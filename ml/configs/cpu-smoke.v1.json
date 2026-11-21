@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "purpose": "CPU_FIXTURE_SMOKE_ONLY",
+  "seed": 42,
+  "input_size": [64, 64],
+  "epochs": 1,
+  "learning_rate": 0.02,
+  "hierarchical_steps": 24,
+  "hierarchical_learning_rate": 0.01
+}

@@ -27,6 +27,8 @@ from app.domain.models import (
     PublicationPolicy,
 )
 from app.infrastructure.quarantine import record_audit_log
+from app.infrastructure.publication_policy import lock_publication_policy
+from app.infrastructure.pilot_policy_evidence import verify_pilot_policy_evidence
 
 logger = logging.getLogger("diagnosis.policy")
 
@@ -147,6 +149,8 @@ def import_publication_policy(
     reason: str,
     policy_data: dict,
     apply: bool = False,
+    release_bundle_path: Optional[Path] = None,
+    g2_approval_path: Optional[Path] = None,
 ) -> dict:
     """Imports an immutable publication policy into the database.
 
@@ -160,6 +164,13 @@ def import_publication_policy(
     is_valid, err = validate_publication_policy_payload(policy_data)
     if not is_valid:
         raise ValueError(f"POLICY_VALIDATION_ERROR: {err}")
+
+    evidence = None
+    if policy_data["governance"]["g0_protocol_version"] == "1.2.0":
+        if release_bundle_path is None or g2_approval_path is None:
+            raise ValueError("EVIDENCE_MISSING: bundle y acta G2 obligatorios para el piloto")
+        evidence = verify_pilot_policy_evidence(
+            policy_data, release_bundle_path, g2_approval_path)
 
     policy_id = uuid.UUID(policy_data["policy_id"])
     target_model = policy_data["target_model"]
@@ -192,6 +203,7 @@ def import_publication_policy(
         "target_model": target_model,
         "approved_classes_count": len(policy_data["approved_classes"]),
         "governance": policy_data["governance"],
+        "verified_evidence": evidence,
     }
 
     if apply:
@@ -211,6 +223,7 @@ def import_publication_policy(
                 "model_version": policy_entry.model_version,
                 "dataset_version": policy_entry.dataset_version,
                 "bundle_digest": policy_entry.bundle_digest,
+                "g2_evidence": evidence,
             },
         )
         db.commit()
@@ -236,6 +249,8 @@ def activate_publication_policy(
     if not reason or not reason.strip():
         raise ValueError("Operator context required: --reason cannot be blank.")
 
+    if apply:
+        lock_publication_policy(db, exclusive=True)
     # Find the target policy
     stmt = select(PublicationPolicy).where(PublicationPolicy.id == policy_id)
     if apply and db.bind and db.bind.dialect.name == "postgresql":
@@ -260,6 +275,10 @@ def activate_publication_policy(
     }
 
     if apply:
+        problems = db.execute(select(Problem)).scalars().all()
+        missing = approved_classes - {problem.code for problem in problems}
+        if missing:
+            raise ValueError("CATALOG_CLASS_MISSING: " + ", ".join(sorted(missing)))
         # Deactivate all other policies
         active_policies = db.execute(
             select(PublicationPolicy).where(
@@ -270,13 +289,15 @@ def activate_publication_policy(
         for ap in active_policies:
             ap.active = False
             ap.retired_at = now
+        # Release the partial unique index slot before assigning the new active
+        # row; ORM flush order is otherwise not guaranteed.
+        db.flush()
 
         policy.active = True
         policy.activated_at = now
         policy.retired_at = None
 
         # Atomically update catalog problem support
-        problems = db.execute(select(Problem)).scalars().all()
         supported_problems = []
         for prob in problems:
             prob.model_supported = prob.code in approved_classes
@@ -322,6 +343,8 @@ def retire_publication_policy(
     if not reason or not reason.strip():
         raise ValueError("Operator context required: --reason cannot be blank.")
 
+    if apply:
+        lock_publication_policy(db, exclusive=True)
     stmt = select(PublicationPolicy)
     if policy_id is not None:
         stmt = stmt.where(PublicationPolicy.id == policy_id)

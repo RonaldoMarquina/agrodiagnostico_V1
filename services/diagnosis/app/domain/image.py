@@ -32,6 +32,7 @@ class ValidatedImage:
     extension: str
     width: int
     height: int
+    identified_crop: Optional[str] = None
 
 
 def _is_heic_or_heif(header: bytes) -> bool:
@@ -169,17 +170,21 @@ class _MultipartReceiver:
         self.current_field_name: Optional[str] = None
         self.spool = tempfile.SpooledTemporaryFile(max_size=1024 * 1024)
         self.file_bytes = 0
+        self.identified_crop: Optional[str] = None
+        self.field_bytes = bytearray()
         self.header_field = b""
         self.header_value = b""
 
     def on_part_begin(self):
         self.parts_count += 1
-        if self.parts_count > 1:
+        if self.parts_count > 2:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail={"code": "INVALID_REQUEST", "message": "Solo se permite una parte multipart (image)."},
+                detail={"code": "INVALID_REQUEST", "message": "Demasiadas partes multipart."},
             )
         self.current_field_name = None
+        self.is_file = False
+        self.field_bytes = bytearray()
         self.header_field = b""
         self.header_value = b""
 
@@ -200,15 +205,22 @@ class _MultipartReceiver:
         self.header_value = b""
 
     def on_headers_finished(self):
-        if self.current_field_name != "image" or not self.is_file:
+        if self.current_field_name == "identified_crop" and not self.is_file and self.identified_crop is None:
+            return
+        if self.current_field_name != "image" or not self.is_file or self.has_image_part:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail={"code": "INVALID_REQUEST", "message": "Campo multipart no permitido o diferente de 'image'."},
+                detail={"code": "INVALID_REQUEST", "message": "Campo multipart no permitido o duplicado."},
             )
         self.has_image_part = True
 
     def on_part_data(self, data: bytes, start: int, end: int):
         chunk = data[start:end]
+        if self.current_field_name == "identified_crop":
+            self.field_bytes.extend(chunk)
+            if len(self.field_bytes) > 16:
+                raise HTTPException(400, detail={"code": "INVALID_REQUEST", "message": "identified_crop inválido."})
+            return
         self.file_bytes += len(chunk)
         if self.file_bytes > MAX_FILE_BYTES:
             raise HTTPException(
@@ -219,7 +231,10 @@ class _MultipartReceiver:
         self.spool.write(chunk)
 
     def on_part_end(self):
-        pass
+        if self.current_field_name == "identified_crop":
+            if self.field_bytes != b"POTATO":
+                raise HTTPException(400, detail={"code": "INVALID_REQUEST", "message": "El piloto solo acepta identified_crop=POTATO."})
+            self.identified_crop = "POTATO"
 
     def on_end(self):
         self.finished = True
@@ -305,4 +320,6 @@ async def parse_multipart_image(request: Request) -> ValidatedImage:
     finally:
         receiver.close()
 
-    return validate_image_bytes(data)
+    validated = validate_image_bytes(data)
+    validated.identified_crop = receiver.identified_crop
+    return validated

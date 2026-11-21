@@ -7,23 +7,23 @@
       "source_label": "Potato___healthy",
       "status": "PROVISIONAL",
       "reference": "https://github.com/spMohanty/PlantVillage-Dataset/tree/7f7ecc7e1eaca78107e3affe7cb5abd9427e139a/raw/color",
-      "note": "Correspondencia lexical candidata, requiere revisión; no aprueba diagnóstico ni entrenamiento."
+      "note": "Correspondencia lexical candidata, requiere revisión; no aprueba diagnóstico ni entrenamiento. Referencia histórica, excluida del piloto G0 v1.2.0."
     },
     {
       "source": "plantvillage",
       "class_code": "POTATO_EARLY_BLIGHT",
       "source_label": "Potato___Early_blight",
-      "status": "PROVISIONAL",
+      "status": "APPROVED",
       "reference": "https://github.com/spMohanty/PlantVillage-Dataset/tree/7f7ecc7e1eaca78107e3affe7cb5abd9427e139a/raw/color",
-      "note": "Correspondencia lexical candidata, requiere revisión; no aprueba diagnóstico ni entrenamiento."
+      "note": "Equivalencia de la etiqueta específica de PlantVillage; procedencia experta de la fuente y control interno de calidad. No implica rendimiento del modelo."
     },
     {
       "source": "plantvillage",
       "class_code": "POTATO_LATE_BLIGHT",
       "source_label": "Potato___Late_blight",
-      "status": "PROVISIONAL",
+      "status": "APPROVED",
       "reference": "https://github.com/spMohanty/PlantVillage-Dataset/tree/7f7ecc7e1eaca78107e3affe7cb5abd9427e139a/raw/color",
-      "note": "Correspondencia lexical candidata, requiere revisión; no aprueba diagnóstico ni entrenamiento."
+      "note": "Equivalencia de la etiqueta específica de PlantVillage; procedencia experta de la fuente y control interno de calidad. No implica rendimiento del modelo."
     },
     {
       "source": "plantvillage",
@@ -31,7 +31,7 @@
       "source_label": "Corn_(maize)___healthy",
       "status": "PROVISIONAL",
       "reference": "https://github.com/spMohanty/PlantVillage-Dataset/tree/7f7ecc7e1eaca78107e3affe7cb5abd9427e139a/raw/color",
-      "note": "Correspondencia lexical candidata, requiere revisión; no aprueba diagnóstico ni entrenamiento."
+      "note": "Correspondencia lexical candidata, requiere revisión; no aprueba diagnóstico ni entrenamiento. Referencia histórica, excluida del piloto G0 v1.2.0."
     },
     {
       "source": "plantvillage",
@@ -39,7 +39,7 @@
       "source_label": "Corn_(maize)___Common_rust_",
       "status": "PROVISIONAL",
       "reference": "https://github.com/spMohanty/PlantVillage-Dataset/tree/7f7ecc7e1eaca78107e3affe7cb5abd9427e139a/raw/color",
-      "note": "Correspondencia lexical candidata, requiere revisión; no aprueba diagnóstico ni entrenamiento."
+      "note": "Correspondencia lexical candidata, requiere revisión; no aprueba diagnóstico ni entrenamiento. Referencia histórica, excluida del piloto G0 v1.2.0."
     },
     {
       "source": "plantvillage",
@@ -47,7 +47,7 @@
       "source_label": "Corn_(maize)___Northern_Leaf_Blight",
       "status": "PROVISIONAL",
       "reference": "https://github.com/spMohanty/PlantVillage-Dataset/tree/7f7ecc7e1eaca78107e3affe7cb5abd9427e139a/raw/color",
-      "note": "Correspondencia lexical candidata, requiere revisión; no aprueba diagnóstico ni entrenamiento."
+      "note": "Correspondencia lexical candidata, requiere revisión; no aprueba diagnóstico ni entrenamiento. Referencia histórica, excluida del piloto G0 v1.2.0."
     },
     {
       "source": "plantvillage",
@@ -55,7 +55,7 @@
       "source_label": "Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot",
       "status": "PROVISIONAL",
       "reference": "https://github.com/spMohanty/PlantVillage-Dataset/tree/7f7ecc7e1eaca78107e3affe7cb5abd9427e139a/raw/color",
-      "note": "Correspondencia lexical candidata, requiere revisión; no aprueba diagnóstico ni entrenamiento."
+      "note": "Correspondencia lexical candidata, requiere revisión; no aprueba diagnóstico ni entrenamiento. Referencia histórica, excluida del piloto G0 v1.2.0."
     },
     {
       "source": "plantdoc",
@@ -63,7 +63,7 @@
       "source_label": null,
       "status": "UNMAPPED",
       "reference": "https://github.com/pratikkayal/PlantDoc-Dataset/tree/5467f6012d78d1c446145d5f582da6096f852ae8/train",
-      "note": "Etiqueta no encontrada en metadatos examinados; no prueba ausencia universal de la clase."
+      "note": "Etiqueta no encontrada en metadatos examinados; no prueba ausencia universal de la clase. Referencia histórica, excluida del piloto G0 v1.2.0."
     },
     {
       "source": "plantdoc",
@@ -87,23 +87,23 @@
       "source_label": null,
       "status": "UNMAPPED",
       "reference": "https://github.com/pratikkayal/PlantDoc-Dataset/tree/5467f6012d78d1c446145d5f582da6096f852ae8/train",
-      "note": "Etiqueta no encontrada en metadatos examinados; no prueba ausencia universal de la clase."
+      "note": "Etiqueta no encontrada en metadatos examinados; no prueba ausencia universal de la clase. Referencia histórica, excluida del piloto G0 v1.2.0."
     },
     {
       "source": "plantdoc",
       "class_code": "MAIZE_COMMON_RUST",
       "source_label": "Corn rust leaf",
-      "status": "PROVISIONAL",
+      "status": "UNMAPPED",
       "reference": "https://github.com/pratikkayal/PlantDoc-Dataset/tree/5467f6012d78d1c446145d5f582da6096f852ae8/train",
-      "note": "Correspondencia lexical candidata, requiere revisión; no aprueba diagnóstico ni entrenamiento."
+      "note": "Roya genérica: sin mapeo automático a roya común. Excluir hasta revisión agronómica de la etiqueta y de cada imagen. Referencia histórica, excluida del piloto G0 v1.2.0."
     },
     {
       "source": "plantdoc",
       "class_code": "MAIZE_LEAF_BLIGHT",
       "source_label": "Corn leaf blight",
-      "status": "PROVISIONAL",
+      "status": "UNMAPPED",
       "reference": "https://github.com/pratikkayal/PlantDoc-Dataset/tree/5467f6012d78d1c446145d5f582da6096f852ae8/train",
-      "note": "Correspondencia lexical candidata, requiere revisión; no aprueba diagnóstico ni entrenamiento."
+      "note": "Tizón genérico: sin mapeo automático a tizón foliar del norte. Excluir hasta revisión agronómica de la etiqueta y de cada imagen. Referencia histórica, excluida del piloto G0 v1.2.0."
     },
     {
       "source": "plantdoc",
@@ -111,7 +111,7 @@
       "source_label": "Corn Gray leaf spot",
       "status": "PROVISIONAL",
       "reference": "https://github.com/pratikkayal/PlantDoc-Dataset/tree/5467f6012d78d1c446145d5f582da6096f852ae8/train",
-      "note": "Correspondencia lexical candidata, requiere revisión; no aprueba diagnóstico ni entrenamiento."
+      "note": "Correspondencia lexical candidata, requiere revisión; no aprueba diagnóstico ni entrenamiento. Referencia histórica, excluida del piloto G0 v1.2.0."
     },
     {
       "source": "plantseg",
@@ -119,7 +119,7 @@
       "source_label": null,
       "status": "UNMAPPED",
       "reference": "https://github.com/tqwei05/PlantSeg/blob/1a3dd4d9224bcc97a5850af7dd1c423abc24eae0/mmseg/datasets/plantseg115.py",
-      "note": "Etiqueta no encontrada en metadatos examinados; no prueba ausencia universal de la clase."
+      "note": "Etiqueta no encontrada en metadatos examinados; no prueba ausencia universal de la clase. Referencia histórica, excluida del piloto G0 v1.2.0."
     },
     {
       "source": "plantseg",
@@ -143,15 +143,15 @@
       "source_label": null,
       "status": "UNMAPPED",
       "reference": "https://github.com/tqwei05/PlantSeg/blob/1a3dd4d9224bcc97a5850af7dd1c423abc24eae0/mmseg/datasets/plantseg115.py",
-      "note": "Etiqueta no encontrada en metadatos examinados; no prueba ausencia universal de la clase."
+      "note": "Etiqueta no encontrada en metadatos examinados; no prueba ausencia universal de la clase. Referencia histórica, excluida del piloto G0 v1.2.0."
     },
     {
       "source": "plantseg",
       "class_code": "MAIZE_COMMON_RUST",
       "source_label": "corn rust",
-      "status": "PROVISIONAL",
+      "status": "UNMAPPED",
       "reference": "https://github.com/tqwei05/PlantSeg/blob/1a3dd4d9224bcc97a5850af7dd1c423abc24eae0/mmseg/datasets/plantseg115.py",
-      "note": "Correspondencia lexical candidata, requiere revisión; no aprueba diagnóstico ni entrenamiento."
+      "note": "Roya genérica: sin mapeo automático a roya común. Excluir hasta revisión agronómica de la etiqueta y de cada imagen. Referencia histórica, excluida del piloto G0 v1.2.0."
     },
     {
       "source": "plantseg",
@@ -159,7 +159,7 @@
       "source_label": "corn northern leaf blight",
       "status": "PROVISIONAL",
       "reference": "https://github.com/tqwei05/PlantSeg/blob/1a3dd4d9224bcc97a5850af7dd1c423abc24eae0/mmseg/datasets/plantseg115.py",
-      "note": "Correspondencia lexical candidata, requiere revisión; no aprueba diagnóstico ni entrenamiento."
+      "note": "Correspondencia lexical candidata, requiere revisión; no aprueba diagnóstico ni entrenamiento. Referencia histórica, excluida del piloto G0 v1.2.0."
     },
     {
       "source": "plantseg",
@@ -167,7 +167,8 @@
       "source_label": "corn gray leaf spot",
       "status": "PROVISIONAL",
       "reference": "https://github.com/tqwei05/PlantSeg/blob/1a3dd4d9224bcc97a5850af7dd1c423abc24eae0/mmseg/datasets/plantseg115.py",
-      "note": "Correspondencia lexical candidata, requiere revisión; no aprueba diagnóstico ni entrenamiento."
+      "note": "Correspondencia lexical candidata, requiere revisión; no aprueba diagnóstico ni entrenamiento. Referencia histórica, excluida del piloto G0 v1.2.0."
     }
-  ]
+  ],
+  "active_protocol_version": "1.2.0"
 }

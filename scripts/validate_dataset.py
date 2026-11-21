@@ -14,6 +14,7 @@ from jsonschema import Draft202012Validator
 ROOT = Path(__file__).resolve().parents[1]
 BASE = ROOT / 'ml/manifests'
 PARTITIONS = ('TRAIN', 'VAL', 'TEST', 'EXTERNAL')
+sys.path.insert(0, str(ROOT / 'ml/src'))
 
 
 class InventoryError(ValueError):
@@ -207,9 +208,12 @@ def validate_taxonomy_v2(taxonomy, schema):
     require('NO_CONCLUYENTE' not in codes, 'NO_CONCLUYENTE no es clase')
     retired = taxonomy.get('retired_codes')
     require(isinstance(retired, list) and not set(codes) & set(retired), 'código retirado reciclado')
+    require(taxonomy.get('active_protocol_version') == '1.2.0', 'taxonomía v2: protocolo activo inválido')
+    require(taxonomy.get('pilot_candidate_codes') == ['POTATO_EARLY_BLIGHT', 'POTATO_LATE_BLIGHT'], 'taxonomía v2: clases piloto inválidas')
     for c in classes:
         require(c['crop_code'] in ('POTATO', 'MAIZE') and c['class_code'].startswith(c['crop_code']+'_'), 'taxonomía: cultivo incompatible')
-        require(c.get('status') == 'CANDIDATE', 'inventario no acredita soporte definitivo')
+        expected_status = 'CANDIDATE' if c['class_code'] in taxonomy['pilot_candidate_codes'] else 'OUT_OF_SCOPE_PILOT'
+        require(c.get('status') == expected_status, 'taxonomía v2: alcance piloto inválido')
         require(c.get('definition_status') in ('PENDING_REVIEW', 'REVIEWED'), 'estado de revisión inválido')
         require(nonempty(c.get('name')) and nonempty(c.get('definition')) and nonempty(c.get('definition_note')), 'definición incompleta')
     return {c['class_code']: c for c in classes}
@@ -247,34 +251,82 @@ def validate_inventory_v2(base=BASE):
     return schema, classes, sources
 
 
-def validate_manifest_v2(path, schema, classes, sources, images_dir=None, synthetic=False, allow_empty=True):
+def validate_manifest_v2(path, schema, classes, sources, images_dir=None, synthetic=False,
+                         allow_empty=True, evidence_path=None, mappings=None):
+    require(not synthetic, 'validador v2 real no admite fixtures')
     count = validate_manifest(path, schema, classes, sources, synthetic=synthetic, allow_empty=allow_empty)
-    if count and not synthetic:
+    if count:
+        require(images_dir is not None and evidence_path is not None,
+                'manifiesto no vacío exige --images-dir y --evidence privados')
+        from agro_ml.data.g1_evidence import load_evidence, validate_image_evidence
+        evidence, evidence_root = load_evidence(evidence_path)
+        mapping_rows = mappings if mappings is not None else read_json(BASE / 'label-mappings.v2.json')['mappings']
         with Path(path).open(newline='', encoding='utf-8') as handle:
-            for row in csv.DictReader(handle):
-                require(classes[row['class_code']].get('definition_status') == 'REVIEWED', 'definición pendiente de revisión')
-    if images_dir and count > 0:
-        images_dir = Path(images_dir)
-        require(images_dir.is_dir(), f'Directorio de imágenes no encontrado: {images_dir}')
-        try:
-            from PIL import Image
-        except ImportError:
-            Image = None
-        require(Image is not None, 'Pillow requerido para verificación de bytes de imágenes')
-
-        with Path(path).open(newline='') as stream:
-            reader = csv.DictReader(stream)
-            for line, row in enumerate(reader, 2):
-                img_path = images_dir / f"{row['image_id']}.jpg"
-                if not img_path.is_file():
-                    img_path = images_dir / f"{row['image_id']}.png"
-                require(img_path.is_file(), f"fila {line}: imagen no encontrada en disco: {img_path}")
-                raw_bytes = img_path.read_bytes()
-                computed_hash = hashlib.sha256(raw_bytes).hexdigest().lower()
-                require(computed_hash == row['sha256'].lower(), f"fila {line}: hash de bytes no coincide con {computed_hash}")
-                with Image.open(img_path) as img:
-                    img.verify()
+            rows = list(csv.DictReader(handle))
+        for row in rows:
+            if not synthetic:
+                require(classes[row['class_code']].get('definition_status') == 'REVIEWED',
+                        'definición pendiente de revisión')
+            record = evidence.get(row['image_id'])
+            require(record is not None, f"{row['image_id']}: falta decisión privada por imagen")
+            label = record.get('source_label')
+            require(any(m.get('source') == row['source'] and m.get('class_code') == row['class_code']
+                        and m.get('source_label') == label and m.get('status') == 'APPROVED'
+                        for m in mapping_rows), f"{row['image_id']}: equivalencia de etiqueta no aprobada")
+            try:
+                validate_image_evidence(row, record, evidence_root, images_dir,
+                                        sources[row['source']])
+            except (ValueError, OSError) as exc:
+                raise InventoryError(str(exc)) from exc
     return count
+
+
+def validate_negative_manifest_v2(path, positive_path, sources, images_dir=None,
+                                  evidence_path=None, allow_empty=True):
+    from agro_ml.data.g1_evidence import load_evidence, validate_image_evidence
+    from agro_ml.data.negatives import load_negatives_manifest, validate_negatives
+    records = load_negatives_manifest(path)
+    with Path(positive_path).open(newline='', encoding='utf-8') as handle:
+        positives = list(csv.DictReader(handle))
+    count = validate_negatives(records, positive_records=positives, allow_empty=allow_empty)
+    if count:
+        require(images_dir is not None and evidence_path is not None,
+                'negativos no vacíos exigen --images-dir y --evidence privados')
+        evidence, evidence_root = load_evidence(evidence_path)
+        for record in records:
+            row = record.to_dict()
+            require(row['source'] in sources, f"{row['image_id']}: fuente negativa desconocida")
+            try:
+                validate_image_evidence(row, evidence.get(row['image_id']), evidence_root,
+                                        images_dir, sources[row['source']], negative=True)
+            except (ValueError, OSError) as exc:
+                raise InventoryError(str(exc)) from exc
+    return count
+
+
+def build_g1_validation_report(positive_path, negative_path, evidence_path, positive_count,
+                               negative_count):
+    """Count only rows whose bytes and private evidence have already passed validation."""
+    from collections import Counter
+    with Path(positive_path).open(newline='', encoding='utf-8') as stream:
+        positives = list(csv.DictReader(stream))
+    with Path(negative_path).open(newline='', encoding='utf-8') as stream:
+        negatives = list(csv.DictReader(stream))
+    require(len(positives) == positive_count and len(negatives) == negative_count,
+            'conteos de reporte no coinciden con validación')
+    return {
+        'schema_version': 1,
+        'status': 'VALIDATED_ROWS_NOT_G1_APPROVAL',
+        'positive_manifest_sha256': hashlib.sha256(Path(positive_path).read_bytes()).hexdigest(),
+        'negative_manifest_sha256': hashlib.sha256(Path(negative_path).read_bytes()).hexdigest(),
+        'evidence_sha256': hashlib.sha256(Path(evidence_path).read_bytes()).hexdigest() if evidence_path else None,
+        'positive_count': positive_count,
+        'negative_count': negative_count,
+        'positive_by_class': dict(sorted(Counter(r['class_code'] for r in positives).items())),
+        'positive_by_context': dict(sorted(Counter(r['capture_context'] for r in positives).items())),
+        'negative_by_category': dict(sorted(Counter(r['negative_category'] for r in negatives).items())),
+        'negative_by_context': dict(sorted(Counter(r['capture_context'] for r in negatives).items())),
+    }
 
 
 def main():
@@ -282,20 +334,35 @@ def main():
     parser.add_argument('--manifest', type=Path, help='CSV real ya autorizado; un archivo vacío no pasa')
     parser.add_argument('--v2', action='store_true', help='Validar inventario y manifiestos versión 2')
     parser.add_argument('--images-dir', type=Path, help='Directorio opcional para comprobar bytes locales reales contra SHA-256')
+    parser.add_argument('--evidence', type=Path, help='Registro privado G1 con permisos y revisión por imagen')
+    parser.add_argument('--negative-manifest', type=Path, help='CSV separado de negativos autorizados')
+    parser.add_argument('--report', type=Path, help='Escribir reporte privado de conteos y hashes validados (archivo nuevo)')
     args = parser.parse_args()
     try:
         is_v2 = args.v2 or (args.manifest and 'v2' in str(args.manifest))
         if is_v2:
             schema, classes, sources = validate_inventory_v2()
             manifest_path = args.manifest or BASE/'images.v2.csv'
-            count = validate_manifest_v2(manifest_path, schema, classes, sources, images_dir=args.images_dir, allow_empty=args.manifest is None)
+            count = validate_manifest_v2(manifest_path, schema, classes, sources,
+                                         images_dir=args.images_dir, evidence_path=args.evidence,
+                                         allow_empty=args.manifest is None)
+            negative_path = args.negative_manifest or BASE/'negatives.v2.csv'
+            negative_count = validate_negative_manifest_v2(
+                negative_path, manifest_path, sources, images_dir=args.images_dir,
+                evidence_path=args.evidence, allow_empty=args.negative_manifest is None)
+            if args.report:
+                report = build_g1_validation_report(manifest_path, negative_path, args.evidence,
+                                                    count, negative_count)
+                with args.report.open('x', encoding='utf-8') as stream:
+                    json.dump(report, stream, indent=2, sort_keys=True)
+                    stream.write('\n')
             admitted = sum(s['eligibility'] == 'ELIGIBLE' for s in sources.values())
             reviewed = sum(c['definition_status'] == 'REVIEWED' for c in classes.values())
-            print(f'PASS dataset inventory v2: {len(sources)} fuentes ({admitted} elegibles), {len(classes)} clases ({reviewed} revisadas); filas reales={count}; validación estructural, no aprobación')
+            print(f'PASS dataset inventory v2: {len(sources)} fuentes ({admitted} elegibles), {len(classes)} clases ({reviewed} revisadas); positivos={count}; negativos={negative_count}; validación de evidencia, no aprobación científica')
         else:
             schema, classes, sources = validate_inventory()
             count = validate_manifest(args.manifest or BASE/'images.v1.csv', schema, classes, sources, allow_empty=args.manifest is None)
-            print(f'PASS dataset inventory: 3 fuentes, 7 clases candidatas, 21 mapeos; filas reales={count}; sin entrenamiento')
+            print(f'PASS dataset inventory: 3 fuentes, 7 códigos históricos y 2 clases candidatas del piloto, 21 mapeos; filas reales={count}; sin entrenamiento')
         return 0
     except (InventoryError, ValueError, KeyError, TypeError, OSError) as error:
         print(f'FAIL dataset: {error}', file=sys.stderr)

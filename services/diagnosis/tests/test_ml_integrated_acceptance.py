@@ -1,4 +1,4 @@
-"""Suite de aceptación integrada y matriz de fallos para Incremento 4 (Tareas 9.1 y 9.2).
+"""Suite sintética de integración para el Incremento 4; no acredita G2 ni G3.
 
 Verifica conforme a ADR-0009, D1–D7 y las puertas de gobernanza G2 y G3:
 Tarea 9.1 (Aceptación integrada con release real y catálogo revisado):
@@ -194,11 +194,11 @@ class TestMLIntegratedAcceptance(unittest.TestCase):
         cls.client = TestClient(main_app)
         cls.consumer = DiagnosisAnalyzedConsumer(db_session_factory=cls.SessionLocal)
 
-        # Configurar release bundle y política G2 verificada
-        cls._setup_g2_release_and_policy()
-
-        # Seed catalog
+        # La activación exige que las clases ya existan en el catálogo.
         cls._seed_reviewed_catalog()
+
+        # Bundle y política son fixtures; la prueba real G3 es separada.
+        cls._setup_g2_release_and_policy()
 
     @classmethod
     def _setup_g2_release_and_policy(cls):
@@ -251,7 +251,7 @@ class TestMLIntegratedAcceptance(unittest.TestCase):
         )
         bundle_obj["governance"] = {
             "g2_approval_id": "G2-VAL-2026-001",
-            "approved_by": "Comite Agronomico UNMSM",
+            "approved_by": "fixture-reviewer-not-a-real-approval",
             "approved_at": "2026-10-15T12:00:00Z",
         }
         cls.bundle_file.write_text(json.dumps(bundle_obj, indent=2), encoding="utf-8")
@@ -290,24 +290,24 @@ class TestMLIntegratedAcceptance(unittest.TestCase):
                 {"class_code": "POTATO_LATE_BLIGHT", "reason": "Excluido por falta de validación agronómica en campo"},
             ],
             g2_approval_reference="G2-VAL-2026-001",
-            approved_by="Docente Agronomo Revisor",
+            approved_by="fixture-reviewer-not-a-real-approval",
             output_policy_path=cls.policy_file,
         )
-        policy_obj["audit"]["imported_by"] = "Docente Agronomo Revisor"
+        policy_obj["audit"]["imported_by"] = "fixture-operator"
         cls.policy_file.write_text(json.dumps(policy_obj, indent=2), encoding="utf-8")
 
         # Importar y activar política en DB de Diagnosis
         session = cls.SessionLocal()
         import_publication_policy(
             db=session,
-            actor="Docente Revisor",
+            actor="fixture-operator",
             reason="Importacion G2 para aceptacion",
             policy_data=policy_obj,
             apply=True,
         )
         activate_publication_policy(
             db=session,
-            actor="Docente Revisor",
+            actor="fixture-operator",
             reason="Activacion G2 para aceptacion",
             policy_id=uuid.UUID(policy_obj["policy_id"]),
             apply=True,

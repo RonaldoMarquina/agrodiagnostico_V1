@@ -1,20 +1,20 @@
 {
   "openapi": "3.1.1",
   "info": {
-    "title": "AgroDiagn\u00f3stico diagnosis",
+    "title": "AgroDiagnóstico diagnosis",
     "version": "1.0.0",
-    "description": "Contrato de Diagnosis: operaciones de usuario, cat\u00e1logo e interfaces internas implementadas hasta el incremento 3; resultados sint\u00e9ticos solo en pruebas aisladas."
+    "description": "Contrato de Diagnosis: operaciones de usuario, catálogo e interfaces internas implementadas hasta el incremento 3; resultados sintéticos solo en pruebas aisladas."
   },
   "paths": {
     "/health/live": {
       "get": {
         "operationId": "diagnosis_live",
         "summary": "Salud live interna",
-        "description": "Solo red interna. No expuesta por proxy. Liveness no sondea dependencias. Readiness seg\u00fan D2; no acredita modelo cargado en incremento 0.",
+        "description": "Solo red interna. No expuesta por proxy. Liveness no sondea dependencias. Readiness según D2; no acredita modelo cargado en incremento 0.",
         "security": [],
         "responses": {
           "200": {
-            "description": "Salud t\u00e9cnica implementada; no acredita funcionalidad de negocio.",
+            "description": "Salud técnica implementada; no acredita funcionalidad de negocio.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -67,11 +67,11 @@
       "get": {
         "operationId": "diagnosis_ready",
         "summary": "Salud ready interna",
-        "description": "Solo red interna. No expuesta por proxy. Liveness no sondea dependencias. Readiness seg\u00fan D2; no acredita modelo cargado en incremento 0.",
+        "description": "Solo red interna. No expuesta por proxy. Liveness no sondea dependencias. Readiness según D2; no acredita modelo cargado en incremento 0.",
         "security": [],
         "responses": {
           "200": {
-            "description": "Salud t\u00e9cnica implementada; no acredita funcionalidad de negocio.",
+            "description": "Salud técnica implementada; no acredita funcionalidad de negocio.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -114,7 +114,7 @@
             }
           },
           "503": {
-            "description": "Dependencia indispensable o migraci\u00f3n/configuraci\u00f3n no disponible; sin detalles sensibles.",
+            "description": "Dependencia indispensable o migración/configuración no disponible; sin detalles sensibles.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -166,8 +166,8 @@
     "/api/v1/diagnoses": {
       "post": {
         "operationId": "diagnosis_create",
-        "summary": "Aceptar imagen para diagn\u00f3stico",
-        "description": "Validar bytes/decodificaci\u00f3n antes de guardar y de publicar evento; imagen agron\u00f3micamente insuficiente se analiza y puede abstenerse. No exige cultivo. Misma clave+bytes en mismo propietario/operaci\u00f3n durante 86400 s devuelve ID/created_at originales y estado actual; contenido distinto 409 IDEMPOTENCY_CONFLICT. Plazo desde primera aceptaci\u00f3n, no deslizante: now >= expires_at permite nueva solicitud. Otra cuenta tiene namespace independiente. Fingerprint SHA-256 de bytes de imagen exactos (no filename, MIME declarado ni boundary); no hay otros campos sem\u00e1nticos admitidos. Borrado l\u00f3gico durante retenci\u00f3n: replay 409 IDEMPOTENCY_RESOURCE_DELETED, nunca resucita. Operaci\u00f3n concurrente a\u00fan en curso:409 IDEMPOTENCY_IN_PROGRESS, reintento posterior.",
+        "summary": "Aceptar imagen para diagnóstico",
+        "description": "Validar bytes/decodificación antes de guardar y de publicar evento; imagen agronómicamente insuficiente se analiza y puede abstenerse. El piloto permite identified_crop=POTATO como identificación del usuario; es opcional en modo provisional y obligatorio antes de activar inferencia real. Misma clave+imagen+identificación de cultivo en mismo propietario/operación durante 86400 s devuelve ID/created_at originales y estado actual; contenido distinto 409 IDEMPOTENCY_CONFLICT. Plazo desde primera aceptación, no deslizante: now >= expires_at permite nueva solicitud. Otra cuenta tiene namespace independiente. Fingerprint SHA-256 de bytes exactos de imagen; si se declara POTATO, se deriva con ese código. No usa filename, MIME declarado ni boundary. Borrado lógico durante retención: replay 409 IDEMPOTENCY_RESOURCE_DELETED, nunca resucita. Operación concurrente aún en curso:409 IDEMPOTENCY_IN_PROGRESS, reintento posterior.",
         "security": [
           {
             "UserBearer": []
@@ -182,7 +182,7 @@
               "$ref": "../schemas/common.schema.json#/$defs/UUID"
             },
             "example": "11111111-1111-4111-8111-111111111111",
-            "description": "UUID del cliente o generado por servidor si falta; valor inv\u00e1lido 400; eco en respuesta."
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
           },
           {
             "name": "Idempotency-Key",
@@ -199,7 +199,7 @@
         ],
         "responses": {
           "202": {
-            "description": "Respuesta prevista; a\u00fan no implementada.",
+            "description": "Respuesta prevista; aún no implementada.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -230,7 +230,7 @@
             }
           },
           "400": {
-            "description": "Solicitud inv\u00e1lida.",
+            "description": "Solicitud inválida.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -254,14 +254,14 @@
                 },
                 "example": {
                   "code": "INVALID_REQUEST",
-                  "message": "Solicitud inv\u00e1lida.",
+                  "message": "Solicitud inválida.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
             }
           },
           "401": {
-            "description": "Autenticaci\u00f3n requerida o inv\u00e1lida.",
+            "description": "Autenticación requerida o inválida.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -285,14 +285,14 @@
                 },
                 "example": {
                   "code": "UNAUTHORIZED",
-                  "message": "Autenticaci\u00f3n requerida o inv\u00e1lida.",
+                  "message": "Autenticación requerida o inválida.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
             }
           },
           "409": {
-            "description": "La operaci\u00f3n entra en conflicto con el estado actual.",
+            "description": "La operación entra en conflicto con el estado actual.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -341,7 +341,7 @@
             }
           },
           "413": {
-            "description": "La imagen supera los l\u00edmites permitidos.",
+            "description": "La imagen supera los límites permitidos.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -365,7 +365,7 @@
                 },
                 "example": {
                   "code": "IMAGE_TOO_LARGE",
-                  "message": "La imagen supera los l\u00edmites permitidos.",
+                  "message": "La imagen supera los límites permitidos.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
@@ -458,7 +458,14 @@
                   "image": {
                     "type": "string",
                     "format": "binary",
-                    "description": "Bytes de archivo, no base64; un \u00fanico campo obligatorio. M\u00e1ximo 10485760 bytes y 24000000 p\u00edxeles decodificados."
+                    "description": "Bytes del archivo JPEG/PNG/WebP, máximo 10485760 bytes y 24000000 píxeles decodificados."
+                  },
+                  "identified_crop": {
+                    "type": "string",
+                    "enum": [
+                      "POTATO"
+                    ],
+                    "description": "Identificación declarada por el usuario para el piloto G0 v1.2.0. Opcional durante el modo provisional; obligatoria antes de activar inferencia real. No representa una predicción del modelo."
                   }
                 },
                 "required": [
@@ -514,7 +521,7 @@
       "get": {
         "operationId": "diagnosis_list",
         "summary": "Historial propio paginado",
-        "description": "Excluye borrado l\u00f3gico. Sin filtros adicionales en v1 inicial. Cursor inv\u00e1lido/ajeno 400 gen\u00e9rico, nunca revela propietario; orden created_at DESC, id DESC.",
+        "description": "Excluye borrado lógico. Sin filtros adicionales en v1 inicial. Cursor inválido/ajeno 400 genérico, nunca revela propietario; orden created_at DESC, id DESC.",
         "security": [
           {
             "UserBearer": []
@@ -529,7 +536,7 @@
               "$ref": "../schemas/common.schema.json#/$defs/UUID"
             },
             "example": "11111111-1111-4111-8111-111111111111",
-            "description": "UUID del cliente o generado por servidor si falta; valor inv\u00e1lido 400; eco en respuesta."
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
           },
           {
             "name": "limit",
@@ -551,12 +558,12 @@
               "maxLength": 2048
             },
             "example": "cursor-opaco-de-ejemplo",
-            "description": "Opaco, vinculado a propietario/filtros; inv\u00e1lido 400. Orden created_at DESC, id DESC; keyset, no offset."
+            "description": "Opaco, vinculado a propietario/filtros; inválido 400. Orden created_at DESC, id DESC; keyset, no offset."
           }
         ],
         "responses": {
           "200": {
-            "description": "Respuesta prevista; a\u00fan no implementada.",
+            "description": "Respuesta prevista; aún no implementada.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -592,7 +599,7 @@
             }
           },
           "400": {
-            "description": "Solicitud inv\u00e1lida.",
+            "description": "Solicitud inválida.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -616,14 +623,14 @@
                 },
                 "example": {
                   "code": "INVALID_REQUEST",
-                  "message": "Solicitud inv\u00e1lida.",
+                  "message": "Solicitud inválida.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
             }
           },
           "401": {
-            "description": "Autenticaci\u00f3n requerida o inv\u00e1lida.",
+            "description": "Autenticación requerida o inválida.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -647,7 +654,7 @@
                 },
                 "example": {
                   "code": "UNAUTHORIZED",
-                  "message": "Autenticaci\u00f3n requerida o inv\u00e1lida.",
+                  "message": "Autenticación requerida o inválida.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
@@ -663,7 +670,7 @@
       "get": {
         "operationId": "diagnosis_detail",
         "summary": "Detalle propio y estado",
-        "description": "Propietario autenticado; ajeno/inexistente/borrado 404 gen\u00e9rico. Estado terminal inmutable. Snapshot versionado solo en COMPLETADO; no presentar score como certeza.",
+        "description": "Propietario autenticado; ajeno/inexistente/borrado 404 genérico. Estado terminal inmutable. Snapshot versionado solo en COMPLETADO; no presentar score como certeza.",
         "security": [
           {
             "UserBearer": []
@@ -678,7 +685,7 @@
               "$ref": "../schemas/common.schema.json#/$defs/UUID"
             },
             "example": "11111111-1111-4111-8111-111111111111",
-            "description": "UUID del cliente o generado por servidor si falta; valor inv\u00e1lido 400; eco en respuesta."
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
           },
           {
             "name": "id",
@@ -692,7 +699,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Respuesta prevista; a\u00fan no implementada.",
+            "description": "Respuesta prevista; aún no implementada.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -814,7 +821,7 @@
             }
           },
           "400": {
-            "description": "Solicitud inv\u00e1lida.",
+            "description": "Solicitud inválida.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -838,14 +845,14 @@
                 },
                 "example": {
                   "code": "INVALID_REQUEST",
-                  "message": "Solicitud inv\u00e1lida.",
+                  "message": "Solicitud inválida.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
             }
           },
           "401": {
-            "description": "Autenticaci\u00f3n requerida o inv\u00e1lida.",
+            "description": "Autenticación requerida o inválida.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -869,7 +876,7 @@
                 },
                 "example": {
                   "code": "UNAUTHORIZED",
-                  "message": "Autenticaci\u00f3n requerida o inv\u00e1lida.",
+                  "message": "Autenticación requerida o inválida.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
@@ -913,8 +920,8 @@
       },
       "delete": {
         "operationId": "diagnosis_delete",
-        "summary": "Borrar l\u00f3gicamente del historial propio",
-        "description": "Primera y sucesivas eliminaciones del mismo recurso propio204; conservar tombstone para autorizaci\u00f3n. Ajeno/nunca existente404. No equivale a cancelar ni revierte terminal; trabajos admitidos pueden terminar ocultos. Retenci\u00f3n f\u00edsica pendiente de pol\u00edtica de datos.",
+        "summary": "Borrar lógicamente del historial propio",
+        "description": "Primera y sucesivas eliminaciones del mismo recurso propio204; conservar tombstone para autorización. Ajeno/nunca existente404. No equivale a cancelar ni revierte terminal; trabajos admitidos pueden terminar ocultos. Retención física pendiente de política de datos.",
         "security": [
           {
             "UserBearer": []
@@ -929,7 +936,7 @@
               "$ref": "../schemas/common.schema.json#/$defs/UUID"
             },
             "example": "11111111-1111-4111-8111-111111111111",
-            "description": "UUID del cliente o generado por servidor si falta; valor inv\u00e1lido 400; eco en respuesta."
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
           },
           {
             "name": "id",
@@ -943,7 +950,7 @@
         ],
         "responses": {
           "204": {
-            "description": "Respuesta prevista; a\u00fan no implementada.",
+            "description": "Respuesta prevista; aún no implementada.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -962,7 +969,7 @@
             }
           },
           "400": {
-            "description": "Solicitud inv\u00e1lida.",
+            "description": "Solicitud inválida.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -986,14 +993,14 @@
                 },
                 "example": {
                   "code": "INVALID_REQUEST",
-                  "message": "Solicitud inv\u00e1lida.",
+                  "message": "Solicitud inválida.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
             }
           },
           "401": {
-            "description": "Autenticaci\u00f3n requerida o inv\u00e1lida.",
+            "description": "Autenticación requerida o inválida.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -1017,7 +1024,7 @@
                 },
                 "example": {
                   "code": "UNAUTHORIZED",
-                  "message": "Autenticaci\u00f3n requerida o inv\u00e1lida.",
+                  "message": "Autenticación requerida o inválida.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
@@ -1064,7 +1071,7 @@
       "post": {
         "operationId": "diagnosis_cancel",
         "summary": "Cancelar solo antes del reclamo",
-        "description": "Transici\u00f3n at\u00f3mica PENDIENTE\u2192CANCELADO. PROCESANDO o cualquier terminal (incluido CANCELADO)409. Ajeno/inexistente/borrado404. No emite DiagnosisFinished.",
+        "description": "Transición atómica PENDIENTE→CANCELADO. PROCESANDO o cualquier terminal (incluido CANCELADO)409. Ajeno/inexistente/borrado404. No emite DiagnosisFinished.",
         "security": [
           {
             "UserBearer": []
@@ -1079,7 +1086,7 @@
               "$ref": "../schemas/common.schema.json#/$defs/UUID"
             },
             "example": "11111111-1111-4111-8111-111111111111",
-            "description": "UUID del cliente o generado por servidor si falta; valor inv\u00e1lido 400; eco en respuesta."
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
           },
           {
             "name": "id",
@@ -1093,7 +1100,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Respuesta prevista; a\u00fan no implementada.",
+            "description": "Respuesta prevista; aún no implementada.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -1125,7 +1132,7 @@
             }
           },
           "400": {
-            "description": "Solicitud inv\u00e1lida.",
+            "description": "Solicitud inválida.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -1149,14 +1156,14 @@
                 },
                 "example": {
                   "code": "INVALID_REQUEST",
-                  "message": "Solicitud inv\u00e1lida.",
+                  "message": "Solicitud inválida.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
             }
           },
           "401": {
-            "description": "Autenticaci\u00f3n requerida o inv\u00e1lida.",
+            "description": "Autenticación requerida o inválida.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -1180,7 +1187,7 @@
                 },
                 "example": {
                   "code": "UNAUTHORIZED",
-                  "message": "Autenticaci\u00f3n requerida o inv\u00e1lida.",
+                  "message": "Autenticación requerida o inválida.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
@@ -1218,7 +1225,7 @@
             }
           },
           "409": {
-            "description": "La operaci\u00f3n entra en conflicto con el estado actual.",
+            "description": "La operación entra en conflicto con el estado actual.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -1242,7 +1249,7 @@
                 },
                 "example": {
                   "code": "CONFLICT",
-                  "message": "La operaci\u00f3n entra en conflicto con el estado actual.",
+                  "message": "La operación entra en conflicto con el estado actual.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
@@ -1257,8 +1264,8 @@
     "/internal/diagnoses/{id}/claim": {
       "post": {
         "operationId": "diagnosis_claim",
-        "summary": "Reclamar at\u00f3micamente trabajo",
-        "description": "Solo principal ai_inference; lease_owner lo deriva el servidor de identidad/instancia verificada. PENDIENTE\u2192PROCESANDO o recuperaci\u00f3n de PROCESANDO con lease vencido y presupuesto disponible; nuevo UUID de fencing. Vigente/terminal409. Duraci\u00f3n configurable: expires_at es autoridad, no duraci\u00f3n del ejemplo. CANCELADO nunca reclamable. El 409 terminal incluye details con field=status y code=TERMINAL; los dem\u00e1s conflictos conservan posibilidad de recuperaci\u00f3n y no autorizan descartar la entrega.",
+        "summary": "Reclamar atómicamente trabajo",
+        "description": "Solo principal ai_inference; lease_owner lo deriva el servidor de identidad/instancia verificada. PENDIENTE→PROCESANDO o recuperación de PROCESANDO con lease vencido y presupuesto disponible; nuevo UUID de fencing. Vigente/terminal409. Duración configurable: expires_at es autoridad, no duración del ejemplo. CANCELADO nunca reclamable. El 409 terminal incluye details con field=status y code=TERMINAL; los demás conflictos conservan posibilidad de recuperación y no autorizan descartar la entrega.",
         "security": [
           {
             "ServiceBearer": []
@@ -1273,7 +1280,7 @@
               "$ref": "../schemas/common.schema.json#/$defs/UUID"
             },
             "example": "11111111-1111-4111-8111-111111111111",
-            "description": "UUID del cliente o generado por servidor si falta; valor inv\u00e1lido 400; eco en respuesta."
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
           },
           {
             "name": "id",
@@ -1318,7 +1325,7 @@
             }
           },
           "400": {
-            "description": "Solicitud inv\u00e1lida.",
+            "description": "Solicitud inválida.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -1342,14 +1349,14 @@
                 },
                 "example": {
                   "code": "INVALID_REQUEST",
-                  "message": "Solicitud inv\u00e1lida.",
+                  "message": "Solicitud inválida.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
             }
           },
           "401": {
-            "description": "Autenticaci\u00f3n requerida o inv\u00e1lida.",
+            "description": "Autenticación requerida o inválida.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -1373,14 +1380,14 @@
                 },
                 "example": {
                   "code": "UNAUTHORIZED",
-                  "message": "Autenticaci\u00f3n requerida o inv\u00e1lida.",
+                  "message": "Autenticación requerida o inválida.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
             }
           },
           "403": {
-            "description": "Operaci\u00f3n no autorizada.",
+            "description": "Operación no autorizada.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -1404,7 +1411,7 @@
                 },
                 "example": {
                   "code": "FORBIDDEN",
-                  "message": "Operaci\u00f3n no autorizada.",
+                  "message": "Operación no autorizada.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
@@ -1442,7 +1449,7 @@
             }
           },
           "409": {
-            "description": "La operaci\u00f3n entra en conflicto con el estado actual.",
+            "description": "La operación entra en conflicto con el estado actual.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -1466,7 +1473,7 @@
                 },
                 "example": {
                   "code": "DIAGNOSIS_NOT_CLAIMABLE",
-                  "message": "La operaci\u00f3n entra en conflicto con el estado actual o lease vigente.",
+                  "message": "La operación entra en conflicto con el estado actual o lease vigente.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111",
                   "details": [
                     {
@@ -1519,7 +1526,7 @@
       "post": {
         "operationId": "diagnosis_renew",
         "summary": "Renovar lease vigente",
-        "description": "Servicio AI autenticado, mismo lease_owner/token, estado PROCESANDO y now < expires_at. Expirado, distinto token/owner o terminal409 STALE_LEASE; no renueva generaci\u00f3n obsoleta.",
+        "description": "Servicio AI autenticado, mismo lease_owner/token, estado PROCESANDO y now < expires_at. Expirado, distinto token/owner o terminal409 STALE_LEASE; no renueva generación obsoleta.",
         "security": [
           {
             "ServiceBearer": []
@@ -1534,7 +1541,7 @@
               "$ref": "../schemas/common.schema.json#/$defs/UUID"
             },
             "example": "11111111-1111-4111-8111-111111111111",
-            "description": "UUID del cliente o generado por servidor si falta; valor inv\u00e1lido 400; eco en respuesta."
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
           },
           {
             "name": "id",
@@ -1579,7 +1586,7 @@
             }
           },
           "400": {
-            "description": "Solicitud inv\u00e1lida.",
+            "description": "Solicitud inválida.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -1603,14 +1610,14 @@
                 },
                 "example": {
                   "code": "INVALID_REQUEST",
-                  "message": "Solicitud inv\u00e1lida.",
+                  "message": "Solicitud inválida.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
             }
           },
           "401": {
-            "description": "Autenticaci\u00f3n requerida o inv\u00e1lida.",
+            "description": "Autenticación requerida o inválida.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -1634,14 +1641,14 @@
                 },
                 "example": {
                   "code": "UNAUTHORIZED",
-                  "message": "Autenticaci\u00f3n requerida o inv\u00e1lida.",
+                  "message": "Autenticación requerida o inválida.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
             }
           },
           "403": {
-            "description": "Operaci\u00f3n no autorizada.",
+            "description": "Operación no autorizada.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -1665,7 +1672,7 @@
                 },
                 "example": {
                   "code": "FORBIDDEN",
-                  "message": "Operaci\u00f3n no autorizada.",
+                  "message": "Operación no autorizada.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
@@ -1787,7 +1794,7 @@
       "get": {
         "operationId": "diagnosis_own_image",
         "summary": "Leer bytes privados autorizados",
-        "description": "Propietario autenticado; ajeno/inexistente/borrado404. Entrega bytes privados, sin URL p\u00fablica o redirecci\u00f3n firmada.",
+        "description": "Propietario autenticado; ajeno/inexistente/borrado404. Entrega bytes privados, sin URL pública o redirección firmada.",
         "security": [
           {
             "UserBearer": []
@@ -1802,7 +1809,7 @@
               "$ref": "../schemas/common.schema.json#/$defs/UUID"
             },
             "example": "11111111-1111-4111-8111-111111111111",
-            "description": "UUID del cliente o generado por servidor si falta; valor inv\u00e1lido 400; eco en respuesta."
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
           },
           {
             "name": "id",
@@ -1816,7 +1823,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Respuesta prevista; a\u00fan no implementada.",
+            "description": "Respuesta prevista; aún no implementada.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -1858,7 +1865,7 @@
             }
           },
           "400": {
-            "description": "Solicitud inv\u00e1lida.",
+            "description": "Solicitud inválida.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -1882,14 +1889,14 @@
                 },
                 "example": {
                   "code": "INVALID_REQUEST",
-                  "message": "Solicitud inv\u00e1lida.",
+                  "message": "Solicitud inválida.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
             }
           },
           "401": {
-            "description": "Autenticaci\u00f3n requerida o inv\u00e1lida.",
+            "description": "Autenticación requerida o inválida.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -1913,7 +1920,7 @@
                 },
                 "example": {
                   "code": "UNAUTHORIZED",
-                  "message": "Autenticaci\u00f3n requerida o inv\u00e1lida.",
+                  "message": "Autenticación requerida o inválida.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
@@ -1960,7 +1967,7 @@
       "get": {
         "operationId": "diagnosis_internal_image",
         "summary": "Leer bytes privados autorizados",
-        "description": "Identidad AI m\u00e1s owner/token vigente y PROCESANDO; lease obsoleto409, credencial de usuario403. Lease no es bearer. Sin URL p\u00fablica o redirecci\u00f3n firmada.",
+        "description": "Identidad AI más owner/token vigente y PROCESANDO; lease obsoleto409, credencial de usuario403. Lease no es bearer. Sin URL pública o redirección firmada.",
         "security": [
           {
             "ServiceBearer": []
@@ -1975,7 +1982,7 @@
               "$ref": "../schemas/common.schema.json#/$defs/UUID"
             },
             "example": "11111111-1111-4111-8111-111111111111",
-            "description": "UUID del cliente o generado por servidor si falta; valor inv\u00e1lido 400; eco en respuesta."
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
           },
           {
             "name": "X-Lease-Token",
@@ -2040,7 +2047,7 @@
             }
           },
           "400": {
-            "description": "Solicitud inv\u00e1lida.",
+            "description": "Solicitud inválida.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -2064,14 +2071,14 @@
                 },
                 "example": {
                   "code": "INVALID_REQUEST",
-                  "message": "Solicitud inv\u00e1lida.",
+                  "message": "Solicitud inválida.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
             }
           },
           "401": {
-            "description": "Autenticaci\u00f3n requerida o inv\u00e1lida.",
+            "description": "Autenticación requerida o inválida.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -2095,14 +2102,14 @@
                 },
                 "example": {
                   "code": "UNAUTHORIZED",
-                  "message": "Autenticaci\u00f3n requerida o inv\u00e1lida.",
+                  "message": "Autenticación requerida o inválida.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
             }
           },
           "403": {
-            "description": "Operaci\u00f3n no autorizada.",
+            "description": "Operación no autorizada.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -2126,7 +2133,7 @@
                 },
                 "example": {
                   "code": "FORBIDDEN",
-                  "message": "Operaci\u00f3n no autorizada.",
+                  "message": "Operación no autorizada.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
@@ -2235,7 +2242,7 @@
       "get": {
         "operationId": "diagnosis_list_crops",
         "summary": "Listado de cultivos activos",
-        "description": "Retorna los cultivos activos en el cat\u00e1logo (POTATO, MAIZE). Requiere autenticaci\u00f3n Bearer de usuario.",
+        "description": "Retorna los cultivos activos en el catálogo (POTATO, MAIZE). Requiere autenticación Bearer de usuario.",
         "security": [
           {
             "UserBearer": []
@@ -2250,7 +2257,7 @@
               "$ref": "../schemas/common.schema.json#/$defs/UUID"
             },
             "example": "11111111-1111-4111-8111-111111111111",
-            "description": "UUID del cliente o generado por servidor si falta; valor inv\u00e1lido 400; eco en respuesta."
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
           }
         ],
         "responses": {
@@ -2288,7 +2295,7 @@
                     },
                     {
                       "code": "MAIZE",
-                      "name": "Ma\u00edz",
+                      "name": "Maíz",
                       "active": true,
                       "created_at": "2026-09-30T12:00:00Z",
                       "updated_at": "2026-09-30T12:00:00Z"
@@ -2299,7 +2306,7 @@
             }
           },
           "401": {
-            "description": "Autenticaci\u00f3n requerida o token inv\u00e1lido.",
+            "description": "Autenticación requerida o token inválido.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -2323,7 +2330,7 @@
                 },
                 "example": {
                   "code": "UNAUTHORIZED",
-                  "message": "Credenciales ausentes, vencidas o firma inv\u00e1lida.",
+                  "message": "Credenciales ausentes, vencidas o firma inválida.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
@@ -2340,7 +2347,7 @@
       "get": {
         "operationId": "diagnosis_list_crop_problems",
         "summary": "Listado de condiciones candidatas de un cultivo",
-        "description": "Retorna las condiciones candidatas activas asociadas a un cultivo activo. Devuelve 404 si el cultivo no existe o est\u00e1 inactivo.",
+        "description": "Retorna las condiciones candidatas activas asociadas a un cultivo activo. Devuelve 404 si el cultivo no existe o está inactivo.",
         "security": [
           {
             "UserBearer": []
@@ -2359,7 +2366,7 @@
               ]
             },
             "example": "POTATO",
-            "description": "C\u00f3digo de cultivo."
+            "description": "Código de cultivo."
           },
           {
             "name": "X-Correlation-ID",
@@ -2369,7 +2376,7 @@
               "$ref": "../schemas/common.schema.json#/$defs/UUID"
             },
             "example": "11111111-1111-4111-8111-111111111111",
-            "description": "UUID del cliente o generado por servidor si falta; valor inv\u00e1lido 400; eco en respuesta."
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
           }
         ],
         "responses": {
@@ -2411,7 +2418,7 @@
                     {
                       "code": "POTATO_EARLY_BLIGHT",
                       "crop_code": "POTATO",
-                      "name": "Tiz\u00f3n temprano en papa",
+                      "name": "Tizón temprano en papa",
                       "problem_type": "DISEASE",
                       "model_supported": false,
                       "active": true,
@@ -2424,7 +2431,7 @@
             }
           },
           "401": {
-            "description": "Autenticaci\u00f3n requerida o token inv\u00e1lido.",
+            "description": "Autenticación requerida o token inválido.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -2448,7 +2455,7 @@
                 },
                 "example": {
                   "code": "UNAUTHORIZED",
-                  "message": "Credenciales ausentes, vencidas o firma inv\u00e1lida.",
+                  "message": "Credenciales ausentes, vencidas o firma inválida.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
@@ -2495,8 +2502,8 @@
     "/api/v1/problems/{code}/recommendations": {
       "get": {
         "operationId": "diagnosis_get_problem_recommendations",
-        "summary": "Consultar recomendaciones de una condici\u00f3n agr\u00edcola",
-        "description": "Retorna la \u00faltima versi\u00f3n aprobada y activa de la recomendaci\u00f3n para el problema activo especificado. Si no existe contenido aprobado, devuelve 200 con items vac\u00edo. Si el problema o cultivo asociado no existe o est\u00e1 inactivo, devuelve 404.",
+        "summary": "Consultar recomendaciones de una condición agrícola",
+        "description": "Retorna la última versión aprobada y activa de la recomendación para el problema activo especificado. Si no existe contenido aprobado, devuelve 200 con items vacío. Si el problema o cultivo asociado no existe o está inactivo, devuelve 404.",
         "security": [
           {
             "UserBearer": []
@@ -2513,7 +2520,7 @@
               "maxLength": 80
             },
             "example": "POTATO_EARLY_BLIGHT",
-            "description": "C\u00f3digo de la condici\u00f3n candidata."
+            "description": "Código de la condición candidata."
           },
           {
             "name": "X-Correlation-ID",
@@ -2523,12 +2530,12 @@
               "$ref": "../schemas/common.schema.json#/$defs/UUID"
             },
             "example": "11111111-1111-4111-8111-111111111111",
-            "description": "UUID del cliente o generado por servidor si falta; valor inv\u00e1lido 400; eco en respuesta."
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
           }
         ],
         "responses": {
           "200": {
-            "description": "\u00daltima versi\u00f3n activa aprobada de la recomendaci\u00f3n.",
+            "description": "Última versión activa aprobada de la recomendación.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -2556,25 +2563,25 @@
                       "id": "22222222-2222-4222-8222-222222222222",
                       "problem_code": "POTATO_EARLY_BLIGHT",
                       "version": 1,
-                      "title": "Manejo preventivo de tiz\u00f3n temprano",
-                      "summary": "Pr\u00e1cticas culturales y medidas preventivas validadas para el control de tiz\u00f3n temprano.",
+                      "title": "Manejo preventivo de tizón temprano",
+                      "summary": "Prácticas culturales y medidas preventivas validadas para el control de tizón temprano.",
                       "cultural_practices": [
-                        "Rotaci\u00f3n de cultivos por al menos 2 a\u00f1os.",
-                        "Eliminaci\u00f3n de rastrojos infestados tras la cosecha."
+                        "Rotación de cultivos por al menos 2 años.",
+                        "Eliminación de rastrojos infestados tras la cosecha."
                       ],
                       "biological_control": [
-                        "Uso de cepas antagonistas de Bacillus subtilis seg\u00fan recomendaci\u00f3n t\u00e9cnica local."
+                        "Uso de cepas antagonistas de Bacillus subtilis según recomendación técnica local."
                       ],
                       "preventive_measures": [
                         "Monitoreo semanal del tercio inferior del follaje.",
-                        "Evitar riego por aspersi\u00f3n en horas de alta humedad relativa."
+                        "Evitar riego por aspersión en horas de alta humedad relativa."
                       ],
                       "source_refs": [
                         "Manual de Manejo Integrado de Enfermedades de la Papa, INIA 2024",
-                        "Gu\u00eda fitopatol\u00f3gica andina v3"
+                        "Guía fitopatológica andina v3"
                       ],
                       "review_reference": "REV-2026-AGRO-001",
-                      "reviewed_by": "Ing. Agr\u00f3nomo Certificado",
+                      "reviewed_by": "Ing. Agrónomo Certificado",
                       "reviewed_at": "2026-09-30T10:00:00Z",
                       "active": true,
                       "created_at": "2026-09-30T10:00:00Z",
@@ -2586,7 +2593,7 @@
             }
           },
           "401": {
-            "description": "Autenticaci\u00f3n requerida o token inv\u00e1lido.",
+            "description": "Autenticación requerida o token inválido.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -2610,7 +2617,7 @@
                 },
                 "example": {
                   "code": "UNAUTHORIZED",
-                  "message": "Credenciales ausentes, vencidas o firma inv\u00e1lida.",
+                  "message": "Credenciales ausentes, vencidas o firma inválida.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
@@ -2641,7 +2648,7 @@
                 },
                 "example": {
                   "code": "RESOURCE_NOT_FOUND",
-                  "message": "Condici\u00f3n agr\u00edcola no encontrada o inactiva.",
+                  "message": "Condición agrícola no encontrada o inactiva.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
@@ -2658,7 +2665,7 @@
       "get": {
         "operationId": "diagnosis_admin_list_crops",
         "summary": "Listado administrativo de cultivos",
-        "description": "Solo rol ADMIN. Retorna todos los cultivos registrados en el cat\u00e1logo, incluidos los inactivos.",
+        "description": "Solo rol ADMIN. Retorna todos los cultivos registrados en el catálogo, incluidos los inactivos.",
         "security": [
           {
             "UserBearer": []
@@ -2673,7 +2680,7 @@
               "$ref": "../schemas/common.schema.json#/$defs/UUID"
             },
             "example": "11111111-1111-4111-8111-111111111111",
-            "description": "UUID del cliente o generado por servidor si falta; valor inv\u00e1lido 400; eco en respuesta."
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
           }
         ],
         "responses": {
@@ -2711,7 +2718,7 @@
                     },
                     {
                       "code": "MAIZE",
-                      "name": "Ma\u00edz",
+                      "name": "Maíz",
                       "active": true,
                       "created_at": "2026-09-30T12:00:00Z",
                       "updated_at": "2026-09-30T12:00:00Z"
@@ -2722,7 +2729,7 @@
             }
           },
           "401": {
-            "description": "Autenticaci\u00f3n requerida o token inv\u00e1lido.",
+            "description": "Autenticación requerida o token inválido.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -2746,14 +2753,14 @@
                 },
                 "example": {
                   "code": "UNAUTHORIZED",
-                  "message": "Credenciales ausentes, vencidas o firma inv\u00e1lida.",
+                  "message": "Credenciales ausentes, vencidas o firma inválida.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
             }
           },
           "403": {
-            "description": "Rol insuficiente para ejecutar la operaci\u00f3n.",
+            "description": "Rol insuficiente para ejecutar la operación.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -2791,8 +2798,8 @@
       },
       "post": {
         "operationId": "diagnosis_admin_create_crop",
-        "summary": "Crear cultivo en el cat\u00e1logo",
-        "description": "Solo rol ADMIN. Registra un cultivo dentro de la taxonom\u00eda V1 (POTATO, MAIZE). Si ya existe, devuelve 409 CATALOG_CONFLICT. Registra auditor\u00eda propia.",
+        "summary": "Crear cultivo en el catálogo",
+        "description": "Solo rol ADMIN. Registra un cultivo dentro de la taxonomía V1 (POTATO, MAIZE). Si ya existe, devuelve 409 CATALOG_CONFLICT. Registra auditoría propia.",
         "security": [
           {
             "UserBearer": []
@@ -2807,7 +2814,7 @@
               "$ref": "../schemas/common.schema.json#/$defs/UUID"
             },
             "example": "11111111-1111-4111-8111-111111111111",
-            "description": "UUID del cliente o generado por servidor si falta; valor inv\u00e1lido 400; eco en respuesta."
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
           }
         ],
         "requestBody": {
@@ -2860,7 +2867,7 @@
             }
           },
           "400": {
-            "description": "Solicitud inv\u00e1lida o par\u00e1metros incorrectos.",
+            "description": "Solicitud inválida o parámetros incorrectos.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -2886,7 +2893,7 @@
                   "INVALID_REQUEST": {
                     "value": {
                       "code": "INVALID_REQUEST",
-                      "message": "Cuerpo de solicitud inv\u00e1lido.",
+                      "message": "Cuerpo de solicitud inválido.",
                       "correlation_id": "11111111-1111-4111-8111-111111111111"
                     }
                   }
@@ -2895,7 +2902,7 @@
             }
           },
           "401": {
-            "description": "Autenticaci\u00f3n requerida o token inv\u00e1lido.",
+            "description": "Autenticación requerida o token inválido.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -2919,14 +2926,14 @@
                 },
                 "example": {
                   "code": "UNAUTHORIZED",
-                  "message": "Credenciales ausentes, vencidas o firma inv\u00e1lida.",
+                  "message": "Credenciales ausentes, vencidas o firma inválida.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
             }
           },
           "403": {
-            "description": "Rol insuficiente para ejecutar la operaci\u00f3n.",
+            "description": "Rol insuficiente para ejecutar la operación.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -2983,7 +2990,7 @@
                   "CATALOG_CONFLICT": {
                     "value": {
                       "code": "CATALOG_CONFLICT",
-                      "message": "El cultivo ya existe en el cat\u00e1logo.",
+                      "message": "El cultivo ya existe en el catálogo.",
                       "correlation_id": "11111111-1111-4111-8111-111111111111"
                     }
                   }
@@ -3001,8 +3008,8 @@
     "/api/v1/admin/crops/{code}": {
       "patch": {
         "operationId": "diagnosis_admin_patch_crop",
-        "summary": "Actualizar cultivo en el cat\u00e1logo",
-        "description": "Solo rol ADMIN. Permite modificar nombre y estado active. El c\u00f3digo es inmutable. Registra auditor\u00eda propia.",
+        "summary": "Actualizar cultivo en el catálogo",
+        "description": "Solo rol ADMIN. Permite modificar nombre y estado active. El código es inmutable. Registra auditoría propia.",
         "security": [
           {
             "UserBearer": []
@@ -3021,7 +3028,7 @@
               ]
             },
             "example": "POTATO",
-            "description": "C\u00f3digo de cultivo inmutable."
+            "description": "Código de cultivo inmutable."
           },
           {
             "name": "X-Correlation-ID",
@@ -3031,7 +3038,7 @@
               "$ref": "../schemas/common.schema.json#/$defs/UUID"
             },
             "example": "11111111-1111-4111-8111-111111111111",
-            "description": "UUID del cliente o generado por servidor si falta; valor inv\u00e1lido 400; eco en respuesta."
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
           }
         ],
         "requestBody": {
@@ -3042,7 +3049,7 @@
                 "$ref": "../schemas/common.schema.json#/$defs/CropPatch"
               },
               "example": {
-                "name": "Papa com\u00fan",
+                "name": "Papa común",
                 "active": true
               }
             }
@@ -3083,7 +3090,7 @@
             }
           },
           "400": {
-            "description": "Solicitud inv\u00e1lida o par\u00e1metros incorrectos.",
+            "description": "Solicitud inválida o parámetros incorrectos.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -3109,7 +3116,7 @@
                   "INVALID_REQUEST": {
                     "value": {
                       "code": "INVALID_REQUEST",
-                      "message": "Intento de mutar campos inmutables o cuerpo vac\u00edo.",
+                      "message": "Intento de mutar campos inmutables o cuerpo vacío.",
                       "correlation_id": "11111111-1111-4111-8111-111111111111"
                     }
                   }
@@ -3118,7 +3125,7 @@
             }
           },
           "401": {
-            "description": "Autenticaci\u00f3n requerida o token inv\u00e1lido.",
+            "description": "Autenticación requerida o token inválido.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -3142,14 +3149,14 @@
                 },
                 "example": {
                   "code": "UNAUTHORIZED",
-                  "message": "Credenciales ausentes, vencidas o firma inv\u00e1lida.",
+                  "message": "Credenciales ausentes, vencidas o firma inválida.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
             }
           },
           "403": {
-            "description": "Rol insuficiente para ejecutar la operaci\u00f3n.",
+            "description": "Rol insuficiente para ejecutar la operación.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -3220,7 +3227,7 @@
     "/api/v1/admin/problems": {
       "get": {
         "operationId": "diagnosis_admin_list_problems",
-        "summary": "Listado administrativo de condiciones agr\u00edcolas",
+        "summary": "Listado administrativo de condiciones agrícolas",
         "description": "Solo rol ADMIN. Retorna todas las condiciones registradas, incluidas las inactivas.",
         "security": [
           {
@@ -3240,7 +3247,7 @@
               ]
             },
             "example": "POTATO",
-            "description": "Filtro opcional por c\u00f3digo de cultivo."
+            "description": "Filtro opcional por código de cultivo."
           },
           {
             "name": "X-Correlation-ID",
@@ -3250,7 +3257,7 @@
               "$ref": "../schemas/common.schema.json#/$defs/UUID"
             },
             "example": "11111111-1111-4111-8111-111111111111",
-            "description": "UUID del cliente o generado por servidor si falta; valor inv\u00e1lido 400; eco en respuesta."
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
           }
         ],
         "responses": {
@@ -3292,7 +3299,7 @@
                     {
                       "code": "POTATO_EARLY_BLIGHT",
                       "crop_code": "POTATO",
-                      "name": "Tiz\u00f3n temprano en papa",
+                      "name": "Tizón temprano en papa",
                       "problem_type": "DISEASE",
                       "model_supported": false,
                       "active": true,
@@ -3305,7 +3312,7 @@
             }
           },
           "401": {
-            "description": "Autenticaci\u00f3n requerida o token inv\u00e1lido.",
+            "description": "Autenticación requerida o token inválido.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -3329,14 +3336,14 @@
                 },
                 "example": {
                   "code": "UNAUTHORIZED",
-                  "message": "Credenciales ausentes, vencidas o firma inv\u00e1lida.",
+                  "message": "Credenciales ausentes, vencidas o firma inválida.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
             }
           },
           "403": {
-            "description": "Rol insuficiente para ejecutar la operaci\u00f3n.",
+            "description": "Rol insuficiente para ejecutar la operación.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -3374,8 +3381,8 @@
       },
       "post": {
         "operationId": "diagnosis_admin_create_problem",
-        "summary": "Crear condici\u00f3n agr\u00edcola en el cat\u00e1logo",
-        "description": "Solo rol ADMIN. Registra una condici\u00f3n candidata (HEALTHY o DISEASE). Duplicados devuelven 409 CATALOG_CONFLICT. Audita mutaci\u00f3n.",
+        "summary": "Crear condición agrícola en el catálogo",
+        "description": "Solo rol ADMIN. Registra una condición candidata (HEALTHY o DISEASE). Duplicados devuelven 409 CATALOG_CONFLICT. Audita mutación.",
         "security": [
           {
             "UserBearer": []
@@ -3390,7 +3397,7 @@
               "$ref": "../schemas/common.schema.json#/$defs/UUID"
             },
             "example": "11111111-1111-4111-8111-111111111111",
-            "description": "UUID del cliente o generado por servidor si falta; valor inv\u00e1lido 400; eco en respuesta."
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
           }
         ],
         "requestBody": {
@@ -3403,7 +3410,7 @@
               "example": {
                 "code": "POTATO_LATE_BLIGHT",
                 "crop_code": "POTATO",
-                "name": "Tiz\u00f3n tard\u00edo de la papa",
+                "name": "Tizón tardío de la papa",
                 "problem_type": "DISEASE",
                 "active": true
               }
@@ -3412,7 +3419,7 @@
         },
         "responses": {
           "201": {
-            "description": "Condici\u00f3n creada exitosamente.",
+            "description": "Condición creada exitosamente.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -3437,7 +3444,7 @@
                 "example": {
                   "code": "POTATO_EARLY_BLIGHT",
                   "crop_code": "POTATO",
-                  "name": "Tiz\u00f3n temprano en papa",
+                  "name": "Tizón temprano en papa",
                   "problem_type": "DISEASE",
                   "model_supported": false,
                   "active": true,
@@ -3448,7 +3455,7 @@
             }
           },
           "400": {
-            "description": "Solicitud inv\u00e1lida o par\u00e1metros incorrectos.",
+            "description": "Solicitud inválida o parámetros incorrectos.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -3474,7 +3481,7 @@
                   "INVALID_REQUEST": {
                     "value": {
                       "code": "INVALID_REQUEST",
-                      "message": "Cuerpo de solicitud inv\u00e1lido.",
+                      "message": "Cuerpo de solicitud inválido.",
                       "correlation_id": "11111111-1111-4111-8111-111111111111"
                     }
                   }
@@ -3483,7 +3490,7 @@
             }
           },
           "401": {
-            "description": "Autenticaci\u00f3n requerida o token inv\u00e1lido.",
+            "description": "Autenticación requerida o token inválido.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -3507,14 +3514,14 @@
                 },
                 "example": {
                   "code": "UNAUTHORIZED",
-                  "message": "Credenciales ausentes, vencidas o firma inv\u00e1lida.",
+                  "message": "Credenciales ausentes, vencidas o firma inválida.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
             }
           },
           "403": {
-            "description": "Rol insuficiente para ejecutar la operaci\u00f3n.",
+            "description": "Rol insuficiente para ejecutar la operación.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -3571,7 +3578,7 @@
                   "CATALOG_CONFLICT": {
                     "value": {
                       "code": "CATALOG_CONFLICT",
-                      "message": "La condici\u00f3n agr\u00edcola ya existe.",
+                      "message": "La condición agrícola ya existe.",
                       "correlation_id": "11111111-1111-4111-8111-111111111111"
                     }
                   }
@@ -3589,8 +3596,8 @@
     "/api/v1/admin/problems/{code}": {
       "patch": {
         "operationId": "diagnosis_admin_patch_problem",
-        "summary": "Actualizar condici\u00f3n agr\u00edcola",
-        "description": "Solo rol ADMIN. Modifica nombre y active. C\u00f3digo, cultivo y tipo son inmutables. Audita mutaci\u00f3n.",
+        "summary": "Actualizar condición agrícola",
+        "description": "Solo rol ADMIN. Modifica nombre y active. Código, cultivo y tipo son inmutables. Audita mutación.",
         "security": [
           {
             "UserBearer": []
@@ -3607,7 +3614,7 @@
               "maxLength": 80
             },
             "example": "POTATO_EARLY_BLIGHT",
-            "description": "C\u00f3digo inmutable de la condici\u00f3n."
+            "description": "Código inmutable de la condición."
           },
           {
             "name": "X-Correlation-ID",
@@ -3617,7 +3624,7 @@
               "$ref": "../schemas/common.schema.json#/$defs/UUID"
             },
             "example": "11111111-1111-4111-8111-111111111111",
-            "description": "UUID del cliente o generado por servidor si falta; valor inv\u00e1lido 400; eco en respuesta."
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
           }
         ],
         "requestBody": {
@@ -3628,7 +3635,7 @@
                 "$ref": "../schemas/common.schema.json#/$defs/ProblemPatch"
               },
               "example": {
-                "name": "Tiz\u00f3n temprano (Alternaria solani)",
+                "name": "Tizón temprano (Alternaria solani)",
                 "active": true
               }
             }
@@ -3636,7 +3643,7 @@
         },
         "responses": {
           "200": {
-            "description": "Condici\u00f3n actualizada exitosamente.",
+            "description": "Condición actualizada exitosamente.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -3661,7 +3668,7 @@
                 "example": {
                   "code": "POTATO_EARLY_BLIGHT",
                   "crop_code": "POTATO",
-                  "name": "Tiz\u00f3n temprano en papa",
+                  "name": "Tizón temprano en papa",
                   "problem_type": "DISEASE",
                   "model_supported": false,
                   "active": true,
@@ -3672,7 +3679,7 @@
             }
           },
           "400": {
-            "description": "Solicitud inv\u00e1lida o par\u00e1metros incorrectos.",
+            "description": "Solicitud inválida o parámetros incorrectos.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -3698,7 +3705,7 @@
                   "INVALID_REQUEST": {
                     "value": {
                       "code": "INVALID_REQUEST",
-                      "message": "Intento de mutar campos inmutables o cuerpo vac\u00edo.",
+                      "message": "Intento de mutar campos inmutables o cuerpo vacío.",
                       "correlation_id": "11111111-1111-4111-8111-111111111111"
                     }
                   }
@@ -3707,7 +3714,7 @@
             }
           },
           "401": {
-            "description": "Autenticaci\u00f3n requerida o token inv\u00e1lido.",
+            "description": "Autenticación requerida o token inválido.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -3731,14 +3738,14 @@
                 },
                 "example": {
                   "code": "UNAUTHORIZED",
-                  "message": "Credenciales ausentes, vencidas o firma inv\u00e1lida.",
+                  "message": "Credenciales ausentes, vencidas o firma inválida.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
             }
           },
           "403": {
-            "description": "Rol insuficiente para ejecutar la operaci\u00f3n.",
+            "description": "Rol insuficiente para ejecutar la operación.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -3793,7 +3800,7 @@
                 },
                 "example": {
                   "code": "RESOURCE_NOT_FOUND",
-                  "message": "Condici\u00f3n agr\u00edcola no encontrada.",
+                  "message": "Condición agrícola no encontrada.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
@@ -3827,7 +3834,7 @@
               "maxLength": 80
             },
             "example": "POTATO_EARLY_BLIGHT",
-            "description": "Filtro opcional por condici\u00f3n."
+            "description": "Filtro opcional por condición."
           },
           {
             "name": "X-Correlation-ID",
@@ -3837,7 +3844,7 @@
               "$ref": "../schemas/common.schema.json#/$defs/UUID"
             },
             "example": "11111111-1111-4111-8111-111111111111",
-            "description": "UUID del cliente o generado por servidor si falta; valor inv\u00e1lido 400; eco en respuesta."
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
           }
         ],
         "responses": {
@@ -3870,25 +3877,25 @@
                       "id": "22222222-2222-4222-8222-222222222222",
                       "problem_code": "POTATO_EARLY_BLIGHT",
                       "version": 1,
-                      "title": "Manejo preventivo de tiz\u00f3n temprano",
-                      "summary": "Pr\u00e1cticas culturales y medidas preventivas validadas para el control de tiz\u00f3n temprano.",
+                      "title": "Manejo preventivo de tizón temprano",
+                      "summary": "Prácticas culturales y medidas preventivas validadas para el control de tizón temprano.",
                       "cultural_practices": [
-                        "Rotaci\u00f3n de cultivos por al menos 2 a\u00f1os.",
-                        "Eliminaci\u00f3n de rastrojos infestados tras la cosecha."
+                        "Rotación de cultivos por al menos 2 años.",
+                        "Eliminación de rastrojos infestados tras la cosecha."
                       ],
                       "biological_control": [
-                        "Uso de cepas antagonistas de Bacillus subtilis seg\u00fan recomendaci\u00f3n t\u00e9cnica local."
+                        "Uso de cepas antagonistas de Bacillus subtilis según recomendación técnica local."
                       ],
                       "preventive_measures": [
                         "Monitoreo semanal del tercio inferior del follaje.",
-                        "Evitar riego por aspersi\u00f3n en horas de alta humedad relativa."
+                        "Evitar riego por aspersión en horas de alta humedad relativa."
                       ],
                       "source_refs": [
                         "Manual de Manejo Integrado de Enfermedades de la Papa, INIA 2024",
-                        "Gu\u00eda fitopatol\u00f3gica andina v3"
+                        "Guía fitopatológica andina v3"
                       ],
                       "review_reference": "REV-2026-AGRO-001",
-                      "reviewed_by": "Ing. Agr\u00f3nomo Certificado",
+                      "reviewed_by": "Ing. Agrónomo Certificado",
                       "reviewed_at": "2026-09-30T10:00:00Z",
                       "active": true,
                       "created_at": "2026-09-30T10:00:00Z",
@@ -3900,7 +3907,7 @@
             }
           },
           "401": {
-            "description": "Autenticaci\u00f3n requerida o token inv\u00e1lido.",
+            "description": "Autenticación requerida o token inválido.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -3924,14 +3931,14 @@
                 },
                 "example": {
                   "code": "UNAUTHORIZED",
-                  "message": "Credenciales ausentes, vencidas o firma inv\u00e1lida.",
+                  "message": "Credenciales ausentes, vencidas o firma inválida.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
             }
           },
           "403": {
-            "description": "Rol insuficiente para ejecutar la operaci\u00f3n.",
+            "description": "Rol insuficiente para ejecutar la operación.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -3969,8 +3976,8 @@
       },
       "post": {
         "operationId": "diagnosis_admin_create_recommendation",
-        "summary": "Crear versi\u00f3n inmutable de recomendaci\u00f3n agr\u00edcola",
-        "description": "Solo rol ADMIN. Exige campos de revisi\u00f3n y fuentes (source_refs, review_reference, reviewed_by, reviewed_at); sin ellos devuelve 400 CATALOG_REVIEW_REQUIRED. Genera una versi\u00f3n incremental nueva bajo bloqueo del problema. Audita mutaci\u00f3n.",
+        "summary": "Crear versión inmutable de recomendación agrícola",
+        "description": "Solo rol ADMIN. Exige campos de revisión y fuentes (source_refs, review_reference, reviewed_by, reviewed_at); sin ellos devuelve 400 CATALOG_REVIEW_REQUIRED. Genera una versión incremental nueva bajo bloqueo del problema. Audita mutación.",
         "security": [
           {
             "UserBearer": []
@@ -3985,7 +3992,7 @@
               "$ref": "../schemas/common.schema.json#/$defs/UUID"
             },
             "example": "11111111-1111-4111-8111-111111111111",
-            "description": "UUID del cliente o generado por servidor si falta; valor inv\u00e1lido 400; eco en respuesta."
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
           }
         ],
         "requestBody": {
@@ -3997,10 +4004,10 @@
               },
               "example": {
                 "problem_code": "POTATO_EARLY_BLIGHT",
-                "title": "Manejo preventivo de tiz\u00f3n temprano",
-                "summary": "Pr\u00e1cticas culturales y medidas preventivas validadas para el control de tiz\u00f3n temprano.",
+                "title": "Manejo preventivo de tizón temprano",
+                "summary": "Prácticas culturales y medidas preventivas validadas para el control de tizón temprano.",
                 "cultural_practices": [
-                  "Rotaci\u00f3n de cultivos por al menos 2 a\u00f1os."
+                  "Rotación de cultivos por al menos 2 años."
                 ],
                 "biological_control": [
                   "Uso de cepas antagonistas de Bacillus subtilis."
@@ -4012,7 +4019,7 @@
                   "Manual INIA 2024"
                 ],
                 "review_reference": "REV-2026-AGRO-001",
-                "reviewed_by": "Ing. Agr\u00f3nomo Certificado",
+                "reviewed_by": "Ing. Agrónomo Certificado",
                 "reviewed_at": "2026-09-30T10:00:00Z",
                 "active": true
               }
@@ -4021,7 +4028,7 @@
         },
         "responses": {
           "201": {
-            "description": "Versi\u00f3n de recomendaci\u00f3n creada exitosamente.",
+            "description": "Versión de recomendación creada exitosamente.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -4047,25 +4054,25 @@
                   "id": "22222222-2222-4222-8222-222222222222",
                   "problem_code": "POTATO_EARLY_BLIGHT",
                   "version": 1,
-                  "title": "Manejo preventivo de tiz\u00f3n temprano",
-                  "summary": "Pr\u00e1cticas culturales y medidas preventivas validadas para el control de tiz\u00f3n temprano.",
+                  "title": "Manejo preventivo de tizón temprano",
+                  "summary": "Prácticas culturales y medidas preventivas validadas para el control de tizón temprano.",
                   "cultural_practices": [
-                    "Rotaci\u00f3n de cultivos por al menos 2 a\u00f1os.",
-                    "Eliminaci\u00f3n de rastrojos infestados tras la cosecha."
+                    "Rotación de cultivos por al menos 2 años.",
+                    "Eliminación de rastrojos infestados tras la cosecha."
                   ],
                   "biological_control": [
-                    "Uso de cepas antagonistas de Bacillus subtilis seg\u00fan recomendaci\u00f3n t\u00e9cnica local."
+                    "Uso de cepas antagonistas de Bacillus subtilis según recomendación técnica local."
                   ],
                   "preventive_measures": [
                     "Monitoreo semanal del tercio inferior del follaje.",
-                    "Evitar riego por aspersi\u00f3n en horas de alta humedad relativa."
+                    "Evitar riego por aspersión en horas de alta humedad relativa."
                   ],
                   "source_refs": [
                     "Manual de Manejo Integrado de Enfermedades de la Papa, INIA 2024",
-                    "Gu\u00eda fitopatol\u00f3gica andina v3"
+                    "Guía fitopatológica andina v3"
                   ],
                   "review_reference": "REV-2026-AGRO-001",
-                  "reviewed_by": "Ing. Agr\u00f3nomo Certificado",
+                  "reviewed_by": "Ing. Agrónomo Certificado",
                   "reviewed_at": "2026-09-30T10:00:00Z",
                   "active": true,
                   "created_at": "2026-09-30T10:00:00Z",
@@ -4075,7 +4082,7 @@
             }
           },
           "400": {
-            "description": "Solicitud inv\u00e1lida o par\u00e1metros incorrectos.",
+            "description": "Solicitud inválida o parámetros incorrectos.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -4101,14 +4108,14 @@
                   "CATALOG_REVIEW_REQUIRED": {
                     "value": {
                       "code": "CATALOG_REVIEW_REQUIRED",
-                      "message": "Fuentes o evidencia de revisi\u00f3n ausente.",
+                      "message": "Fuentes o evidencia de revisión ausente.",
                       "correlation_id": "11111111-1111-4111-8111-111111111111"
                     }
                   },
                   "INVALID_REQUEST": {
                     "value": {
                       "code": "INVALID_REQUEST",
-                      "message": "Cuerpo de solicitud inv\u00e1lido.",
+                      "message": "Cuerpo de solicitud inválido.",
                       "correlation_id": "11111111-1111-4111-8111-111111111111"
                     }
                   }
@@ -4117,7 +4124,7 @@
             }
           },
           "401": {
-            "description": "Autenticaci\u00f3n requerida o token inv\u00e1lido.",
+            "description": "Autenticación requerida o token inválido.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -4141,14 +4148,14 @@
                 },
                 "example": {
                   "code": "UNAUTHORIZED",
-                  "message": "Credenciales ausentes, vencidas o firma inv\u00e1lida.",
+                  "message": "Credenciales ausentes, vencidas o firma inválida.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
             }
           },
           "403": {
-            "description": "Rol insuficiente para ejecutar la operaci\u00f3n.",
+            "description": "Rol insuficiente para ejecutar la operación.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -4219,8 +4226,8 @@
     "/api/v1/admin/recommendations/{id}": {
       "patch": {
         "operationId": "diagnosis_admin_patch_recommendation",
-        "summary": "Activar o desactivar versi\u00f3n de recomendaci\u00f3n",
-        "description": "Solo rol ADMIN. El contenido, problema y n\u00famero de versi\u00f3n son inmutables; solo se permite modificar active. Audita mutaci\u00f3n.",
+        "summary": "Activar o desactivar versión de recomendación",
+        "description": "Solo rol ADMIN. El contenido, problema y número de versión son inmutables; solo se permite modificar active. Audita mutación.",
         "security": [
           {
             "UserBearer": []
@@ -4235,7 +4242,7 @@
               "$ref": "../schemas/common.schema.json#/$defs/UUID"
             },
             "example": "22222222-2222-4222-8222-222222222222",
-            "description": "UUID de la versi\u00f3n de recomendaci\u00f3n."
+            "description": "UUID de la versión de recomendación."
           },
           {
             "name": "X-Correlation-ID",
@@ -4245,7 +4252,7 @@
               "$ref": "../schemas/common.schema.json#/$defs/UUID"
             },
             "example": "11111111-1111-4111-8111-111111111111",
-            "description": "UUID del cliente o generado por servidor si falta; valor inv\u00e1lido 400; eco en respuesta."
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
           }
         ],
         "requestBody": {
@@ -4263,7 +4270,7 @@
         },
         "responses": {
           "200": {
-            "description": "Versi\u00f3n de recomendaci\u00f3n actualizada.",
+            "description": "Versión de recomendación actualizada.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -4289,25 +4296,25 @@
                   "id": "22222222-2222-4222-8222-222222222222",
                   "problem_code": "POTATO_EARLY_BLIGHT",
                   "version": 1,
-                  "title": "Manejo preventivo de tiz\u00f3n temprano",
-                  "summary": "Pr\u00e1cticas culturales y medidas preventivas validadas para el control de tiz\u00f3n temprano.",
+                  "title": "Manejo preventivo de tizón temprano",
+                  "summary": "Prácticas culturales y medidas preventivas validadas para el control de tizón temprano.",
                   "cultural_practices": [
-                    "Rotaci\u00f3n de cultivos por al menos 2 a\u00f1os.",
-                    "Eliminaci\u00f3n de rastrojos infestados tras la cosecha."
+                    "Rotación de cultivos por al menos 2 años.",
+                    "Eliminación de rastrojos infestados tras la cosecha."
                   ],
                   "biological_control": [
-                    "Uso de cepas antagonistas de Bacillus subtilis seg\u00fan recomendaci\u00f3n t\u00e9cnica local."
+                    "Uso de cepas antagonistas de Bacillus subtilis según recomendación técnica local."
                   ],
                   "preventive_measures": [
                     "Monitoreo semanal del tercio inferior del follaje.",
-                    "Evitar riego por aspersi\u00f3n en horas de alta humedad relativa."
+                    "Evitar riego por aspersión en horas de alta humedad relativa."
                   ],
                   "source_refs": [
                     "Manual de Manejo Integrado de Enfermedades de la Papa, INIA 2024",
-                    "Gu\u00eda fitopatol\u00f3gica andina v3"
+                    "Guía fitopatológica andina v3"
                   ],
                   "review_reference": "REV-2026-AGRO-001",
-                  "reviewed_by": "Ing. Agr\u00f3nomo Certificado",
+                  "reviewed_by": "Ing. Agrónomo Certificado",
                   "reviewed_at": "2026-09-30T10:00:00Z",
                   "active": true,
                   "created_at": "2026-09-30T10:00:00Z",
@@ -4317,7 +4324,7 @@
             }
           },
           "400": {
-            "description": "Solicitud inv\u00e1lida o par\u00e1metros incorrectos.",
+            "description": "Solicitud inválida o parámetros incorrectos.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -4352,7 +4359,7 @@
             }
           },
           "401": {
-            "description": "Autenticaci\u00f3n requerida o token inv\u00e1lido.",
+            "description": "Autenticación requerida o token inválido.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -4376,14 +4383,14 @@
                 },
                 "example": {
                   "code": "UNAUTHORIZED",
-                  "message": "Credenciales ausentes, vencidas o firma inv\u00e1lida.",
+                  "message": "Credenciales ausentes, vencidas o firma inválida.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
             }
           },
           "403": {
-            "description": "Rol insuficiente para ejecutar la operaci\u00f3n.",
+            "description": "Rol insuficiente para ejecutar la operación.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -4438,7 +4445,7 @@
                 },
                 "example": {
                   "code": "RESOURCE_NOT_FOUND",
-                  "message": "Versi\u00f3n de recomendaci\u00f3n no encontrada.",
+                  "message": "Versión de recomendación no encontrada.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
@@ -4454,8 +4461,8 @@
     "/api/v1/admin/diagnoses": {
       "get": {
         "operationId": "diagnosis_admin_list_diagnoses",
-        "summary": "Supervisi\u00f3n administrativa de metadatos de diagn\u00f3sticos",
-        "description": "Solo rol ADMIN. Retorna listado paginado con cursor HMAC de diagn\u00f3sticos no borrados (id, owner_id, status, created_at, updated_at, reason_code). Excluye fotos, object_key, feedback y datos de Identity. Audita consulta de supervisi\u00f3n.",
+        "summary": "Supervisión administrativa de metadatos de diagnósticos",
+        "description": "Solo rol ADMIN. Retorna listado paginado con cursor HMAC de diagnósticos no borrados (id, owner_id, status, created_at, updated_at, reason_code). Excluye fotos, object_key, feedback y datos de Identity. Audita consulta de supervisión.",
         "security": [
           {
             "UserBearer": []
@@ -4484,7 +4491,7 @@
               "maxLength": 2048
             },
             "example": "cursor-admin-opaco",
-            "description": "Cursor HMAC opaco para supervisi\u00f3n."
+            "description": "Cursor HMAC opaco para supervisión."
           },
           {
             "name": "X-Correlation-ID",
@@ -4494,12 +4501,12 @@
               "$ref": "../schemas/common.schema.json#/$defs/UUID"
             },
             "example": "11111111-1111-4111-8111-111111111111",
-            "description": "UUID del cliente o generado por servidor si falta; valor inv\u00e1lido 400; eco en respuesta."
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
           }
         ],
         "responses": {
           "200": {
-            "description": "P\u00e1gina de diagn\u00f3sticos para supervisi\u00f3n.",
+            "description": "Página de diagnósticos para supervisión.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -4538,7 +4545,7 @@
             }
           },
           "400": {
-            "description": "Solicitud inv\u00e1lida o par\u00e1metros incorrectos.",
+            "description": "Solicitud inválida o parámetros incorrectos.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -4564,7 +4571,7 @@
                   "INVALID_PAGINATION": {
                     "value": {
                       "code": "INVALID_PAGINATION",
-                      "message": "Cursor HMAC inv\u00e1lido, alterado o par\u00e1metros inv\u00e1lidos.",
+                      "message": "Cursor HMAC inválido, alterado o parámetros inválidos.",
                       "correlation_id": "11111111-1111-4111-8111-111111111111"
                     }
                   }
@@ -4573,7 +4580,7 @@
             }
           },
           "401": {
-            "description": "Autenticaci\u00f3n requerida o token inv\u00e1lido.",
+            "description": "Autenticación requerida o token inválido.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -4597,14 +4604,14 @@
                 },
                 "example": {
                   "code": "UNAUTHORIZED",
-                  "message": "Credenciales ausentes, vencidas o firma inv\u00e1lida.",
+                  "message": "Credenciales ausentes, vencidas o firma inválida.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
             }
           },
           "403": {
-            "description": "Rol insuficiente para ejecutar la operaci\u00f3n.",
+            "description": "Rol insuficiente para ejecutar la operación.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -4644,8 +4651,8 @@
     "/api/v1/diagnoses/{id}/feedback": {
       "post": {
         "operationId": "diagnosis_submit_feedback",
-        "summary": "Valoraci\u00f3n de resultado de diagn\u00f3stico propio",
-        "description": "Requiere diagn\u00f3stico propio no borrado en estado COMPLETADO o NO_CONCLUYENTE. Primer env\u00edo crea registro con 201; env\u00edos posteriores actualizan useful y comentario con 200. Estados no permitidos devuelven 409 FEEDBACK_NOT_ALLOWED. Recurso ajeno/borrado/inexistente devuelve 404 gen\u00e9rico. No alimenta entrenamiento autom\u00e1tico.",
+        "summary": "Valoración de resultado de diagnóstico propio",
+        "description": "Requiere diagnóstico propio no borrado en estado COMPLETADO o NO_CONCLUYENTE. Primer envío crea registro con 201; envíos posteriores actualizan useful y comentario con 200. Estados no permitidos devuelven 409 FEEDBACK_NOT_ALLOWED. Recurso ajeno/borrado/inexistente devuelve 404 genérico. No alimenta entrenamiento automático.",
         "security": [
           {
             "UserBearer": []
@@ -4660,7 +4667,7 @@
               "$ref": "../schemas/common.schema.json#/$defs/UUID"
             },
             "example": "11111111-1111-4111-8111-111111111111",
-            "description": "UUID del diagn\u00f3stico propio."
+            "description": "UUID del diagnóstico propio."
           },
           {
             "name": "X-Correlation-ID",
@@ -4670,7 +4677,7 @@
               "$ref": "../schemas/common.schema.json#/$defs/UUID"
             },
             "example": "11111111-1111-4111-8111-111111111111",
-            "description": "UUID del cliente o generado por servidor si falta; valor inv\u00e1lido 400; eco en respuesta."
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
           }
         ],
         "requestBody": {
@@ -4682,7 +4689,7 @@
               },
               "example": {
                 "useful": true,
-                "comment": "Recomendaci\u00f3n preventiva muy clara y aplicable en campo."
+                "comment": "Recomendación preventiva muy clara y aplicable en campo."
               }
             }
           }
@@ -4714,7 +4721,7 @@
                 "example": {
                   "diagnosis_id": "11111111-1111-4111-8111-111111111111",
                   "useful": true,
-                  "comment": "Recomendaci\u00f3n preventiva muy clara y aplicable en campo.",
+                  "comment": "Recomendación preventiva muy clara y aplicable en campo.",
                   "created_at": "2026-09-30T13:00:00Z",
                   "updated_at": "2026-09-30T13:00:00Z"
                 }
@@ -4747,7 +4754,7 @@
                 "example": {
                   "diagnosis_id": "11111111-1111-4111-8111-111111111111",
                   "useful": true,
-                  "comment": "Recomendaci\u00f3n preventiva muy clara y aplicable en campo.",
+                  "comment": "Recomendación preventiva muy clara y aplicable en campo.",
                   "created_at": "2026-09-30T13:00:00Z",
                   "updated_at": "2026-09-30T13:00:00Z"
                 }
@@ -4755,7 +4762,7 @@
             }
           },
           "400": {
-            "description": "Solicitud inv\u00e1lida o par\u00e1metros incorrectos.",
+            "description": "Solicitud inválida o parámetros incorrectos.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -4781,7 +4788,7 @@
                   "INVALID_REQUEST": {
                     "value": {
                       "code": "INVALID_REQUEST",
-                      "message": "Cuerpo de feedback inv\u00e1lido o comentario mayor a 1000 caracteres.",
+                      "message": "Cuerpo de feedback inválido o comentario mayor a 1000 caracteres.",
                       "correlation_id": "11111111-1111-4111-8111-111111111111"
                     }
                   }
@@ -4790,7 +4797,7 @@
             }
           },
           "401": {
-            "description": "Autenticaci\u00f3n requerida o token inv\u00e1lido.",
+            "description": "Autenticación requerida o token inválido.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -4814,7 +4821,7 @@
                 },
                 "example": {
                   "code": "UNAUTHORIZED",
-                  "message": "Credenciales ausentes, vencidas o firma inv\u00e1lida.",
+                  "message": "Credenciales ausentes, vencidas o firma inválida.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
@@ -4845,7 +4852,7 @@
                 },
                 "example": {
                   "code": "RESOURCE_NOT_FOUND",
-                  "message": "Diagn\u00f3stico no encontrado, ajeno o borrado.",
+                  "message": "Diagnóstico no encontrado, ajeno o borrado.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
@@ -4900,25 +4907,25 @@
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT",
-        "description": "Firma, issuer, audience, expiry, revocaci\u00f3n/estado de cuenta. Solo identidad de usuario."
+        "description": "Firma, issuer, audience, expiry, revocación/estado de cuenta. Solo identidad de usuario."
       },
       "ServiceBearer": {
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT",
-        "description": "Identidad ai_inference; audience interna dedicada. Bearer de usuario no autoriza. Algoritmo/configuraci\u00f3n en ADR de seguridad antes de incremento 1/3."
+        "description": "Identidad ai_inference; audience interna dedicada. Bearer de usuario no autoriza. Algoritmo/configuración en ADR de seguridad antes de incremento 1/3."
       },
       "RefreshCookie": {
         "type": "apiKey",
         "in": "cookie",
         "name": "__Secure-agro_refresh",
-        "description": "Cookie HttpOnly; Secure; SameSite=Lax; Path=/api/v1/auth; sin Domain. Rotaci\u00f3n y revocaci\u00f3n."
+        "description": "Cookie HttpOnly; Secure; SameSite=Lax; Path=/api/v1/auth; sin Domain. Rotación y revocación."
       },
       "CsrfHeader": {
         "type": "apiKey",
         "in": "header",
         "name": "X-CSRF-Token",
-        "description": "Debe coincidir con token ligado a sesi\u00f3n; adem\u00e1s verificar Origin permitido."
+        "description": "Debe coincidir con token ligado a sesión; además verificar Origin permitido."
       }
     }
   }

@@ -58,6 +58,8 @@ def create_diagnosis(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail={"code": "INVALID_REQUEST", "message": "Idempotency-Key inválida o no cumple con el formato contractual."},
         )
+    fingerprint = (hashlib.sha256(f"{validated_image.sha256}:POTATO".encode()).hexdigest()
+                   if validated_image.identified_crop else validated_image.sha256)
 
     # 1. Non-blocking advisory lock on owner_id/scope/key
     lock_id = compute_advisory_lock_id(principal.id, "diagnosis_create", idempotency_key)
@@ -111,7 +113,7 @@ def create_diagnosis(
                     },
                 )
 
-            if existing_key.fingerprint == validated_image.sha256:
+            if existing_key.fingerprint == fingerprint:
                 # Replay identical
                 return diag
             else:
@@ -209,6 +211,7 @@ def create_diagnosis(
             image_size_bytes=validated_image.size_bytes,
             image_width=validated_image.width,
             image_height=validated_image.height,
+            identified_crop=validated_image.identified_crop,
             correlation_id=cid,
             created_at=now,
             updated_at=now,
@@ -224,7 +227,7 @@ def create_diagnosis(
             owner_id=principal.id,
             scope="diagnosis_create",
             key=idempotency_key,
-            fingerprint=validated_image.sha256,
+            fingerprint=fingerprint,
             diagnosis_id=new_diag_id,
             created_at=now,
             expires_at=expires_at,
@@ -242,6 +245,7 @@ def create_diagnosis(
                 "diagnosis_id": str(new_diag_id),
                 "owner_id": str(principal.id),
                 "object_key": object_key,
+                **({"identified_crop": validated_image.identified_crop} if validated_image.identified_crop else {}),
             },
         }
 

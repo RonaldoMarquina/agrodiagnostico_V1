@@ -1,22 +1,28 @@
 {
   "schema_version": 2,
-  "reviewed_at": null,
-  "reviewer": null,
-  "protocol_reference": "ml/evaluation/protocol-g0.v1.json",
+  "reviewed_at": "2026-11-19",
+  "reviewer": "project owner G0; Codex internal quality control",
+  "protocol_reference": "ml/evaluation/protocol-g0.v1.2.0.json",
   "dossier_reference": "docs/evidence/INCREMENTO-4-EXPEDIENTE-FUENTES.md",
   "decisions": [
     {
       "source_id": "plantvillage",
-      "decision": "PENDING",
-      "admitted_for": [],
+      "decision": "ADMITTED",
+      "admitted_for": [
+        "TRAINING",
+        "EVALUATION"
+      ],
       "license": "CC-BY-SA-3.0",
-      "verified_license_status": "PENDING_REVIEW",
+      "verified_license_status": "VERIFIED_FOR_PROJECT",
       "capture_context": "CONTROLLED_LEAF",
       "restrictions": "Atribución requerida. Agrupamiento obligatorio por planta/sesión para evitar fugas.",
-      "classes_admitted": [],
-      "local_inventory_status": "NOT_ADMITTED",
-      "local_count": null,
-      "reason": "Admisión sin evidencia verificable; requiere revisión humana."
+      "classes_admitted": [
+        "POTATO_EARLY_BLIGHT",
+        "POTATO_LATE_BLIGHT"
+      ],
+      "local_inventory_status": "ADMITTED_PILOT_ONLY",
+      "local_count": 2358,
+      "reason": "PlantVillage expert provenance and internal quality control; rights linked to pinned revision and each SHA-256."
     },
     {
       "source_id": "plantdoc",

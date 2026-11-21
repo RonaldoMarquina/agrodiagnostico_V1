@@ -15,12 +15,12 @@ El worker real SHALL verificar integridad, procedencia autorizada, compatibilida
 - **WHEN** el modo real no dispone de su release
 - **THEN** no produce resultados inventados y los trabajos permanecen durables para procesamiento posterior
 
-### Requirement: Cultivo automático y abstención evaluada
-La inferencia SHALL intentar identificar POTATO o MAIZE sin selección manual obligatoria y producir resultados técnicos contractuales. SHALL abstenerse con motivo aplicable ante cultivo ajeno, calidad visual insuficiente o evidencia insuficiente conforme controles evaluados. SHALL NOT inventar cultivo, enfermedad ni recomendaciones. NO_CONCLUYENTE SHALL seguir siendo estado de Diagnosis, no clase entrenable.
+### Requirement: Entrada de papa identificada y abstención evaluada
+La entrada del piloto SHALL exigir que el usuario identifique previamente una hoja de papa y producir resultados técnicos contractuales solo para tizón temprano o tardío. SHALL abstenerse con motivo aplicable ante cultivo ajeno, papa sana, calidad visual insuficiente o evidencia insuficiente conforme controles evaluados. SHALL NOT inventar cultivo, enfermedad ni recomendaciones. NO_CONCLUYENTE SHALL seguir siendo estado de Diagnosis, no clase entrenable.
 
 #### Scenario: Imagen dentro de cobertura
-- **WHEN** una imagen de papa o maíz satisface controles técnicos del release
-- **THEN** se emite predicción con cultivo/clase compatibles, raw_score y metadatos reales para decisión posterior de Diagnosis
+- **WHEN** una imagen identificada como hoja de papa satisface controles técnicos del release
+- **THEN** se emite predicción con cultivo POTATO y una de las dos clases candidatas compatibles, raw_score y metadatos reales para decisión posterior de Diagnosis
 
 #### Scenario: Imagen fuera de cobertura o ambigua
 - **WHEN** los controles evaluados rechazan un cultivo ajeno o una imagen visualmente ambigua

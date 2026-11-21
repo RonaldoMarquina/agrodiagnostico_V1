@@ -10,14 +10,21 @@ Verifies Task 7.2:
 - Prohibits public HTTP PATCH modification of model_supported.
 """
 from datetime import datetime, timezone
+from contextlib import redirect_stdout
+import io
+from pathlib import Path
 import json
+import tempfile
 from unittest.mock import patch
 import unittest
 import uuid
 
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker
+from fastapi import HTTPException
 
+from app.application.catalog import patch_admin_problem
+from app.policy import main as policy_cli_main
 from app.application.policy import (
     activate_publication_policy,
     get_publication_policy_status,
@@ -181,6 +188,58 @@ class TestPublicationPolicyCLI(unittest.TestCase):
         with self.assertRaises(ValueError) as ctx:
             import_publication_policy(self.session, "admin", "Second import", payload, apply=True)
         self.assertIn("POLICY_ALREADY_EXISTS", str(ctx.exception))
+
+    def test_pilot_import_requires_exact_g2_evidence_even_in_dry_run(self):
+        payload = make_sample_policy_payload()
+        payload["governance"]["g0_protocol_version"] = "1.2.0"
+        payload["approved_classes"][1]["class_code"] = "POTATO_LATE_BLIGHT"
+        payload["approved_classes"][1]["crop_code"] = "POTATO"
+        with self.assertRaisesRegex(ValueError, "EVIDENCE_MISSING"):
+            import_publication_policy(self.session, "admin", "revisión", payload)
+        with patch("app.application.policy.verify_pilot_policy_evidence",
+                   side_effect=ValueError("EVIDENCE_MISMATCH")):
+            with self.assertRaisesRegex(ValueError, "EVIDENCE_MISMATCH"):
+                import_publication_policy(self.session, "admin", "revisión", payload,
+                                          release_bundle_path=Path("bundle.json"),
+                                          g2_approval_path=Path("acta.json"))
+        self.assertEqual(self.session.query(PublicationPolicy).count(), 0)
+        self.assertEqual(self.session.query(DiagnosisAuditLog).count(), 0)
+
+    def test_import_audit_failure_rolls_back_policy(self):
+        payload = make_sample_policy_payload()
+        with patch("app.application.policy.record_audit_log", side_effect=RuntimeError("audit failed")):
+            with self.assertRaisesRegex(RuntimeError, "audit failed"):
+                import_publication_policy(self.session, "admin", "auditoría", payload, apply=True)
+        self.session.rollback()
+        self.assertEqual(self.session.query(PublicationPolicy).count(), 0)
+
+    def test_public_catalog_patch_cannot_set_model_support(self):
+        with self.assertRaises(HTTPException) as raised:
+            patch_admin_problem(self.session, None, uuid.uuid4(),
+                                "POTATO_EARLY_BLIGHT", {"model_supported": True})
+        self.assertEqual(raised.exception.status_code, 400)
+        self.assertFalse(self.session.get(Problem, "POTATO_EARLY_BLIGHT").model_supported)
+
+    def test_cli_import_without_apply_is_dry_run(self):
+        payload = make_sample_policy_payload()
+        payload["governance"]["g0_protocol_version"] = "1.2.0"
+        payload["approved_classes"][1].update(
+            class_code="POTATO_LATE_BLIGHT", crop_code="POTATO")
+        with tempfile.TemporaryDirectory() as directory:
+            policy_path = Path(directory) / "policy.json"
+            policy_path.write_text(json.dumps(payload), encoding="utf-8")
+            argv = ["policy", "import", "--policy-file", str(policy_path),
+                    "--release-bundle", str(Path(directory) / "bundle.json"),
+                    "--g2-approval", str(Path(directory) / "approval.json"),
+                    "--actor", "operador", "--reason", "ensayo"]
+            with (patch("app.policy.sys.argv", argv),
+                  patch("app.policy.get_sessionmaker", return_value=self.Session),
+                  patch("app.application.policy.verify_pilot_policy_evidence",
+                        return_value={"bundle_sha256": "a" * 64})):
+                with redirect_stdout(io.StringIO()):
+                    self.assertEqual(policy_cli_main(), 0)
+        self.assertEqual(self.session.query(PublicationPolicy).count(), 0)
+        self.assertEqual(self.session.query(DiagnosisAuditLog).count(), 0)
 
     def test_validation_fails_on_missing_governance(self):
         payload = make_sample_policy_payload()

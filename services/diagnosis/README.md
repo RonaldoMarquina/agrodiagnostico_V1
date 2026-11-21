@@ -1,10 +1,10 @@
 # Diagnosis — AgroDiagnóstico V1
 
-Estado: persistencia y API de salud técnica implementadas; funciones de negocio pendientes. La presencia de `app/`, `migrations/` o Dockerfile no demuestra implementación.
+Estado actual: las funciones de Diagnosis de los incrementos 2 y 3 están implementadas. Para el piloto ML G0 v1.2.0, la carga acepta el campo multipart opcional `identified_crop=POTATO`, lo guarda separado del cultivo inferido y lo envía en `DiagnosisRequested` v2. Rechaza otros valores. La inferencia real continúa desactivada hasta G2; las solicitudes sin ese campo conservan el flujo provisional. [Contrato HTTP](../../contracts/openapi/diagnosis.openapi.json) · [Evento](../../contracts/events/DiagnosisRequested.v2.schema.json).
 
-Responsabilidad prevista: solicitudes, estados, referencias de imágenes privadas, resultados visibles, historial, catálogo revisado, feedback y outbox/inbox. Decide si el análisis puede publicarse y obtiene recomendaciones del catálogo. NO_CONCLUYENTE es un estado, no una clase. No guarda bytes de fotos en PostgreSQL.
+Responsabilidad: solicitudes, estados, referencias de imágenes privadas, resultados visibles, historial, catálogo revisado, feedback y outbox/inbox. Decide si el análisis puede publicarse y obtiene recomendaciones del catálogo. NO_CONCLUYENTE es un estado, no una clase. No guarda bytes de fotos en PostgreSQL.
 
-El grupo 3 aporta dependencias bloqueadas, contenedor de migración y revisión Alembic independiente. El grupo 4 aporta API de salud y contenedor de runtime. Las funciones de dominio corresponden al incremento 2–3; no están terminadas.
+Las secciones inferiores conservan detalles del arranque técnico del incremento 0. La revisión `diagnosis_0006` añade `identified_crop` nullable con restricción para el piloto; no reescribe diagnósticos históricos. La suite de migración verifica upgrade/downgrade y la carga HTTP prueba POTATO, rechazo de otros valores e idempotencia.
 
 Referencias: [arquitectura](../../docs/ARCHITECTURE.md), [inventario de interfaces](../../docs/API_CONTRACTS.md), [ADR de persistencia](../../docs/adr/0001-incremento-0-base-tecnica.md) y [tareas del Incremento 0](../../openspec/changes/archive/2026-09-30-incremento-0-base-integrada/tasks.md). Los comandos de persistencia se describen debajo; el servidor HTTP técnico se inicia mediante Compose según DEVELOPMENT.
 
@@ -33,7 +33,7 @@ La base/rol están fijados al dueño del servicio. `ready` devuelve0 solo si la 
 
 La revisión base (`diagnosis_0001`) crea solo los metadatos `alembic_version`. La revisión de dominio (`diagnosis_0002`) implementa las tablas del Incremento 2:
 - `crops`: Cultivos autorizados (`POTATO`, `MAIZE`).
-- `problems`: Condiciones candidatas iniciales (`POTATO_HEALTHY`, `POTATO_EARLY_BLIGHT`, `POTATO_LATE_BLIGHT`, `MAIZE_HEALTHY`, `MAIZE_COMMON_RUST`, `MAIZE_LEAF_BLIGHT`, `MAIZE_GRAY_LEAF_SPOT`) con `model_supported=false`.
+- `problems`: Condiciones candidatas iniciales (`POTATO_HEALTHY`, `POTATO_EARLY_BLIGHT`, `POTATO_LATE_BLIGHT`, `MAIZE_HEALTHY`, `MAIZE_COMMON_RUST`, `MAIZE_LEAF_BLIGHT`, `MAIZE_GRAY_LEAF_SPOT`) con `model_supported=false`. `diagnosis_0005` cambia el nombre candidato de la semilla `MAIZE_LEAF_BLIGHT` a «Tizón foliar del norte» sin acreditar revisión externa ni soporte de modelo.
 - `recommendations`: Recomendaciones versionadas e inmutables con fuentes y revisión humana (inicialmente sin semillas).
 - `diagnoses`: Ciclo de vida, metadatos de imagen privada (`object_key`), snapshot de recomendación y tombstone (`deleted_at`).
 - `idempotency_keys`: Idempotencia `(owner_id, scope, key)` con fingerprint SHA-256 y retención de 24h.

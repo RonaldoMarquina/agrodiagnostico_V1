@@ -125,7 +125,10 @@ class Contracts(unittest.TestCase):
             self.assertIn(str(status), op['responses'])
         schema = op['requestBody']['content']['multipart/form-data']['schema']
         self.assertEqual(schema['required'], ['image'])
-        self.assertEqual(set(schema['properties']), {'image'})
+        self.assertEqual(set(schema['properties']), {'image', 'identified_crop'})
+        self.assertEqual(schema['properties']['identified_crop']['enum'], ['POTATO'])
+        v.validator(schema).validate({'image': 'synthetic', 'identified_crop': 'POTATO'})
+        self.assertFalse(v.validator(schema).is_valid({'image': 'synthetic', 'identified_crop': 'MAIZE'}))
         self.assertFalse(v.validator(schema).is_valid({'image': 'synthetic', 'crop_code': 'POTATO'}))
         self.assertEqual(op['x-upload-policy']['max_file_bytes'], 10485760)
         self.assertEqual(op['x-upload-policy']['max_decoded_pixels'], 24000000)

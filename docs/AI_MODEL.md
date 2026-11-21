@@ -1,3 +1,5 @@
+> G1 del piloto v1.2.0 quedó cerrado para las dos etiquetas de papa con PlantVillage y negativos de tomate. MobileNetV3 y ResNet18 se compararon en VAL; el candidato se congeló antes de [una evaluación de TEST](evidence/INCREMENTO-4-TEST-PILOTO-V1.2.md) que cumplió los límites numéricos. [G2 aprobó el bundle restringido](evidence/INCREMENTO-4-APROBACION-G2-PILOTO.md). La [aceptación integrada local](evidence/INCREMENTO-4-G3-ACEPTACION-LOCAL.md) encontró 4/4 falsas aceptaciones de papa sana; G3 no está aprobado. Worker y política se activaron solo en el entorno aislado ya retirado. Se prepara otro ciclo de datos y evaluación para rechazo de papa sana.
+
 # Datos y modelo de IA
 
 ## Alcance previsto
@@ -5,9 +7,9 @@
 | Cultivo | Condiciones candidatas |
 | --- | --- |
 | Papa | Sana; tizón temprano; tizón tardío o rancha |
-| Maíz | Sano; roya común; tizón foliar; mancha gris foliar |
+| Maíz | Sano; roya común; tizón foliar del norte; mancha gris foliar |
 
-Las siete clases son el objetivo experimental, no una promesa de cobertura ya demostrada. Publica una clase solo después de acordar criterios con el docente y aportar métricas en un test independiente. Si alguna no cumple, desactívala en interfaz y catálogo y documenta la cobertura real. La etiqueta sana tampoco significa ausencia de todas las enfermedades o plagas.
+El objetivo experimental G0 v1.2.0 son los dos tizones de papa en hoja previamente identificada. Papa sana, maíz, cultivo automático y plagas quedan fuera del piloto. Publica una clase solo después de aplicar los criterios definidos y aprobados por el responsable del proyecto antes del entrenamiento y aportar métricas en un test independiente. Si alguna no cumple, desactívala en interfaz y catálogo y documenta la cobertura real. La etiqueta sana tampoco significa ausencia de todas las enfermedades o plagas.
 
 ## Responsabilidades
 
@@ -17,9 +19,9 @@ Tras aceptar y decodificar la carga, para cultivo ajeno, imagen visualmente defe
 
 ## Inventario del dataset
 
-Antes de entrenar, documenta para cada fuente: nombre/autor, permiso o licencia, fecha de acceso, etiquetas y definición diagnóstica, cantidades por clase, condiciones de captura, revisión de etiquetas, duplicados, exclusiones y restricciones de uso. PlantVillage, PlantDoc y PlantSeg tienen un inventario inicial de fuentes y etiquetas; siguen pendientes de admisión y la compatibilidad de permisos y etiquetas se decide antes de usar imágenes. Un conjunto de campo de Ayacucho con permisos adecuados se reserva para evaluación externa si se obtiene; su ausencia debe declararse.
+Antes de entrenar, documenta para cada fuente: nombre/autor, permiso o licencia, fecha de acceso, etiquetas y definición diagnóstica, cantidades por clase, condiciones de captura, revisión de etiquetas, duplicados, exclusiones y restricciones de uso. La revisión fijada de PlantVillage `color` tiene un lote privado G1 admitido solo para los dos tizones y negativos de tomate. PlantDoc y PlantSeg siguen pendientes de admisión. Un conjunto de campo de Ayacucho con permisos adecuados se reserva para evaluación externa si se obtiene; su ausencia debe declararse.
 
-El manifiesto versionado CSV o Parquet incluirá como mínimo `image_id`, `sha256`, `crop_code`, `class_code`, `source`, `license`, `capture_context`, `label_quality`, `split_group` y `split` (`TRAIN`, `VAL`, `TEST`, `EXTERNAL`). Define y congela los siete `class_code` antes de entrenar; nunca recicles un código retirado. Mantén imágenes privadas y ubicación precisa fuera del repositorio.
+El manifiesto versionado CSV o Parquet incluirá como mínimo `image_id`, `sha256`, `crop_code`, `class_code`, `source`, `license`, `capture_context`, `label_quality`, `split_group` y `split` (`TRAIN`, `VAL`, `TEST`, `EXTERNAL`). Define y congela los dos `class_code` activos antes de entrenar; nunca recicles un código retirado. Mantén imágenes privadas y ubicación precisa fuera del repositorio.
 
 Divide por planta, sesión, sitio o fuente cuando existan imágenes relacionadas; evita que duplicados o vistas de la misma planta crucen particiones. Verifica corruptos, desbalance y coincidencias exactas/visuales. El test sellado no sirve para elegir hiperparámetros ni umbral. No pases fotos de producción a entrenamiento sin consentimiento, etiquetado y revisión posteriores.
 
@@ -41,18 +43,22 @@ Plagas requieren proyecto experimental separado: especies pertinentes, cajas ano
 
 ## Precisiones de la fuente reconciliada
 
-RF-07 y §8.21 exigen intentar identificar el cultivo sin selección manual obligatoria. Se compararán clasificación de cultivo y clases combinadas; no se inventará un cultivo para imágenes fuera de cobertura. RF-20/§8.34 conservan el feedback de utilidad en Diagnosis; «no útil» no equivale a etiqueta incorrecta ni autoriza entrenamiento. Véase [reconciliación](reference/RECONCILIACION-V1.md).
+RF-07 y §8.21 pertenecen al alcance general previo. Para G0 v1.2.0, el usuario identifica previamente la hoja de papa; el piloto evalúa rechazo de entradas fuera de cobertura. RF-20/§8.34 conservan el feedback de utilidad en Diagnosis; «no útil» no equivale a etiqueta incorrecta ni autoriza entrenamiento. Véase [reconciliación](reference/RECONCILIACION-V1.md).
 
 Los archivos corruptos, disfrazados, excesivos o no decodificables se rechazarán durante la validación HTTP antes de crear el diagnóstico/evento. Ese rechazo no es un resultado NO_CONCLUYENTE del modelo.
 
 ## Inventario inicial implementado — Incremento 0, grupo 5
 
-El [inventario versionado](../ml/manifests/README.md) registra referencias primarias, revisiones, licencias declaradas, restricciones, conteos remotos y locales desconocidos. Distingue PlantSeg v5/v7 y sus permisos; no autoriza intercambiar versiones. Las siete clases siguen candidatas y la equivalencia «tizón foliar»/«Northern Leaf Blight» permanece provisional. Ayacucho externo no está disponible.
+El [inventario versionado](../ml/manifests/README.md) registra referencias primarias, revisiones, licencias declaradas, restricciones, conteos remotos y locales desconocidos. Distingue PlantSeg v5/v7 y sus permisos; no autoriza intercambiar versiones. Solo los dos tizones de papa son candidatos del piloto; los otros códigos son historial fuera de alcance. El responsable propuso denominar `MAIZE_LEAF_BLIGHT` «tizón foliar del norte»; las etiquetas específicas «Northern Leaf Blight» permanecen provisionales y las genéricas de roya/tizón no se mapean automáticamente. Ayacucho externo no está disponible.
 
-`bash scripts/check_dataset.sh` valida estructura, elegibilidad, correspondencia con contratos y separación por hash/grupo entre cada par de TRAIN/VAL/TEST/EXTERNAL, con positivos y negativos sintéticos. No modifica filas ni descarga imágenes. Manifiesto real inicialmente sin filas; fixtures separados no acreditan datos ni métricas.
+`bash scripts/check_dataset.sh` valida estructura, elegibilidad, correspondencia con contratos y separación por hash/grupo entre cada par de TRAIN/VAL/TEST/EXTERNAL, con positivos y negativos sintéticos. No modifica filas ni descarga imágenes. El lote real admitido está en manifiestos privados G1; los fixtures separados no acreditan datos ni métricas agronómicas.
 
 La [política de cuarentena y agrupamiento](../ml/manifests/README.md#partición-cuarentena-y-privacidad) exige relacionar planta/sesión/sitio/fuente y copias entre fuentes antes de particionar. Sin separación fiable, excluir o mantener fuera del manifiesto admitido. El control automático no verifica bytes, etiquetas, consentimiento ni casi duplicados visuales; esa curación y el test sellado pertenecen al incremento 4. No hay entrenamiento ni reutilización automática de imágenes de usuarios. [Evidencia](evidence/INCREMENTO-0-GRUPO-5.md).
 
-## Estado del incremento 4 (2026-10-15)
+## Estado del incremento 4 (2026-11-19)
 
-G0–G3 pendientes. Se retiraron afirmaciones de aprobación y aceptación sin evidencia. Los clasificadores actuales son fixtures lineales; el runtime real y pipeline experimental requieren implementación adicional. Ver [estado rectificado](evidence/INCREMENTO-4-ACEPTACION-INTEGRADA.md).
+G0 de diseño aprobado por el responsable el 2026-11-19 ([protocolo v1.2.0](../ml/evaluation/protocol-g0.v1.2.0.json)); G1 cerrado para el piloto; G2 aprobado para el [bundle de dos tizones](evidence/INCREMENTO-4-APROBACION-G2-PILOTO.md); G3 pendiente. El [recorrido técnico PyTorch CPU](evidence/INCREMENTO-4-CPU-SMOKE.md) usa fixtures geométricos y conserva una alternativa jerárquica histórica limitada a `VAL_FIXTURE`. El [lote privado G1](evidence/INCREMENTO-4-G1-PILOTO-V1.2.md) tiene derechos y procedencia experta de PlantVillage con control interno de calidad; no hubo nueva revisión agronómica independiente. El experimento real TRAIN/VAL usa clasificadores directos. El [runtime del worker](evidence/INCREMENTO-4-WORKER-CPU-PREPARADO.md) está preparado sin activación; la política de publicación requiere integración adicional.
+
+El [paquete ML](../ml/README.md) permite entrenar y evaluar en CPU con manifiestos locales explícitos. Los comandos históricos de candidato con fixtures no constituyen resultados agronómicos. En el piloto, [dos clasificadores no jerárquicos se entrenaron y compararon con TRAIN/VAL admitidos](evidence/INCREMENTO-4-ENTRENAMIENTO-VAL-PILOTO.md); MobileNetV3 fue seleccionado y congelado con calibración/umbral de VAL. [TEST se evaluó una sola vez](evidence/INCREMENTO-4-TEST-PILOTO-V1.2.md) y ambos tizones cumplieron los límites numéricos. [G2 aprobó el bundle](evidence/INCREMENTO-4-APROBACION-G2-PILOTO.md) para este alcance; esto no prueba generalización a campo ni activa el worker real.
+
+El [preflight G3](evidence/INCREMENTO-4-POLITICA-Y-PREFLIGHT-G3.md) verificó hashes del bundle, acta y dataset G1 sin volver a evaluar TEST. La [prueba integrada posterior](evidence/INCREMENTO-4-G3-ACEPTACION-LOCAL.md) publicó orientación revisada y activó la política únicamente en un proyecto Compose efímero, ya eliminado. El rechazo de papa sana falló y `G3=NOT_APPROVED`. La [guía operativa](operations/ai-model-operations.md#g0g3-política-y-rollback) contiene comandos de G0–G3, activación, retiro y rollback. La ausencia de contenido revisado sigue produciendo `CATALOG_UNAVAILABLE`.

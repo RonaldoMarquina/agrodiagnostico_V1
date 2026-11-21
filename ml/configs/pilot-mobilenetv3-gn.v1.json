@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "purpose": "G1_PILOT_VAL_EXPERIMENT",
+  "architecture": "mobilenet_v3_small",
+  "normalization": "GROUP_NORM",
+  "base_weights": "RANDOM_INITIALIZATION",
+  "class_codes": ["POTATO_EARLY_BLIGHT", "POTATO_LATE_BLIGHT"],
+  "negative_target": "OTHER_CROP",
+  "seed": 42,
+  "epochs": 3,
+  "batch_size": 16,
+  "cpu_threads": 4,
+  "learning_rate": 0.001,
+  "preprocessing": {
+    "input_size": [224, 224],
+    "channels": 3,
+    "color_space": "RGB",
+    "mean": [0.485, 0.456, 0.406],
+    "std": [0.229, 0.224, 0.225],
+    "min_dimension": 200,
+    "max_dimension": 6000
+  }
+}

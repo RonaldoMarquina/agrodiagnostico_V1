@@ -286,6 +286,25 @@ class TestPublicationPolicyEngineAndSerialization(unittest.TestCase):
             self.assertEqual(diag_db.reason_code, "CATALOG_UNAVAILABLE")
             self.assertIsNone(diag_db.recommendation_id)
 
+    def test_pilot_logit_calibration_still_requires_reviewed_catalog(self):
+        """G0 v1.2 uses Platt(logit(raw_score)); no content means abstention."""
+        policy = self.session.get(PublicationPolicy, self.policy_id)
+        payload = dict(policy.payload)
+        payload["governance"] = {**payload["governance"], "g0_protocol_version": "1.2.0"}
+        policy.payload = payload
+        self.session.query(Recommendation).delete()
+        self.session.commit()
+        diag, token = self._create_processing_diagnosis()
+        msg = self._build_analyzed_message(diag.id, token, raw_score=0.8)
+        channel = MockAMQPChannel()
+        self.assertTrue(self.consumer.process_message(channel, 50, msg, "diagnosis.analyzed.v1"))
+        with self.Session() as db:
+            result = db.get(Diagnosis, diag.id)
+            self.assertEqual(result.status, "NO_CONCLUYENTE")
+            self.assertEqual(result.reason_code, "CATALOG_UNAVAILABLE")
+            self.assertAlmostEqual(result.calibrated_confidence, 0.9412, places=4)
+            self.assertIsNone(result.recommendation_id)
+
     def test_retired_policy_fails_closed(self):
         """Retiring policy causes subsequent Analyzed messages to transition to UNSUPPORTED_CLASS."""
         retire_publication_policy(self.session, "ops", "Test retirement", self.policy_id, apply=True)

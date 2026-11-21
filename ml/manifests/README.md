@@ -1,6 +1,10 @@
+> Estado actual del piloto G0 v1.2.0: G1 cerrado para dos tizones de papa y negativos de tomate, con manifiestos privados en `.local/pv-g1/pilot-v1.2/`. TEST está sellado. Las tablas históricas siguientes describen el inventario anterior. [Evidencia](../../docs/evidence/INCREMENTO-4-G1-PILOTO-V1.2.md).
+
 # Inventario inicial v1
 
-Consulta de fuentes: 2026-09-29. Tres fuentes **PENDING**, siete clases **CANDIDATE**, veintiún mapeos explícitos. No hay imágenes admitidas ni modelo evaluado. Los conteos locales por clase son `null` (no medidos); `images.v1.csv` contiene únicamente la cabecera, cuya ausencia de filas sí se comprueba. No confundir ese cero de filas con un conteo de fotografías en el equipo.
+Actualización de diseño v2: `MAIZE_LEAF_BLIGHT` se denomina **tizón foliar del norte**; `Corn rust leaf`, `corn rust` y `Corn leaf blight` están `UNMAPPED` en [`label-mappings.v2.json`](label-mappings.v2.json). El responsable reservó este vocabulario históricamente; G0 v1.2.0 solo incluye dos tizones de papa; equivalencias de imágenes y derechos siguen pendientes en G1, por lo que no es una clase soportada. Los conteos v1 de abajo son metadatos históricos de etiquetas originales y no acreditan equivalencia ni admisión. Véase el [protocolo G0](../evaluation/protocol-g0.v1.2.0.json).
+
+Consulta de fuentes: 2026-09-29. Tres fuentes **PENDING**, siete códigos históricos (dos clases candidatas del piloto), veintiún mapeos de inventario. No hay imágenes admitidas ni modelo evaluado. Los conteos locales por clase son `null` (no medidos); `images.v1.csv` contiene únicamente la cabecera, cuya ausencia de filas sí se comprueba. No confundir ese cero de filas con un conteo de fotografías en el equipo.
 
 | Archivo | Uso |
 | --- | --- |
@@ -13,7 +17,7 @@ Consulta de fuentes: 2026-09-29. Tres fuentes **PENDING**, siete clases **CANDID
 
 ## Fuentes, versiones y permisos
 
-- **PlantVillage:** repositorio de los autores y [distribución enlazada por ellos](https://huggingface.co/datasets/mohanty/PlantVillage), cuya tarjeta declara CC BY-SA 3.0. Se registra esa declaración, pendiente de revisar su alcance sobre la distribución elegida, atribución y derivados. El README publica 54.306 imágenes globales; no se suman variantes de color/gris/segmentación como fotografías independientes. [Referencia primaria](https://github.com/spMohanty/PlantVillage-Dataset).
+- **PlantVillage:** repositorio de los autores y [distribución de la cuenta del autor, revisión `9e97599868962bd0079b8db4b7f1efa9185fa1e7`](https://huggingface.co/datasets/mohanty/PlantVillage/commit/9e97599868962bd0079b8db4b7f1efa9185fa1e7), con configuración candidata `color`. Su tarjeta declara CC BY-SA 3.0 y el artículo original aclara una condición sobre algoritmos entrenados. La revisión, ruta y SHA-256 vinculan el lote color seleccionado a la licencia común. La matriz de fuentes recoge la atribución y condiciones de publicación del modelo. El README publica 54.306 imágenes globales; no se suman variantes de color/gris/segmentación como fotografías independientes. [Referencia primaria](https://github.com/spMohanty/PlantVillage-Dataset).
 - **PlantDoc:** se inventaría Cropped-PlantDoc para clasificación, separado del repositorio de detección. Su [README](https://github.com/pratikkayal/PlantDoc-Dataset) reporta 2.598 puntos globales y su [licencia](https://github.com/pratikkayal/PlantDoc-Dataset/blob/5467f6012d78d1c446145d5f582da6096f852ae8/LICENSE.txt) declara CC BY 4.0. Los conteos de carpetas son metadatos del repositorio, no una reconciliación de ese total ni una auditoría de derechos de fotografías recopiladas de Internet.
 - **PlantSeg:** el [README](https://github.com/tqwei05/PlantSeg) enlaza [v5](https://zenodo.org/records/14935094), cuyos metadatos declaran CC BY 4.0. La [v7](https://zenodo.org/records/17719108) declara CC BY-NC 4.0. Se sigue v7 como candidata, conservando el contraste; ningún permiso se traslada entre versiones. Las etiquetas proceden del código de los autores en revisión fijada y requieren comprobar correspondencia con el archivo v7 antes de importar. El README expresa un total superior a 11.400; se conserva como descripción, no como total exacto de v7.
 
@@ -41,7 +45,7 @@ UTF-8, cabecera única con exactamente estos campos (orden libre): `image_id`, `
 
 Particiones: `TRAIN`, `VAL`, `TEST`, `EXTERNAL`. `label_quality=REVIEWED` se exige a filas reales; las no revisadas se conservan fuera del manifiesto admitido. `SOURCE_ONLY` existe en el esquema para expresar procedencia, pero no supera la admisión real. Los fixtures usan `SYNTHETIC` en un modo interno exclusivo de pruebas: el CLI de manifiestos reales los rechaza. El inventario inicial vacío puede pasar su verificación documental; un CSV vacío pasado expresamente con `--manifest` falla.
 
-Los códigos v1 quedan reservados: no cambiar cultivo/significado ni reciclar códigos retirados. Conservar mapas publicados y sus versiones; un cambio semántico requiere nuevo código, decisión revisada y actualización de contratos antes de consumidores. El validador detecta códigos repetidos, retirados activos y divergencias frente a contratos de eventos/HTTP. Las siete definiciones siguen pendientes de revisión; `NO_CONCLUYENTE` no entra en la taxonomía.
+Los códigos v1 quedan reservados: no cambiar cultivo/significado ni reciclar códigos retirados. Conservar mapas publicados y sus versiones; un cambio semántico requiere nuevo código, decisión revisada y actualización de contratos antes de consumidores. El validador detecta códigos repetidos, retirados activos y divergencias frente a contratos de eventos/HTTP. Las dos definiciones del piloto están revisadas con procedencia experta de PlantVillage y control interno; otras equivalencias permanecen pendientes. `NO_CONCLUYENTE` no entra en la taxonomía.
 
 ## Partición, cuarentena y privacidad
 
@@ -61,3 +65,26 @@ No guardar imágenes de usuarios ni ubicación precisa en Git; no entrenar autom
 Desde la raíz: `bash scripts/check_dataset.sh`. Python 3.12, entorno efímero y dependencias del lock existente `contracts/tooling/requirements.lock`; no modifica herramientas globales. Solo la instalación de dependencias necesita red (o caché); la validación y pruebas son offline, sin GPU, fotos ni pesos.
 
 Con JSON Schema instalado desde ese lock en un entorno aislado: `python scripts/validate_dataset.py --manifest /ruta/privada/manifiesto.csv`. No usar fixtures para entrenamiento. [Evidencia](../../docs/evidence/INCREMENTO-0-GRUPO-5.md).
+
+## Puerta G1 v2 para filas reales
+
+Los CSV [`images.v2.csv`](images.v2.csv) y [`negatives.v2.csv`](negatives.v2.csv) del repositorio contienen solo cabeceras. Una copia privada versionada contiene las filas propuestas; el CSV negativo conserva las nueve columnas propias y **no** incluye `class_code` ni `NO_CONCLUYENTE`. Una fila no vacía requiere `--images-dir` y `--evidence`; sin ellos el validador falla. No descarga imágenes ni decide derechos por ser pública una fuente.
+
+Copiar [`g1-private-record.template.json`](g1-private-record.template.json) a una carpeta privada fuera de Git. En `records` registrar por cada imagen: `image_id`, `sha256`, `source`, `source_revision` exacta de `sources.v2.json`, `relative_path` dentro de la raíz privada, `split_group`, `decision` (`ADMIT`, `EXCLUDE`, `PENDING`), `decision_by`, `decision_at` y `decision_reason`. Solo las decisiones `ADMIT` pueden entrar en un CSV. Cada `ADMIT` añade `rights` con `decision: APPROVED`, `allowed_uses` (`TRAINING` para TRAIN o `EVALUATION` para VAL/TEST/EXTERNAL), `proof_path` relativo al registro privado, `reviewer`, `reviewed_at`, `attribution` y `restrictions`. El comprobante debe existir y contener bytes; una licencia aplicable al lote puede servir de comprobante común cuando cada fila vincula los bytes mediante revisión, ruta original y SHA-256.
+
+Para una imagen positiva añadir `source_label`, `class_code`, `crop_code` y `label_review` con `decision: APPROVED`, esos tres valores, `reviewer`, `reviewed_at` y `evidence_note`. La definición de clase y la equivalencia exacta de `label-mappings.v2.json` también deben figurar como `REVIEWED` y `APPROVED` con evidencia de procedencia experta de la fuente y control interno de calidad/ambigüedad, o con revisión especializada independiente si se dispone de ella. Para un negativo añadir `category_review` con `decision: APPROVED`, `negative_category`, `quality_decision: INCLUDE_AS_NEGATIVE`, `ambiguity_note`, `reviewer`, `reviewed_at` y `evidence_note`; no asignar una clase de enfermedad. Las decisiones excluidas o pendientes conservan motivo y responsable en el registro privado y se omiten de los CSV.
+
+Comando desde la raíz, solo después de reunir evidencia y actualizar inventarios con decisiones reales:
+
+```bash
+ml/.venv/bin/python scripts/validate_dataset.py --v2 \
+  --manifest /ruta/privada/images.v3.csv \
+  --negative-manifest /ruta/privada/negatives.v3.csv \
+  --images-dir /ruta/privada/images \
+  --evidence /ruta/privada/g1-review.v1.json \
+  --report /ruta/privada/g1-validation.v1.json
+```
+
+El reporte nuevo contiene hashes de ambos CSV y del registro, conteos de positivos por clase/contexto y negativos por categoría/contexto, con estado `VALIDATED_ROWS_NOT_G1_APPROVAL`. Guardar versiones sucesivas sin sobrescribir decisiones o reportes. La herramienta exige fuente `ELIGIBLE` con licencia `VERIFIED_FOR_PROJECT`, permiso por imagen, revisión exacta, bytes/hash/decodificación y ausencia de fugas entre positivos y negativos. La comprobación automática sola no cierra G1: el lote piloto cerró además con [revisión documental y control interno](../../docs/evidence/INCREMENTO-4-G1-PILOTO-V1.2.md), mínimos, agrupamiento y TEST sellado. No usar TEST para elegir umbrales o modelos.
+
+El entorno `ml/.venv` debe instalarse mediante el lock de [`ml/`](../README.md); la validación de bytes necesita Pillow. El verificador de inventario v1 del incremento 0 usa otro lock y no acredita filas v2.

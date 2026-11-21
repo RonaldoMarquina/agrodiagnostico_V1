@@ -74,6 +74,32 @@ class TestImageIngestion(unittest.TestCase):
             self.assertEqual(len(record.sha256), 64)
             self.assertEqual(len(self.service.quarantine), 0)
 
+    def test_generic_rust_and_blight_labels_stay_unmapped(self):
+        """An admitted source fixture cannot silently turn generic names into classes."""
+        blocked = (("plantdoc", "Corn rust leaf"),
+                   ("plantseg", "corn rust"),
+                   ("plantdoc", "Corn leaf blight"))
+        for source in self.sources_doc["sources"]:
+            if source["source_id"] in {"plantdoc", "plantseg"}:
+                source["eligibility"] = "ELIGIBLE"
+                source["license"]["status"] = "SYNTHETIC_ONLY"
+        service = ImageIngestionService(
+            sources_doc=self.sources_doc,
+            label_mappings_doc=self.label_mappings_doc,
+            taxonomy_doc=self.taxonomy_doc,
+        )
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            for index, (source, label) in enumerate(blocked):
+                with self.subTest(source=source, label=label):
+                    mapping = next(item for item in self.label_mappings_doc["mappings"]
+                                   if item["source"] == source and item["source_label"] == label)
+                    self.assertEqual(mapping["status"], "UNMAPPED")
+                    filename = f"generic-{index}.jpg"
+                    (root / filename).write_bytes(create_test_image())
+                    self.assertIsNone(service.ingest_single_image(root, filename, source, label))
+                    self.assertEqual(service.quarantine[-1].reason_code, "UNMAPPED_LABEL")
+
     def test_path_traversal_detection(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             base = Path(temp_dir) / "source_subdir"

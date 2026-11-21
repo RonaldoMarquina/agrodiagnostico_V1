@@ -11,6 +11,10 @@ Diagnosis SHALL gestionar políticas inmutables que vinculen versión exacta de 
 - **WHEN** una política carece de evaluación, aprobación o vínculo verificable al release
 - **THEN** se rechaza y no cambia soporte ni política activa
 
+#### Scenario: Corrección del nombre candidato sin promoción
+- **WHEN** la semilla del catálogo `MAIZE_LEAF_BLIGHT` aún muestra «Tizón foliar del maíz»
+- **THEN** una migración propia de Diagnosis corrige únicamente ese nombre a «Tizón foliar del norte», conserva el código y `model_supported=false`, y no modifica resultados terminales ni presume revisión especializada de imágenes o soporte publicado
+
 #### Scenario: Fallo de auditoría
 - **WHEN** falla la auditoría de activación o retiro
 - **THEN** no se confirma la mutación ni el cambio de soporte

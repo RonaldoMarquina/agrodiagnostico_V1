@@ -1,0 +1,185 @@
+{
+  "revision": "9e97599868962bd0079b8db4b7f1efa9185fa1e7",
+  "inputs_sha256": {
+    "README.md": "9fbe34695a3f05583f47345e5174383226ecee9e7af9e21d979307771b2362fb",
+    "data.zip": "fba30c6a7965e49be94b47a62f8aff6cfb1c35c27f475f22092b56db41745e84",
+    "color_train.txt": "c43e0205b321d1c929116f5df1842348ac1e5c4861306e081416785d3c439dbd",
+    "leaf-map.json": "3b4b253683c6911744959a3870a92509b1faa1ee34e9f8585e21d0fe6337a25b"
+  },
+  "source_train_paths": 43596,
+  "scope": "CANDIDATE_ONLY",
+  "partition_units": [
+    "images",
+    "distinct_publisher_leaf_ids"
+  ],
+  "visual_pairs": 4899,
+  "exact_redundant_paths": 4,
+  "csv_sha256": {
+    "excluded.csv": "7f4ec8f2b24951f19fe07f8073c11dd8d71e06defb508c4abdadddbf16113340",
+    "negatives.csv": "846277663fe3d5d46a88360cfda0d89ceb8491eae61b75d267c113144e70e519",
+    "positives.csv": "4109b54502970432ba75356e60a45b999039c392556fa1c469ba2502b6c60b4c",
+    "visual-pairs.csv": "bffbc6cfcb971b08f5c9a7dbc14be7707c15970890931ffe1a3f6224bdc82c75"
+  },
+  "classes": {
+    "POTATO_HEALTHY": {
+      "inventoried": 120,
+      "excluded": {},
+      "partitions": {
+        "TRAIN": [
+          80,
+          20
+        ],
+        "VAL": [
+          24,
+          6
+        ],
+        "TEST": [
+          16,
+          4
+        ]
+      }
+    },
+    "POTATO_EARLY_BLIGHT": {
+      "inventoried": 836,
+      "excluded": {
+        "VISUAL_MATCH_PENDING": 8
+      },
+      "partitions": {
+        "TRAIN": [
+          541,
+          136
+        ],
+        "VAL": [
+          165,
+          42
+        ],
+        "TEST": [
+          122,
+          31
+        ]
+      }
+    },
+    "POTATO_LATE_BLIGHT": {
+      "inventoried": 788,
+      "excluded": {
+        "VISUAL_MATCH_PENDING": 21
+      },
+      "partitions": {
+        "TRAIN": [
+          501,
+          129
+        ],
+        "VAL": [
+          153,
+          39
+        ],
+        "TEST": [
+          113,
+          29
+        ]
+      }
+    },
+    "MAIZE_HEALTHY": {
+      "inventoried": 912,
+      "excluded": {
+        "LEAF_ID_UNRESOLVED": 912
+      },
+      "partitions": {
+        "TRAIN": [
+          0,
+          0
+        ],
+        "VAL": [
+          0,
+          0
+        ],
+        "TEST": [
+          0,
+          0
+        ]
+      }
+    },
+    "MAIZE_COMMON_RUST": {
+      "inventoried": 975,
+      "excluded": {
+        "LEAF_ID_UNRESOLVED": 975
+      },
+      "partitions": {
+        "TRAIN": [
+          0,
+          0
+        ],
+        "VAL": [
+          0,
+          0
+        ],
+        "TEST": [
+          0,
+          0
+        ]
+      }
+    },
+    "MAIZE_LEAF_BLIGHT": {
+      "inventoried": 765,
+      "excluded": {
+        "LEAF_ID_UNRESOLVED": 765
+      },
+      "partitions": {
+        "TRAIN": [
+          0,
+          0
+        ],
+        "VAL": [
+          0,
+          0
+        ],
+        "TEST": [
+          0,
+          0
+        ]
+      }
+    },
+    "MAIZE_GRAY_LEAF_SPOT": {
+      "inventoried": 406,
+      "excluded": {
+        "LEAF_ID_UNRESOLVED": 406
+      },
+      "partitions": {
+        "TRAIN": [
+          0,
+          0
+        ],
+        "VAL": [
+          0,
+          0
+        ],
+        "TEST": [
+          0,
+          0
+        ]
+      }
+    },
+    "OTHER_CROP": {
+      "inventoried": 1261,
+      "excluded": {
+        "LEAF_ID_UNRESOLVED": 482,
+        "VISUAL_MATCH_PENDING": 10,
+        "EXACT_DUPLICATE": 4
+      },
+      "partitions": {
+        "TRAIN": [
+          503,
+          127
+        ],
+        "VAL": [
+          150,
+          38
+        ],
+        "TEST": [
+          112,
+          29
+        ]
+      }
+    }
+  }
+}

@@ -57,6 +57,10 @@ def main() -> int:
         required=True,
         help="Path to the JSON publication policy file.",
     )
+    import_parser.add_argument("--release-bundle", type=Path,
+                               help="Bundle privado G2 exigido para importar el piloto")
+    import_parser.add_argument("--g2-approval", type=Path,
+                               help="Acta privada G2 exigida para importar el piloto")
     import_parser.add_argument(
         "--actor",
         type=str,
@@ -144,6 +148,8 @@ def main() -> int:
                 logger.error("Policy file not found: %s", args.policy_file)
                 return 1
             payload = json.loads(path.read_text(encoding="utf-8"))
+            if payload.get("governance", {}).get("g0_protocol_version") != "1.2.0":
+                raise ValueError("CLI_IMPORT_SCOPE: solo el piloto G0 v1.2.0 puede importarse")
 
             with session_maker() as db:
                 result = import_publication_policy(
@@ -152,6 +158,8 @@ def main() -> int:
                     reason=args.reason,
                     policy_data=payload,
                     apply=args.apply,
+                    release_bundle_path=args.release_bundle,
+                    g2_approval_path=args.g2_approval,
                 )
                 print(json.dumps(result, indent=2))
                 return 0

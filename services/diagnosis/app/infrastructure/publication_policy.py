@@ -19,7 +19,7 @@ import os
 from typing import Any, Dict, Optional, Tuple
 import uuid
 
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.orm import Session
 
 from app.domain.models import (
@@ -56,6 +56,17 @@ def sigmoid(z: float) -> float:
     return 1.0 / (1.0 + math.exp(-z))
 
 
+# A single transaction-scoped lock serializes finalization with policy switches.
+# Shared decisions may coexist; activation/retirement take the exclusive form.
+POLICY_LOCK_KEY = 74127412001
+
+
+def lock_publication_policy(session: Session, *, exclusive: bool) -> None:
+    if session.bind and session.bind.dialect.name == "postgresql":
+        function = "pg_advisory_xact_lock" if exclusive else "pg_advisory_xact_lock_shared"
+        session.execute(text(f"SELECT {function}(:key)"), {"key": POLICY_LOCK_KEY})
+
+
 def evaluate_publication(session: Session, payload: dict) -> PublicationDecision:
     """Evaluates whether an incoming DiagnosisAnalyzed PREDICTION can be published as COMPLETADO."""
     model_id = payload.get("model_id")
@@ -65,6 +76,9 @@ def evaluate_publication(session: Session, payload: dict) -> PublicationDecision
     crop_code = payload.get("crop_code")
     raw_score = payload.get("raw_score")
 
+    # Serialize the whole decision with activation/retirement, including the
+    # no-active-policy case where row locks alone cannot protect an empty set.
+    lock_publication_policy(session, exclusive=False)
     # 1. Fetch active PublicationPolicy with row lock for share
     policy_stmt = select(PublicationPolicy).where(PublicationPolicy.active.is_(True))
     if session.bind and session.bind.dialect.name == "postgresql":
@@ -115,7 +129,12 @@ def evaluate_publication(session: Session, payload: dict) -> PublicationDecision
         if not _is_finite_number(slope) or not _is_finite_number(intercept):
             return PublicationDecision(accepted=False, reason_code="LOW_CONFIDENCE")
 
-        z = slope * float(raw_score) + intercept
+        if active_policy.payload.get("governance", {}).get("g0_protocol_version") == "1.2.0":
+            bounded = min(max(float(raw_score), 1e-6), 1 - 1e-6)
+            z = slope * math.log(bounded / (1 - bounded)) + intercept
+        else:
+            # Historical fixture policies retain their original scalar rule.
+            z = slope * float(raw_score) + intercept
         calibrated_conf = round(sigmoid(z), 4)
 
         # E. Inclusive frontier threshold comparison: calibrated_confidence >= threshold is accepted

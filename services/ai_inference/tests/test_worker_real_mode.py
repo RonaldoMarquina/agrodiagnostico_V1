@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import tempfile
+import time
 from typing import Any, Dict
 import unittest
 from unittest.mock import MagicMock, patch
@@ -155,10 +156,95 @@ class TestWorkerRealMode(unittest.TestCase):
             },
         }
 
-    def test_real_mode_rejects_json_fixture_even_with_bundle(self):
-        with patch.dict(os.environ, {"INFERENCE_MODE": "real", "APP_ENV": "local", "MODEL_BUNDLE_PATH": str(self.bundle_file)}):
-            with self.assertRaisesRegex(RuntimeError, "REAL_RUNTIME_NOT_IMPLEMENTED"):
+    def test_real_mode_rejects_unpinned_json_fixture(self):
+        with patch.dict(os.environ, {"INFERENCE_MODE": "real", "APP_ENV": "local",
+                                  "MODEL_BUNDLE_PATH": str(self.bundle_file), "MODEL_BUNDLE_SHA256": ""}):
+            with self.assertRaisesRegex(RuntimeError, "MODEL_BUNDLE_SHA256"):
                 create_configured_inference_adapter()
+
+    def test_worker_passes_identified_crop_to_pilot_adapter(self):
+        diag_id = uuid.uuid4()
+        lease_token = uuid.uuid4()
+        self.mock_http.post.return_value = httpx.Response(200, json={"lease_token": str(lease_token)})
+        self.mock_http.get.return_value = httpx.Response(200, content=_create_minimal_png(250, 250))
+        pilot = MagicMock()
+        pilot.requires_identified_crop = True
+        pilot.run_inference.return_value = {
+            "outcome": "ABSTENTION", "crop_code": None, "class_code": None,
+            "raw_score": None, "reason_code": "UNSUPPORTED_CROP",
+            "model_id": None, "model_version": None, "dataset_version": None,
+            "inference_ms": None,
+        }
+        self.worker.inference_adapter = pilot
+        event = self._create_sample_event(diag_id)
+        event["payload"]["identified_crop"] = "POTATO"
+        channel = MockAMQPChannel()
+        self.assertTrue(self.worker.process_message(
+            channel, 1, json.dumps(event).encode(), "diagnosis.requested.v2"))
+        self.assertEqual(channel.acked_tags, [1])
+        self.assertEqual(pilot.run_inference.call_args.kwargs["identified_crop"], "POTATO")
+
+    def test_pilot_timeout_before_commit_requeues_without_result(self):
+        diag_id = uuid.uuid4()
+        lease_token = uuid.uuid4()
+        self.mock_http.post.return_value = httpx.Response(200, json={"lease_token": str(lease_token)})
+        self.mock_http.get.return_value = httpx.Response(200, content=_create_minimal_png(250, 250))
+        pilot = MagicMock()
+        pilot.requires_identified_crop = True
+        pilot.run_inference.side_effect = TimeoutError("synthetic timeout")
+        self.worker.inference_adapter = pilot
+        event = self._create_sample_event(diag_id)
+        event["payload"]["identified_crop"] = "POTATO"
+        channel = MockAMQPChannel()
+        self.assertFalse(self.worker.process_message(
+            channel, 1, json.dumps(event).encode(), "diagnosis.requested.v2"))
+        self.assertEqual(channel.acked_tags, [])
+        self.assertEqual(channel.nacked_tags, [(1, True)])
+        with self.Session() as session:
+            self.assertEqual(session.query(InferenceResult).filter_by(diagnosis_id=diag_id).count(), 0)
+            self.assertEqual(session.query(InferenceOutbox).filter_by(diagnosis_id=diag_id).count(), 0)
+            self.assertEqual(session.query(InferenceInbox).filter_by(event_id=uuid.UUID(event["event_id"])).count(), 0)
+
+    def test_heartbeat_continues_while_cpu_adapter_runs(self):
+        engine = create_engine(f"sqlite:///{self.base_dir / 'heartbeat.sqlite'}")
+        Base.metadata.create_all(engine)
+        session_factory = sessionmaker(bind=engine)
+        diag_id = uuid.uuid4()
+        lease_token = uuid.uuid4()
+        renewals = []
+
+        def post(url, **kwargs):
+            if url.endswith("/lease/renew"):
+                renewals.append(url)
+                return httpx.Response(200, json={"lease_token": str(lease_token)})
+            return httpx.Response(200, json={"lease_token": str(lease_token)})
+
+        self.mock_http.post.side_effect = post
+        self.mock_http.get.return_value = httpx.Response(200, content=_create_minimal_png(250, 250))
+        pilot = MagicMock()
+        pilot.requires_identified_crop = True
+
+        def compute(**kwargs):
+            time.sleep(.25)
+            return {"outcome": "ABSTENTION", "crop_code": "POTATO", "class_code": None,
+                    "raw_score": None, "reason_code": "LOW_CONFIDENCE",
+                    "model_id": "pilot", "model_version": "0.1.0-pilot",
+                    "dataset_version": "1.2.0-pv-color", "inference_ms": 250}
+
+        pilot.run_inference.side_effect = compute
+        worker = InferenceWorker(
+            session_factory, "http://diagnosis:8000", self.signer,
+            http_client=self.mock_http, local_lease_seconds=2,
+            heartbeat_seconds=.05, inference_adapter=pilot)
+        event = self._create_sample_event(diag_id)
+        event["payload"]["identified_crop"] = "POTATO"
+        channel = MockAMQPChannel()
+        self.assertTrue(worker.process_message(
+            channel, 1, json.dumps(event).encode(), "diagnosis.requested.v2"))
+        self.assertGreaterEqual(len(renewals), 1)
+        with session_factory() as session:
+            self.assertEqual(session.query(InferenceResult).filter_by(diagnosis_id=diag_id).count(), 1)
+        engine.dispose()
 
     def test_fixture_mode_requires_explicit_test_guard(self):
         with patch.dict(os.environ, {"INFERENCE_MODE": "fixture", "APP_ENV": "local", "ENABLE_SIMULATED_INFERENCE": "true"}):

@@ -75,6 +75,120 @@ def cmd_verify(args):
     return 2
 
 
+def cmd_smoke_train(args):
+    """Entrena y recarga pesos tensoriales reales con fixtures geométricos."""
+    from agro_ml.smoke import run_cpu_smoke
+    try:
+        report = run_cpu_smoke(Path(args.config), args.architecture, Path(args.output_dir))
+    except (ValueError, OSError, RuntimeError) as exc:
+        print(f"CPU_SMOKE_FAILED: {exc}", file=sys.stderr)
+        return 2
+    print(json.dumps(report, sort_keys=True))
+    return 0
+
+
+def cmd_smoke_infer(args):
+    """Infiere únicamente sobre un fixture generado, nunca sobre fotos de usuario."""
+    from agro_ml.smoke import fixture_image, infer_fixture_checkpoint
+    try:
+        label = None if args.fixture_label == "OTHER" else int(args.fixture_label)
+        result = infer_fixture_checkpoint(Path(args.checkpoint), fixture_image(label, variant=1))
+    except (ValueError, OSError, RuntimeError, KeyError) as exc:
+        print(f"CPU_SMOKE_FAILED: {exc}", file=sys.stderr)
+        return 2
+    print(json.dumps({"status": "TECHNICAL_FIXTURE_ONLY", "prediction": result}, sort_keys=True))
+    return 0
+
+
+def cmd_smoke_compare(args):
+    """Compara ambos modelos exclusivamente sobre VAL_FIXTURE."""
+    from agro_ml.smoke import compare_fixture_models
+    try:
+        report = compare_fixture_models(Path(args.joint), Path(args.hierarchical))
+    except (ValueError, OSError, RuntimeError, KeyError) as exc:
+        print(f"CPU_SMOKE_FAILED: {exc}", file=sys.stderr)
+        return 2
+    print(json.dumps(report, sort_keys=True))
+    return 0
+
+
+def cmd_smoke_evaluate(args):
+    """Genera reporte técnico sobre VAL_FIXTURE; no abre TEST."""
+    from agro_ml.smoke import evaluate_fixture_checkpoint
+    try:
+        report = evaluate_fixture_checkpoint(Path(args.checkpoint))
+        with Path(args.output).open("x", encoding="utf-8") as stream:
+            json.dump(report, stream, indent=2, sort_keys=True)
+            stream.write("\n")
+    except (ValueError, OSError, RuntimeError, KeyError, TypeError) as exc:
+        print(f"CPU_SMOKE_FAILED: {exc}", file=sys.stderr)
+        return 2
+    print(json.dumps(report, sort_keys=True))
+    return 0
+
+
+def cmd_smoke_package(args):
+    """Empaqueta un fixture técnico aparte del contrato de release G2."""
+    from agro_ml.smoke import package_fixture_checkpoint
+    try:
+        report = package_fixture_checkpoint(Path(args.checkpoint), Path(args.evaluation), Path(args.output))
+    except (ValueError, OSError, RuntimeError, KeyError, TypeError) as exc:
+        print(f"CPU_SMOKE_FAILED: {exc}", file=sys.stderr)
+        return 2
+    print(json.dumps(report, sort_keys=True))
+    return 0
+
+
+def cmd_cpu_train(args):
+    """Entrena candidato CPU local; jamás lo convierte en release G2."""
+    from agro_ml.cpu_candidate import train
+    try:
+        result = train(Path(args.config), Path(args.manifest), Path(args.images_root), Path(args.output_dir))
+    except (ValueError, OSError, RuntimeError, KeyError, TypeError) as exc:
+        print(f"CPU_CANDIDATE_FAILED: {exc}", file=sys.stderr)
+        return 2
+    print(json.dumps(result, sort_keys=True))
+    return 0
+
+
+def cmd_cpu_fixture_data(args):
+    """Prepara datos gráficos locales sin fotos de terceros."""
+    from agro_ml.cpu_candidate import write_fixture_manifests
+    try:
+        result = write_fixture_manifests(Path(args.output_dir))
+    except (ValueError, OSError, RuntimeError) as exc:
+        print(f"CPU_CANDIDATE_FAILED: {exc}", file=sys.stderr)
+        return 2
+    print(json.dumps(result, sort_keys=True))
+    return 0
+
+
+def cmd_cpu_evaluate_val(args):
+    """Evalúa candidato solo en VAL explícita; jamás abre TEST."""
+    from agro_ml.cpu_candidate import evaluate_val
+    try:
+        result = evaluate_val(Path(args.checkpoint), Path(args.train_manifest),
+                              Path(args.val_manifest), Path(args.images_root), Path(args.output))
+    except (ValueError, OSError, RuntimeError, KeyError, TypeError) as exc:
+        print(f"CPU_CANDIDATE_FAILED: {exc}", file=sys.stderr)
+        return 2
+    print(json.dumps(result, sort_keys=True))
+    return 0
+
+
+def cmd_cpu_package_candidate(args):
+    """Empaqueta candidato con reporte VAL; no cumple model-bundle G2."""
+    from agro_ml.cpu_candidate import package_candidate
+    try:
+        result = package_candidate(Path(args.checkpoint), Path(args.evaluation), Path(args.output),
+                                   Path(args.train_manifest), Path(args.val_manifest), Path(args.images_root))
+    except (ValueError, OSError, RuntimeError, KeyError, TypeError) as exc:
+        print(f"CPU_CANDIDATE_FAILED: {exc}", file=sys.stderr)
+        return 2
+    print(json.dumps(result, sort_keys=True))
+    return 0
+
+
 def cmd_partition(args):
     """Verifica ausencia de fugas y genera sello de TEST/EXTERNAL."""
     manifest_path = Path(args.manifest)
@@ -160,6 +274,53 @@ def main():
     p_ver = subparsers.add_parser("verify", help="Verificar procedencia e integridad de bundle")
     p_ver.add_argument("--bundle", required=True, help="Ruta al bundle JSON")
 
+    p_smoke = subparsers.add_parser("smoke-train", help="Entrenamiento e inferencia CPU con fixtures, sin G0/G2")
+    p_smoke.add_argument("--config", default="ml/configs/cpu-smoke.v1.json")
+    p_smoke.add_argument("--architecture", required=True, choices=("mobilenet_v3_small", "resnet18_hierarchical"))
+    p_smoke.add_argument("--output-dir", required=True)
+
+    p_smoke_infer = subparsers.add_parser("smoke-infer", help="Inferencia sobre fixture gráfico, sin diagnóstico")
+    p_smoke_infer.add_argument("--checkpoint", required=True)
+    p_smoke_infer.add_argument("--fixture-label", required=True,
+                               choices=tuple(str(index) for index in range(7)) + ("OTHER",))
+
+    p_smoke_compare = subparsers.add_parser("smoke-compare", help="Comparación VAL_FIXTURE, sin selección de release")
+    p_smoke_compare.add_argument("--joint", required=True, help="Checkpoint del clasificador conjunto")
+    p_smoke_compare.add_argument("--hierarchical", required=True, help="Checkpoint de la alternativa jerárquica")
+
+    p_smoke_evaluate = subparsers.add_parser("smoke-evaluate", help="Reporte VAL_FIXTURE, sin TEST ni G2")
+    p_smoke_evaluate.add_argument("--checkpoint", required=True)
+    p_smoke_evaluate.add_argument("--output", required=True)
+
+    p_smoke_package = subparsers.add_parser("smoke-package", help="Archivo técnico FIXTURE_ONLY, no bundle G2")
+    p_smoke_package.add_argument("--checkpoint", required=True)
+    p_smoke_package.add_argument("--evaluation", required=True)
+    p_smoke_package.add_argument("--output", required=True)
+
+    p_cpu_train = subparsers.add_parser("cpu-train", help="Candidato CPU local desde manifiesto explícito")
+    p_cpu_train.add_argument("--config", required=True)
+    p_cpu_train.add_argument("--manifest", required=True, help="Manifiesto TRAIN local JSON")
+    p_cpu_train.add_argument("--images-root", required=True, help="Raíz privada de imágenes locales")
+    p_cpu_train.add_argument("--output-dir", required=True)
+
+    p_cpu_fixture = subparsers.add_parser("cpu-fixture-data", help="Genera manifiestos e imágenes gráficas FIXTURE_ONLY")
+    p_cpu_fixture.add_argument("--output-dir", required=True)
+
+    p_cpu_eval = subparsers.add_parser("cpu-evaluate-val", help="Reporte de candidato solo en VAL")
+    p_cpu_eval.add_argument("--checkpoint", required=True)
+    p_cpu_eval.add_argument("--train-manifest", required=True)
+    p_cpu_eval.add_argument("--val-manifest", required=True)
+    p_cpu_eval.add_argument("--images-root", required=True)
+    p_cpu_eval.add_argument("--output", required=True)
+
+    p_cpu_package = subparsers.add_parser("cpu-package-candidate", help="Paquete de candidato sin aprobación G2")
+    p_cpu_package.add_argument("--checkpoint", required=True)
+    p_cpu_package.add_argument("--evaluation", required=True)
+    p_cpu_package.add_argument("--train-manifest", required=True)
+    p_cpu_package.add_argument("--val-manifest", required=True)
+    p_cpu_package.add_argument("--images-root", required=True)
+    p_cpu_package.add_argument("--output", required=True)
+
     # partition
     p_part = subparsers.add_parser("partition", help="Verificar fugas de partición y sellar TEST")
     p_part.add_argument("--manifest", required=True, help="Ruta al CSV de particiones")
@@ -178,6 +339,15 @@ def main():
         "evaluate": cmd_evaluate,
         "package": cmd_package,
         "verify": cmd_verify,
+        "smoke-train": cmd_smoke_train,
+        "smoke-infer": cmd_smoke_infer,
+        "smoke-compare": cmd_smoke_compare,
+        "smoke-evaluate": cmd_smoke_evaluate,
+        "smoke-package": cmd_smoke_package,
+        "cpu-train": cmd_cpu_train,
+        "cpu-fixture-data": cmd_cpu_fixture_data,
+        "cpu-evaluate-val": cmd_cpu_evaluate_val,
+        "cpu-package-candidate": cmd_cpu_package_candidate,
         "partition": cmd_partition,
         "verify-seal": cmd_verify_seal,
     }

@@ -1,9 +1,28 @@
 {
-  "protocol_version": "1.0.0",
-  "approved_at": null,
-  "reviewer_role": null,
-  "responsible": null,
-  "status": "PENDING_REVIEW",
+  "protocol_version": "1.1.0",
+  "decision_recorded_at": "2026-11-19",
+  "decision_author_role": "PROJECT_OWNER",
+  "project_owner_decision": {
+    "status": "APPROVED_G0_DESIGN",
+    "scope": "Taxonomía candidata, política de admisión, mínimos de partición, métricas, rechazos, presupuesto CPU y exclusión de mapeos genéricos; no autoriza imágenes, resultados medidos ni publicación",
+    "approved_at": "2026-11-19",
+    "decision_ref": "docs/adr/0009-modelo-validado-inferencia-y-politicas-de-publicacion.md",
+    "change_reason": "El responsable sustituye la aprobación docente exigida en la planificación anterior por su propia aprobación del protocolo de diseño; define cobertura, error selectivo y aceptación errónea de negativos antes de entrenar."
+  },
+  "selected_image_rights": {
+    "gate": "G1",
+    "status": "PENDING",
+    "evidence_ref": null
+  },
+  "measured_results": {
+    "gate": "G2",
+    "status": "NOT_MEASURED",
+    "evaluation_ref": null
+  },
+  "approved_at": "2026-11-19",
+  "reviewer_role": "PROJECT_OWNER",
+  "responsible": "PROJECT_OWNER",
+  "status": "APPROVED_G0_DESIGN",
   "candidate_classes": [
     "POTATO_HEALTHY",
     "POTATO_EARLY_BLIGHT",
@@ -12,6 +31,14 @@
     "MAIZE_COMMON_RUST",
     "MAIZE_LEAF_BLIGHT",
     "MAIZE_GRAY_LEAF_SPOT"
+  ],
+  "candidate_class_names": {
+    "MAIZE_LEAF_BLIGHT": "Tizón foliar del norte"
+  },
+  "automatic_label_mapping_exclusions": [
+    {"source": "plantdoc", "source_label": "Corn rust leaf", "reason": "Roya genérica; no acredita roya común"},
+    {"source": "plantseg", "source_label": "corn rust", "reason": "Roya genérica; no acredita roya común"},
+    {"source": "plantdoc", "source_label": "Corn leaf blight", "reason": "Tizón genérico; no acredita tizón foliar del norte"}
   ],
   "partition_minimums": {
     "train": {
@@ -33,13 +60,43 @@
   },
   "metrics_thresholds": {
     "macro_f1_val_min": 0.8,
-    "macro_f1_test_min": 0.8,
+    "macro_f1_test_min": 0.85,
+    "class_recall_test_min": 0.8,
     "class_f1_test_min": 0.7,
+    "macro_f1_external_target": 0.75,
     "crop_accuracy_min": 0.9,
     "unsupported_crop_abstention_min": 0.95,
     "negative_samples_fpr_max": 0.05,
     "negative_samples_rejection_min": 0.95,
-    "calibration_ece_max": 0.15
+    "negative_samples_acceptance_max": 0.10,
+    "calibration_ece_max": 0.15,
+    "selective_coverage_min": 0.70,
+    "selective_error_max": 0.10
+  },
+  "metric_definitions": {
+    "selective_coverage": "diagnósticos aceptados de una de las siete clases / imágenes válidas de las siete clases; NO_CONCLUYENTE y demás salidas sin diagnóstico aceptado permanecen en el denominador; denominador cero no cumple",
+    "selective_error": "diagnósticos aceptados incorrectos / diagnósticos aceptados de imágenes válidas de las siete clases; numerador incluye errores de cultivo o clase; cero aceptados no cumple",
+    "class_recall": "diagnósticos aceptados correctos de la clase / todas las imágenes válidas de esa clase; abstenciones cuentan como falsos negativos, no como una clase adicional",
+    "negative_samples_acceptance": "negativos fuera de las siete clases con diagnóstico aceptado de clase soportada / total de negativos evaluados; denominador cero no cumple",
+    "negative_samples_fpr": "mismo numerador y denominador que negative_samples_acceptance; límite histórico 0.05 más estricto que el nuevo límite 0.10, por lo que 0.05 gobierna la aceptación",
+    "negative_samples_rejection": "negativos sin diagnóstico aceptado / total de negativos evaluados; objetivo histórico 0.95 complementario a FPR 0.05",
+    "reporting": "publicar numerador, denominador y valor por clase cuando corresponda, junto con agregados, abstenciones y exclusiones predefinidas; un denominador cero no acredita ningún umbral"
+  },
+  "required_reporting": [
+    "accuracy",
+    "precision_per_class",
+    "recall_per_class",
+    "f1_per_class",
+    "confusion_matrix",
+    "latency",
+    "non_conclusive_rate",
+    "numerators_and_denominators_by_class"
+  ],
+  "confidence_threshold": {
+    "value": null,
+    "selected_on": "VAL",
+    "freeze_before": "TEST",
+    "record_justification_and_abstention_rate": true
   },
   "compute_budget_cpu": {
     "latency_median_ms_max": 1000,
@@ -47,6 +104,7 @@
     "latency_hard_limit_ms": 4000,
     "max_rss_mb": 1024
   },
+  "full_diagnosis_p95_seconds_target": 30,
   "increment_closure_rule": {
     "required_crops": [
       "POTATO",
@@ -54,5 +112,5 @@
     ],
     "min_approved_diseases_per_crop": 1
   },
-  "review_note": "Propuesta no aprobada. Cifras heredadas sin evidencia docente: no utilizarlas para promoción."
+  "review_note": "G0 es protocolo de diseño aprobado por el responsable el 2026-11-19; no requiere aprobación docente. F1 macro TEST 0.85 prevalece sobre el 0.80 histórico. Los límites 0.05 FPR y 0.95 rechazo de negativos son más estrictos que la nueva aceptación errónea máxima 0.10 y permanecen vigentes. Umbral de confianza se selecciona en VAL y se congela antes de TEST. Derechos por imagen y revisión de etiquetas por imagen pertenecen a G1; resultados medidos a G2. EXTERNAL depende de un conjunto autorizado. No usar metas como resultados ni promover sin G1/G2. Cualquier ajuste tras TEST exige nuevo ciclo independiente."
 }

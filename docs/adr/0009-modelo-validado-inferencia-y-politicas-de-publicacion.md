@@ -3,6 +3,8 @@
 Fecha: 2026-10-10. Estado: adoptado para `incremento-4-datos-y-modelo-validado`.
 Tarea: 1.1 de `incremento-4-datos-y-modelo-validado`.
 
+> Vigente desde la enmienda G0 v1.2.0 del 2026-11-19: piloto de hoja de papa identificada previamente, solo tizón temprano y tardío. Las secciones originales de siete clases, maíz y cultivo automático son historial sustituido por la enmienda final. [G1 del lote piloto](../evidence/INCREMENTO-4-G1-PILOTO-V1.2.md) cerró con procedencia experta PlantVillage y control interno. [Dos clasificadores directos se compararon en VAL](../evidence/INCREMENTO-4-ENTRENAMIENTO-VAL-PILOTO.md) y uno se congeló antes de TEST; [G2 aprobó el bundle restringido](../evidence/INCREMENTO-4-APROBACION-G2-PILOTO.md). G3 sigue pendiente.
+
 ## Contexto
 
 El Incremento 3 consolidó el flujo asíncrono desacoplado y confiable entre los servicios `Diagnosis` y `AI Inference` mediante RabbitMQ, leases con tokens Ed25519 internos, persistencia transaccional en PostgreSQL, deduplicación en inbox y cuarentena (ADR-0008). Sin embargo, la inferencia en dicho incremento operó exclusivamente bajo un simulador determinista (`ENABLE_SIMULATED_INFERENCE=true`), sin datos reales ni modelo agronómico validado.
@@ -20,13 +22,15 @@ Trazabilidad normativa: ADR-0002 (interfaces y eventos V1), ADR-0004 (identidade
 
 ### D1. Puertas de evidencia (G0–G3) y delimitación de responsabilidades
 
-1. **Separación de roles**: El agente de desarrollo implementa herramientas automatizadas, pruebas, validadores y reportes reproducibles; el responsable del proyecto y los asesores agronómicos/docentes aportan las decisiones de permisos legales de fuentes, revisión de etiquetas botánicas y aprobación de criterios de aceptación. Ningún valor o firma humana se genera ficticiamente.
+1. **Separación de roles**: El agente de desarrollo implementa herramientas automatizadas, pruebas, validadores y reportes reproducibles; el responsable del proyecto define y aprueba G0. La revisión de derechos y etiquetas de imágenes seleccionadas se documenta en G1. Ningún valor o firma humana se genera ficticiamente.
 2. **Definición de compuertas (Gates)**:
-   - **G0 (Protocolo y Criterios)**: Documento formal fechado y aprobado antes de entrenar modelos de selección: definición inequívoca de las 7 clases candidatas (incluyendo resolución de `MAIZE_LEAF_BLIGHT` y royas), conteos mínimos por partición y clase, métricas objetivo por clase y macro, límites de error admisible, abstención, comportamiento en negativos y presupuesto de recursos CPU (latencia y memoria).
+   - **G0 (Protocolo y Criterios)**: Documento de diseño fechado, versionado y aprobado por el responsable antes de entrenar con datos reales: definición de las 7 clases candidatas (incluyendo denominación de `MAIZE_LEAF_BLIGHT` y exclusión de royas genéricas), política de admisión, conteos mínimos por partición y clase, métricas objetivo por clase y macro, límites de cobertura, error selectivo, abstención, comportamiento en negativos y presupuesto CPU. G0 no acredita imágenes ni resultados.
    - **G1 (Datos y Particiones Curadas)**: Fuentes formalmente admitidas con licencias verificadas, dataset curado localmente, duplicados y similares agrupados globalmente, particiones selladas (TRAIN, VAL, TEST, EXTERNAL) con hashes inmutables y manifiesto de negativos independiente.
    - **G2 (Evaluación Independiente y Artefacto)**: Evaluación estricta en TEST/EXTERNAL sin reutilización para sintonía; reporte completo de métricas por clase y cultivo; bundle empaquetado e inmutable con checksums de pesos y manifiestos revisado por el proyecto. Cobertura mínima obligatoria para ambos cultivos (papa y maíz).
    - **G3 (Aceptación Real Integrada)**: Validación E2E en entorno multi-contenedor con worker real (`ml-real`), catálogo agrícola revisado, políticas activadas y verificación de resiliencia.
 3. **Bloqueo ante puertas no superadas**: La falta de cumplimiento de una compuerta impide promover el modelo o cerrar el incremento. La infraestructura puede verificarse con fixtures tensoriales explícitos, pero un fixture jamás acredita la superación de una compuerta ni la validez de un modelo agronómico.
+
+Enmienda aprobada por el responsable (2026-11-19, protocolo G0 v1.1.0): se elimina la condición de aprobación formal docente que figuraba en la planificación anterior. Justificación: el responsable del proyecto asume explícitamente la autoridad sobre los criterios de diseño antes del entrenamiento; la revisión especializada de imágenes y etiquetas sigue siendo una evidencia distinta de G1. Se fijan cobertura ≥ 0,70 (diagnósticos aceptados / imágenes válidas de siete clases), error selectivo ≤ 0,10 (aceptados incorrectos / aceptados; cero aceptados no cumple) y aceptación errónea de negativos ≤ 0,10 (negativos con clase soportada aceptada / negativos evaluados). Se conservan FPR ≤ 0,05 y rechazo ≥ 0,95 previamente aprobados para esos mismos negativos, por ser más estrictos; cero negativos no acredita el criterio. Las abstenciones permanecen en el denominador de cobertura y recall por clase como falsos negativos. Umbral seleccionado en VAL y congelado antes de TEST. Se publicarán numeradores, denominadores y resultados por clase. `MAIZE_LEAF_BLIGHT` se denomina «tizón foliar del norte» y las etiquetas genéricas `Corn rust leaf`, `corn rust` y `Corn leaf blight` quedan sin mapeo automático. **G0 cerrado como diseño**; derechos y revisión de imágenes seleccionadas siguen pendientes en G1 y resultados medidos en G2. No existe una aprobación especializada de las equivalencias agronómicas ni se declara tal revisión.
 
 ### D2. Curación de datos, inventario versionado y particiones selladas
 
@@ -76,7 +80,7 @@ Trazabilidad normativa: ADR-0002 (interfaces y eventos V1), ADR-0004 (identidade
 ### D6. Política propia de Diagnosis y soporte efectivo del catálogo
 
 1. **Contrato `publication-policy.v1.schema.json`**:
-   - Define: `policy_id`, `version`, tupla admitida (`model_version`, `dataset_version`), digest SHA-256 del bundle, lista de clases autorizadas, parámetros de calibración escalar por clase, umbrales mínimos de publicación, referencia de aprobación docente y metadatos de auditoría.
+   - Define: `policy_id`, `version`, tupla admitida (`model_version`, `dataset_version`), digest SHA-256 del bundle, lista de clases autorizadas, parámetros de calibración escalar por clase, umbrales mínimos de publicación, referencia de aprobación del responsable del proyecto y metadatos de auditoría.
 2. **Administración operativa inmutable**:
    - Las políticas se gestionan mediante comandos CLI administrativos protegidos con modo `dry-run` por defecto. La activación o retiro de una política genera un registro de auditoría transaccional inmutable (`diagnosis_audit_logs`) y actualiza el campo `Problem.model_supported` del catálogo agrícola en la misma transacción de PostgreSQL.
    - No se expone ningún endpoint HTTP público ni privilegios PATCH que permitan alterar el soporte del modelo sin trazabilidad.
@@ -93,7 +97,7 @@ Trazabilidad normativa: ADR-0002 (interfaces y eventos V1), ADR-0004 (identidade
 1. **Integración en CI (`ml-contracts-and-runtime`)**:
    - Se incorpora una etapa obligatoria en `tooling/ci/plan.json` que valida contratos JSON Schema (`model-bundle.v1`, `publication-policy.v1`), migraciones de base de datos de Diagnosis, y carga de un fixture tensorial mínimo en CPU sin requerir GPUs ni descargar datasets privados de gran tamaño.
 2. **Comando de aceptación real desacoplado**:
-   - Se establece un script de aceptación real (`scripts/check_ml_acceptance.py`) que opera exclusivamente sobre datos y modelos autorizados, verificando el flujo E2E real, latencias en CPU, consumo de memoria y concordancia de diagnósticos con el catálogo agrícola.
+   - Se establece un script de aceptación real (`scripts/check_ml_real_acceptance.py`) que deberá operar sobre datos y modelos autorizados, verificando el flujo E2E real, latencias en CPU, consumo de memoria y concordancia de diagnósticos con el catálogo agrícola. Su implementación actual no acredita G3.
 3. **Conservación de todas las etapas previas**:
    - Se preservan íntegramente las etapas `lint`, `contracts`, `identity-integration`, `diagnosis-integration` y `async-integration`, garantizando cero regresiones en la infraestructura local y de integración continua.
 
@@ -103,13 +107,15 @@ Trazabilidad normativa: ADR-0002 (interfaces y eventos V1), ADR-0004 (identidade
 
 | Requisito Original | Definición V1 Reconciliada | Capacidad OpenSpec Afectada | Criterio de Aceptación / Verificación | Evidencia Reproducible |
 | :--- | :--- | :--- | :--- | :--- |
-| **RF-07** | El sistema intentará identificar automáticamente el cultivo presente en la fotografía sin exigir selección manual previa. Cultivo ajeno produce abstención. | `validated-model-inference` / `reproducible-model-training-and-evaluation` | Comparación experimental en VAL de clasificación directa vs jerárquica. Imágenes no reconocidas como papa o maíz generan `NO_CONCLUYENTE` con `reason_code=UNSUPPORTED_CROP`. Cero campos de cultivo en API de carga multipart. | Reporte experimental en VAL; pruebas unitarias e integración en `tests/dataset/` y `services/ai_inference/tests/test_worker_inference.py`. |
+| **RF-07** | El sistema intentará identificar automáticamente el cultivo presente en la fotografía sin exigir selección manual previa. Cultivo ajeno produce abstención. | `validated-model-inference` / `reproducible-model-training-and-evaluation` | Comparación experimental en VAL de clasificación directa vs jerárquica. Imágenes no reconocidas como papa o maíz generan `NO_CONCLUYENTE` con `reason_code=UNSUPPORTED_CROP`. Cero campos de cultivo en API de carga multipart. | Reporte experimental en VAL pendiente; pruebas técnicas en `tests/dataset/` no acreditan reconocimiento agronómico. |
 | **RF-08** | Para cultivos soportados se analizará la imagen mediante un modelo versionado para identificar una de las 7 condiciones visuales previstas, sujeta a validación por clase. | `dataset-inventory` / `reproducible-model-training-and-evaluation` / `model-publication-policy` | Protocolo G0 con métricas independientes por clase. Clases sin datos suficientes o que no alcancen el umbral quedan no soportadas (`UNSUPPORTED_CLASS`). El cierre de incremento exige cobertura verificada en ambos cultivos. | Protocolo G0 aprobado; manifiesto curado G1; informe de evaluación independiente G2; matriz de confusión en TEST; `Problem.model_supported` sincronizado por política. |
 | **RF-09** | El sistema mostrará el diagnóstico probable acompañado del nivel de confianza generado por el modelo (confianza estimada), sin presentarlo como certeza clínica. | `model-publication-policy` / `validated-model-inference` | Calibración escalar en VAL a partir de `raw_score`. Diagnóstico visible expone `estimated_confidence` y snapshot de política. Textos en interfaz y contratos declaran el resultado como orientación diagnóstica probable. | Contrato OpenAPI actualizado; fixtures de respuesta; validación de esquema en `tests/contracts/test_contracts.py`; snapshot inmutable en `DiagnosisFinished`. |
 
 ---
 
 ## Coherencia con ADR-0008 e Invariantes del Sistema
+
+Revisión documental 2026-11-19: D1–D7 y la matriz RF-07/08/09 se contrastaron con [ADR-0008](0008-flujo-asincrono-confiable-y-leases-internos.md) y el cambio activo. ADR-0009 añade artefactos y políticas propios de cada servicio; no cambia la propiedad de datos, los estados terminales ni la autorización de usuarios o de rutas internas. G0 de diseño se aprobó por la enmienda anterior; las pruebas de modelo real permanecen pendientes. Se corrigieron referencias a archivos de aceptación y pruebas inexistentes, sin convertir expectativas de la matriz en evidencia alcanzada.
 
 1. **Propiedad de Datos**:
    - `Diagnosis` sigue siendo dueño exclusivo de la base de datos `diagnosis`, añadiendo las tablas `publication_policies` y columnas de trazabilidad mediante migraciones Alembic aditivas.
@@ -136,3 +142,21 @@ Trazabilidad normativa: ADR-0002 (interfaces y eventos V1), ADR-0004 (identidade
   - *Mitigación*: Heartbeat concurrente desacoplado en el worker; optimización de cuantización o arquitecturas ligeras (MobileNetV3); límites de tiempo de inferencia acordados en G0.
 - **Riesgo**: Reemplazo de política en caliente con diagnósticos en curso.
   - *Mitigación*: Transacción atómica de finalización que evalúa la política activa al momento del commit del resultado y serialización en PostgreSQL para evitar estados inconsistentes.
+
+## Enmienda G0 v1.2.0 — 2026-11-19
+
+El responsable del proyecto aprobó antes de entrenar o abrir TEST un piloto de hoja de papa previamente identificada, con `POTATO_EARLY_BLIGHT` y `POTATO_LATE_BLIGHT` como clases candidatas. La [auditoría reproducible de fuentes](../evidence/INCREMENTO-4-FUENTES-PARA-COMPLETAR-G1.md) muestra que faltan grupos verificables de hoja, planta o sesión para completar las siete clases previas. Papa sana, maíz, cultivo automático y plagas quedan fuera del piloto.
+
+Se mantienen mínimos por clase y partición, revisión de etiquetas, negativos, abstención, cobertura ≥ 0,70, error selectivo ≤ 0,10, FPR en negativos ≤ 0,05, calibración, presupuesto CPU y evaluación. F1 macro y cobertura se calcularán sobre los dos tizones. Los negativos G1 se seleccionaron de hojas de tomate PlantVillage con `leaf_id`; papa sana no se usa como negativo. La exactitud de identificación automática de cultivo anterior no aplica al piloto, pues el usuario identifica previamente papa. G1 se cerró después para [el lote documentado](../evidence/INCREMENTO-4-G1-PILOTO-V1.2.md), con procedencia experta de etiquetas y control interno de calidad; no hubo nueva evaluación agronómica independiente. G2 conserva los resultados medidos pendientes. [Protocolo aprobado](../../ml/evaluation/protocol-g0.v1.2.0.json).
+
+## Decisión experimental del piloto — 2026-11-19
+
+Por el alcance de dos tizones y la entrada `identified_crop=POTATO`, la arquitectura jerárquica de cultivo no corresponde al experimento real. Se compararon MobileNetV3-Small y ResNet18 como clasificadores directos con objetivo técnico `OTHER_CROP` para rechazo, bajo el mismo preprocesado y presupuesto CPU; ninguno produce una clase publicada adicional. La [evidencia VAL](../evidence/INCREMENTO-4-ENTRENAMIENTO-VAL-PILOTO.md) seleccionó MobileNetV3 y congeló pesos, configuración y umbral calibrado antes de TEST. Esta decisión se tomó con VAL y conserva TEST sellado. No sustituye la evaluación independiente ni aprueba G2; el contrato de bundle y worker real siguen pendientes.
+
+## Enmienda de aprobación G2 — 2026-11-19
+
+El responsable del proyecto aprobó G2 tras la carga independiente del [bundle privado restringido](../evidence/INCREMENTO-4-APROBACION-G2-PILOTO.md), SHA-256 `93e2e65130a9c266be4bdba0262d1c98e30d0604f4d21466effba2d9c9ff0b41`, vinculado al TEST único que cumple G0 v1.2.0. El mapa publicable contiene solo `POTATO_EARLY_BLIGHT` y `POTATO_LATE_BLIGHT` para hoja de papa previamente identificada. `OTHER_CROP` es rechazo técnico, no clase publicada; por ello el contrato del piloto exige `identified_crop=POTATO` sin `crop_detection_threshold` automático. EXTERNAL no existe, el rechazo de papa sana no está medido y la latencia de flujo completo sigue pendiente. El bundle aprobado no activa por sí mismo worker, política, catálogo ni G3.
+
+## Decisión de preparar G0 v1.3.0 — 2026-11-20
+
+La [aceptación integrada local](../evidence/INCREMENTO-4-G3-ACEPTACION-LOCAL.md) publicó erróneamente como tizón tardío cuatro de cuatro fotos originales de papa sana usadas como control de alcance. G3 v1.2.0 **no se aprobó**. El responsable eligió una nueva versión con rechazo verificable de papa sana. La [propuesta técnica](../evidence/INCREMENTO-4-CICLO-RECHAZO-PAPA-SANA.md) conserva las dos enfermedades publicables y plantea papa sana como negativo separado, sin diagnóstico «sana». Los mínimos por estrato y el protocolo completo v1.3.0 aún requieren definición y aprobación del responsable antes de entrenar. G1 debe admitir imágenes y grupos concretos y aportar un TEST independiente nuevo; el TEST v1.2.0 ya abierto no podrá acreditarlo. G2 v1.2.0 se conserva como historia inmutable, sin promover su política fuera del entorno efímero de aceptación.

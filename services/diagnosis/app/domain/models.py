@@ -126,6 +126,8 @@ class PublicationPolicy(Base):
 
     __table_args__ = (
         Index("ix_publication_policies_active", "active"),
+        Index("uq_publication_policies_one_active", "active", unique=True,
+              postgresql_where=active.is_(True), sqlite_where=active.is_(True)),
         Index("ix_publication_policies_model_dataset", "model_id", "model_version", "dataset_version"),
     )
 
@@ -142,6 +144,7 @@ class Diagnosis(Base):
     image_size_bytes = Column(Integer, nullable=False)
     image_width = Column(Integer, nullable=True)
     image_height = Column(Integer, nullable=True)
+    identified_crop = Column(String(50), nullable=True)
 
     # Result fields (Incremento 3 / populated on completion)
     crop_code = Column(String(50), ForeignKey("crops.code", ondelete="SET NULL"), nullable=True)
@@ -197,6 +200,10 @@ class Diagnosis(Base):
         CheckConstraint(
             "status IN ('PENDIENTE', 'PROCESANDO', 'COMPLETADO', 'NO_CONCLUYENTE', 'FALLIDO', 'CANCELADO')",
             name="ck_diagnoses_status",
+        ),
+        CheckConstraint(
+            "identified_crop IS NULL OR identified_crop = 'POTATO'",
+            name="ck_diagnoses_identified_crop_pilot",
         ),
         Index("ix_diagnoses_created_at_id", "created_at", "id"),
         Index("ix_diagnoses_owner_keyset", "owner_id", "deleted_at", "created_at", "id"),

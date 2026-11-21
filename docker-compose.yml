@@ -668,7 +668,7 @@ services:
     profiles: [ml-real]
     build:
       context: .
-      dockerfile: services/ai_inference/Dockerfile
+      dockerfile: services/ai_inference/Dockerfile.ml-real
     user: ${LOCAL_UID:-1000}:${LOCAL_GID:-1000}
     command:
     - python
@@ -677,8 +677,11 @@ services:
     environment:
       APP_ENV: ${APP_ENV:?APP_ENV required; copy .env.example}
       INFERENCE_MODE: real
-      MODEL_BUNDLE_PATH: /models/release/model_bundle.v1.json
-      MODEL_WEIGHTS_DIR: /models/release
+      MODEL_BUNDLE_PATH: /models/release/model-bundle.json
+      MODEL_BUNDLE_SHA256: 93e2e65130a9c266be4bdba0262d1c98e30d0604f4d21466effba2d9c9ff0b41
+      MODEL_APPROVAL_SHA256: 579404dfe711fcae00c5d8964db669b8a66477f853d48a1fed45f72946d165f9
+      INFERENCE_TIMEOUT_SECONDS: "20"
+      LEASE_HEARTBEAT_SECONDS: ${REAL_WORKER_HEARTBEAT_SECONDS:-20}
       ENABLE_SIMULATED_INFERENCE: "false"
       DB_HOST: postgres
       DB_PASSWORD_FILE: /run/secrets/ai_inference_password
@@ -687,11 +690,16 @@ services:
       RABBITMQ_PASSWORD_FILE: /run/secrets/rabbit_ai_inference_password
       DIAGNOSIS_INTERNAL_URL: http://diagnosis:8000
       WORKER_INSTANCE_ID: worker-real-1
-      INTERNAL_WORKER_INSTANCE_ID: worker-real-1
+      INTERNAL_WORKER_INSTANCE_ID: worker-1
       INTERNAL_WORKER_KID: worker-1-key
       INTERNAL_WORKER_PRIVATE_KEY_FILE: /run/secrets/internal_worker_1_private_key
     volumes:
-    - ./ml/models:/models/release:ro
+    - type: bind
+      source: ./.local/ml-pilot-v1.2/g2-bundle-v1
+      target: /models/release
+      read_only: true
+      bind:
+        create_host_path: false
     secrets:
     - ai_inference_password
     - rabbit_ai_inference_password

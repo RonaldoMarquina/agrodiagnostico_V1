@@ -23,6 +23,11 @@
               "type": "string",
               "pattern": "^diagnoses/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}|original\\.(jpg|png|webp))$",
               "description": "Clave privada opaca; diagnoses/{UUID}/{UUID} o diagnoses/{UUID}/original.(jpg|png|webp); sin URL, querystring, credenciales ni nombre del usuario."
+            },
+            "identified_crop": {
+              "type": "string",
+              "const": "POTATO",
+              "description": "Identificación previa del usuario para el piloto; ausente en solicitudes históricas."
             }
           },
           "required": [
@@ -36,4 +41,3 @@
     }
   ]
 }
-

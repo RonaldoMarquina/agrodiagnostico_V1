@@ -9,32 +9,34 @@
         "David P. Hughes",
         "Marcel Salathé"
       ],
-      "version": "Git 7f7ecc7e1eaca78107e3affe7cb5abd9427e139a",
-      "reference": "https://github.com/spMohanty/PlantVillage-Dataset/blob/7f7ecc7e1eaca78107e3affe7cb5abd9427e139a/README.md",
-      "consulted_at": "2026-09-29",
+      "version": "Hugging Face Git 9e97599868962bd0079b8db4b7f1efa9185fa1e7 / color",
+      "reference": "https://huggingface.co/datasets/mohanty/PlantVillage/commit/9e97599868962bd0079b8db4b7f1efa9185fa1e7",
+      "origin_repository_revision": "Git 7f7ecc7e1eaca78107e3affe7cb5abd9427e139a",
+      "consulted_at": "2026-11-19",
       "license": {
         "identifier": "CC-BY-SA-3.0",
         "evidence": [
-          "https://huggingface.co/datasets/mohanty/PlantVillage"
+          "https://huggingface.co/datasets/mohanty/PlantVillage/commit/9e97599868962bd0079b8db4b7f1efa9185fa1e7",
+          "https://arxiv.org/pdf/1511.08060"
         ],
-        "status": "DECLARED_BY_PUBLISHER"
+        "status": "VERIFIED_FOR_PROJECT"
       },
-      "eligibility": "PENDING",
-      "eligibility_reason": "Pendiente admisión por el proyecto: correspondencia de etiquetas, revisión de derechos/atribución y curación. La licencia declarada no acredita cada fotografía ni calidad.",
-      "restrictions": "Atribución y ShareAlike; verificar alcance sobre la distribución elegida y derivados. No mezclar color/grayscale/segmented como muestras independientes.",
+      "eligibility": "ELIGIBLE",
+      "eligibility_reason": "Licencia CC BY-SA 3.0 de la revisión fijada cubre archivos por SHA-256; dos tizones y negativos de tomate con hoja verificable, procedencia experta e inspección interna de calidad.",
+      "restrictions": "Atribución y ShareAlike; el artículo original aclara que algoritmos entrenados con esos datos quedan bajo la misma licencia. Revisar compatibilidad de la futura publicación del modelo. No mezclar color/grayscale/segmented como muestras independientes.",
       "capture_context": "CONTROLLED_LEAF",
-      "label_review": "Curación/etiquetado reportados por autores; revisión local no realizada.",
-      "duplicates": "No evaluados localmente; comparar hashes y grupos entre fuentes y variantes antes de particionar.",
-      "exclusions": "No se admite ninguna imagen todavía. Fuera de papa/maíz o sin equivalencia revisada: excluir o cuarentena.",
+      "label_review": "Procedencia experta PlantVillage (Hughes y Salathé, validación técnica) + control interno de calidad/ambigüedad por archivo; sin revisión agronómica independiente nueva.",
+      "duplicates": "SHA-256 y dHash con umbral 6; pares visuales candidatos apartados antes del split; grupos leaf_id de fuente.",
+      "exclusions": "Papa sana, maíz y todas las otras etiquetas fuera del piloto; ambiguas, sin leaf_id y pares visuales apartados por SHA-256 en expediente privado.",
       "reported_total": {
         "value": 54306,
         "reference": "https://github.com/spMohanty/PlantVillage-Dataset/blob/7f7ecc7e1eaca78107e3affe7cb5abd9427e139a/README.md",
         "method": "Total global declarado en README; no es el subconjunto candidato ni conteo local."
       },
       "local_total": {
-        "value": null,
-        "reference": "ml/datasets/",
-        "method": "No se ha importado ni medido un dataset por clase; null no significa cero."
+        "value": 2358,
+        "reference": "docs/evidence/INCREMENTO-4-CURACION-Y-G1.md",
+        "method": "1593 positivos de dos tizones + 765 negativos de tomate tras exclusiones, previo a validación final."
       },
       "counts": [
         {
@@ -60,9 +62,9 @@
             "method": "Metadatos remotos Git: blobs .jpg/.jpeg/.png de árbol de clase completo no truncado; sin decodificar imágenes."
           },
           "local": {
-            "value": null,
-            "reference": "ml/datasets/",
-            "method": "No importado ni medido por clase."
+            "value": 828,
+            "reference": "docs/evidence/INCREMENTO-4-CURACION-Y-G1.md",
+            "method": "Filas seleccionadas del lote privado con leaf_id, SHA y control de calidad."
           }
         },
         {
@@ -74,9 +76,9 @@
             "method": "Metadatos remotos Git: blobs .jpg/.jpeg/.png de árbol de clase completo no truncado; sin decodificar imágenes."
           },
           "local": {
-            "value": null,
-            "reference": "ml/datasets/",
-            "method": "No importado ni medido por clase."
+            "value": 765,
+            "reference": "docs/evidence/INCREMENTO-4-CURACION-Y-G1.md",
+            "method": "Filas seleccionadas del lote privado con leaf_id, SHA y control de calidad."
           }
         },
         {
@@ -136,7 +138,8 @@
           }
         }
       ],
-      "other_versions": []
+      "other_versions": [],
+      "candidate_batch_evidence": "docs/evidence/INCREMENTO-4-PLANTVILLAGE-CONTEOS.json"
     },
     {
       "source_id": "plantdoc",
@@ -239,7 +242,7 @@
           "reported": {
             "value": 116,
             "reference": "https://api.github.com/repos/pratikkayal/PlantDoc-Dataset/git/trees/5467f6012d78d1c446145d5f582da6096f852ae8?recursive=1",
-            "method": "Metadatos remotos Git no truncados: blobs .jpg/.jpeg/.png en train y test por carpeta; no conteo del abstract ni curación local."
+            "method": "Conteo remoto de la etiqueta original genérica; UNMAPPED en v2, no acredita imágenes de roya común. Blobs Git no truncados .jpg/.jpeg/.png de train y test."
           },
           "local": {
             "value": null,
@@ -253,7 +256,7 @@
           "reported": {
             "value": 192,
             "reference": "https://api.github.com/repos/pratikkayal/PlantDoc-Dataset/git/trees/5467f6012d78d1c446145d5f582da6096f852ae8?recursive=1",
-            "method": "Metadatos remotos Git no truncados: blobs .jpg/.jpeg/.png en train y test por carpeta; no conteo del abstract ni curación local."
+            "method": "Conteo remoto de la etiqueta original genérica; UNMAPPED en v2, no acredita imágenes de tizón foliar del norte. Blobs Git no truncados .jpg/.jpeg/.png de train y test."
           },
           "local": {
             "value": null,
@@ -379,7 +382,7 @@
           "reported": {
             "value": null,
             "reference": "https://github.com/tqwei05/PlantSeg/blob/1a3dd4d9224bcc97a5850af7dd1c423abc24eae0/mmseg/datasets/plantseg115.py",
-            "method": "Sin conteo publicado verificado para esta etiqueta/versión; no inferir cero."
+            "method": "Etiqueta original genérica UNMAPPED en v2; sin conteo publicado verificado para esta versión y sin equivalencia acreditada a roya común. No inferir cero."
           },
           "local": {
             "value": null,

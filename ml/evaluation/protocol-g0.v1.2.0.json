@@ -1,0 +1,114 @@
+{
+  "protocol_version": "1.2.0",
+  "decision_recorded_at": "2026-11-19",
+  "decision_author_role": "PROJECT_OWNER",
+  "project_owner_decision": {
+    "status": "APPROVED_G0_DESIGN",
+    "scope": "Piloto de hoja de papa previamente identificada; tizón temprano y tardío. Mantiene mínimos por clase y grupo, métricas, abstención, negativos, calibración y CPU.",
+    "approved_at": "2026-11-19",
+    "decision_ref": "docs/adr/0009-modelo-validado-inferencia-y-politicas-de-publicacion.md",
+    "change_reason": "El responsable reduce el piloto a dos tizones de papa tras la auditoría reproducible: faltan grupos de hoja/planta/sesión verificables para completar las siete clases; aprueba el cambio antes del entrenamiento y de abrir TEST."
+  },
+  "selected_image_rights": {
+    "gate": "G1",
+    "status": "VERIFIED_FOR_PILOT_LOT",
+    "evidence_ref": "docs/evidence/INCREMENTO-4-G1-PILOTO-V1.2.md"
+  },
+  "measured_results": {
+    "gate": "G2",
+    "status": "NOT_MEASURED",
+    "evaluation_ref": null
+  },
+  "approved_at": "2026-11-19",
+  "reviewer_role": "PROJECT_OWNER",
+  "responsible": "PROJECT_OWNER",
+  "status": "APPROVED_G0_DESIGN",
+  "candidate_classes": [
+    "POTATO_EARLY_BLIGHT",
+    "POTATO_LATE_BLIGHT"
+  ],
+  "automatic_label_mapping_exclusions": [],
+  "partition_minimums": {
+    "train": {
+      "min_samples_per_class": 150,
+      "min_groups_per_class": 50
+    },
+    "val": {
+      "min_samples_per_class": 40,
+      "min_groups_per_class": 20
+    },
+    "test": {
+      "min_samples_per_class": 30,
+      "min_groups_per_class": 15
+    },
+    "external": {
+      "min_samples_per_class": 20,
+      "min_groups_per_class": 10
+    }
+  },
+  "metrics_thresholds": {
+    "macro_f1_val_min": 0.8,
+    "macro_f1_test_min": 0.85,
+    "class_recall_test_min": 0.8,
+    "class_f1_test_min": 0.7,
+    "macro_f1_external_target": 0.75,
+    "negative_samples_fpr_max": 0.05,
+    "negative_samples_rejection_min": 0.95,
+    "negative_samples_acceptance_max": 0.1,
+    "calibration_ece_max": 0.15,
+    "selective_coverage_min": 0.7,
+    "selective_error_max": 0.1
+  },
+  "metric_definitions": {
+    "selective_coverage": "diagnósticos aceptados de una de las dos clases del piloto / imágenes válidas de esas dos clases; NO_CONCLUYENTE permanece en el denominador; denominador cero no cumple",
+    "selective_error": "diagnósticos aceptados incorrectos / diagnósticos aceptados de imágenes válidas de las dos clases del piloto; cero aceptados no cumple",
+    "class_recall": "diagnósticos aceptados correctos de la clase / todas las imágenes válidas de esa clase; abstenciones cuentan como falsos negativos, no como una clase adicional",
+    "negative_samples_acceptance": "negativos autorizados de otros cultivos, con diagnóstico aceptado de clase del piloto / total de negativos evaluados; denominador cero no cumple. Papa sana queda fuera del piloto, pero no se utiliza como negativo en G1 v1.2.0.",
+    "negative_samples_fpr": "mismo numerador y denominador que negative_samples_acceptance; límite histórico 0.05 más estricto que el nuevo límite 0.10, por lo que 0.05 gobierna la aceptación",
+    "negative_samples_rejection": "negativos sin diagnóstico aceptado de clase del piloto / total de negativos evaluados; objetivo 0.95 complementario a FPR 0.05",
+    "reporting": "publicar numerador, denominador y valor por clase cuando corresponda, junto con agregados, abstenciones y exclusiones predefinidas; un denominador cero no acredita ningún umbral"
+  },
+  "required_reporting": [
+    "accuracy",
+    "precision_per_class",
+    "recall_per_class",
+    "f1_per_class",
+    "confusion_matrix",
+    "latency",
+    "non_conclusive_rate",
+    "numerators_and_denominators_by_class"
+  ],
+  "confidence_threshold": {
+    "value": null,
+    "selected_on": "VAL",
+    "freeze_before": "TEST",
+    "record_justification_and_abstention_rate": true
+  },
+  "compute_budget_cpu": {
+    "latency_median_ms_max": 1000,
+    "latency_p95_ms_max": 2500,
+    "latency_hard_limit_ms": 4000,
+    "max_rss_mb": 1024
+  },
+  "full_diagnosis_p95_seconds_target": 30,
+  "increment_closure_rule": {
+    "required_crops": [
+      "POTATO"
+    ],
+    "min_approved_diseases_per_crop": 2
+  },
+  "review_note": "G0 v1.2.0 aprobado por el responsable el 2026-11-19 antes de entrenar y abrir TEST. Las metas se calculan para dos tizones de papa; la entrada exige hoja de papa previamente identificada. Cultivo automático, papa sana, maíz y plagas quedan fuera del piloto. FPR 0.05 y rechazo 0.95 de negativos siguen vigentes. Umbral en VAL antes de TEST. Derechos, etiquetas, negativos y particiones en G1; resultados en G2.",
+  "supersedes": "1.1.0",
+  "pilot_input": "Fotografía de una hoja de papa previamente identificada por el usuario",
+  "out_of_scope_classes": [
+    "POTATO_HEALTHY",
+    "MAIZE_HEALTHY",
+    "MAIZE_COMMON_RUST",
+    "MAIZE_LEAF_BLIGHT",
+    "MAIZE_GRAY_LEAF_SPOT"
+  ],
+  "out_of_scope_capabilities": [
+    "detección automática de cultivo",
+    "plagas"
+  ]
+}

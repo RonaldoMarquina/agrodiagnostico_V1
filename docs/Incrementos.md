@@ -1,6 +1,6 @@
 # Incrementos de AgroDiagnóstico V1
 
-Estado actual: incrementos 0–3 implementados y verificados. Incremento 4 en corrección técnica y pendiente de aprobación humana/datos/modelo reales. Incremento 5 pendiente.
+Estado actual: incrementos 0–3 implementados y verificados. Incremento 4 con G0 v1.2.0, G1 y [bundle piloto G2](evidence/INCREMENTO-4-APROBACION-G2-PILOTO.md) aprobados; [catálogo revisado](evidence/INCREMENTO-4-CATALOGO-PILOTO-V1.md) publicado solo en aceptación aislada. La [prueba local real](evidence/INCREMENTO-4-G3-ACEPTACION-LOCAL.md) falló en rechazo de papa sana. G3 y la activación para usuarios siguen pendientes. Incremento 5 pendiente.
 
 | Incremento | Resultado previsto | Estado |
 | --- | --- | --- |
@@ -8,7 +8,7 @@ Estado actual: incrementos 0–3 implementados y verificados. Incremento 4 en co
 | 1 | Registro, sesiones, roles, perfil, cambio y recuperación de contraseña, autorización | Implementado y revisado mediante correctivo posterior; 12 operaciones de identidad. Véase evidencia INCREMENTO-1-CORRECCION |
 | 2 | Imágenes privadas, validación y formatos, diagnósticos, catálogo, historial, feedback | Implementado; cierre original rectificado por [corrección](evidence/INCREMENTO-2-CORRECCION.md). 20 operaciones de negocio de Diagnosis |
 | 3 | RabbitMQ, outbox/inbox, lease, worker provisional e idempotencia | Verificado y archivado; CI local 17/17. [Evidencia](evidence/INCREMENTO-3-CIERRE.md). Resultados sintéticos, sin modelo real |
-| 4 | Dataset autorizado, cultivo automático, entrenamiento, evaluación y modelo validado | En corrección; no hay G0–G3 acreditadas. [Estado rectificado](evidence/INCREMENTO-4-ACEPTACION-INTEGRADA.md) |
+| 4 | Piloto de dos tizones de papa, datos autorizados, entrenamiento, evaluación y modelo validado | En desarrollo: **37/44 tareas** tras añadir cuatro del ciclo correctivo; [G0 v1.2.0](evidence/INCREMENTO-4-PROTOCOLO-G0.md), [G1](evidence/INCREMENTO-4-G1-PILOTO-V1.2.md) y [bundle G2](evidence/INCREMENTO-4-APROBACION-G2-PILOTO.md) aprobados para el ciclo histórico. [Catálogo revisado](evidence/INCREMENTO-4-CATALOGO-PILOTO-V1.md) publicado en aceptación local; [9.2 pasó y G3 falló](evidence/INCREMENTO-4-G3-ACEPTACION-LOCAL.md) por 4/4 falsas aceptaciones de papa sana en control de alcance. [CI local 18/18](evidence/INCREMENTO-4-CI-LOCAL.md), remota pendiente. Perfil real apagado fuera de aceptación. EXTERNAL no disponible. [Nueva versión con rechazo de papa sana propuesta](evidence/INCREMENTO-4-CICLO-RECHAZO-PAPA-SANA.md), aún sin G0 completo. |
 | 5 | Notificaciones, lectura de avisos, interfaz final, observabilidad, recuperación, pruebas y despliegue con dominio, HTTPS, Cloudflare y CDN | Pendiente |
 
 Gemini, voz, PWA y detector de plagas son extensiones posteriores opcionales.
@@ -29,4 +29,4 @@ CI de cierre del incremento 2 (2026-10-07): 16/16 etapas locales aprobadas, incl
 
 Cierre del incremento 3 (2026-10-09): 33/33 tareas, cinco capacidades sincronizadas y [CI local completo](evidence/INCREMENTO-3-CI-LOCAL.json). [Tareas archivadas](../openspec/changes/archive/2026-10-09-incremento-3-flujo-asincrono-confiable/tasks.md). La comprobación remota de GitHub Actions permanece pendiente; el siguiente incremento es el 4 (datos autorizados y modelo validado).
 
-Estado del incremento 4 rectificado el 2026-10-15: se retira la declaración de 36/40 completadas y la aceptación real. Persisten trabajo técnico, permisos, revisión docente, entrenamiento y evaluación. No archivar.
+Estado del incremento 4 rectificado el 2026-10-15: se retira la declaración de 36/40 completadas y la aceptación real. Actualización del 2026-11-19: el responsable aprobó G0 como protocolo de diseño y se cerró G1 para el lote privado de dos tizones y negativos de tomate, con procedencia experta de etiquetas PlantVillage y control interno de calidad. Persisten entrenamiento, evaluación G2 y aceptación G3. No archivar.
