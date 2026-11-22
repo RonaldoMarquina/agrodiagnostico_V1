@@ -1,6 +1,6 @@
 # Tasks — ciclo v1.3.2 (v1.3.0 y v1.3.1 históricos)
 
-Estado al 2026-11-21: **7/21; G0 v1.3.2 aprobado y G1 v1.3.1 revalidado y cerrado**. Las aprobaciones G0/G1/G2 v1.2.0 son históricas. El TEST conocido v1.2.0 y los cuatro controles sanos G3 solo justifican el nuevo ciclo; sus tres grupos de hoja quedaron excluidos. La [aprobación de los criterios sanos 3/32 y 29/32](../../../docs/evidence/INCREMENTO-4-G0-V1.3.2-APROBACION.md) conserva la [admisión privada de 2.391 fotos/606 grupos](../../../docs/evidence/INCREMENTO-4-G1-V1.3.1-ADMISION.md) sin repartición ni nuevo sello. El TEST nuevo está sellado, sin evaluación; no hay entrenamiento v1.3.2 ni G2. No usar TEST para seleccionar arquitectura, umbral o pesos.
+Estado al 2026-11-22: **10/21; G0 v1.3.2 aprobado, G1 v1.3.1 cerrado y candidato TRAIN/VAL congelado**. Las aprobaciones G0/G1/G2 v1.2.0 son históricas. El TEST conocido v1.2.0 y los cuatro controles sanos G3 solo justifican el nuevo ciclo; sus tres grupos de hoja quedaron excluidos. La [aprobación de los criterios sanos 3/32 y 29/32](../../../docs/evidence/INCREMENTO-4-G0-V1.3.2-APROBACION.md) conserva la [admisión privada de 2.391 fotos/606 grupos](../../../docs/evidence/INCREMENTO-4-G1-V1.3.1-ADMISION.md) sin repartición ni nuevo sello. El [expediente TRAIN/VAL](../../../docs/evidence/INCREMENTO-4-TRAIN-VAL-V1.3.2.md) acredita 4.1–4.3; el TEST nuevo sigue sellado, sin evaluación ni G2. No usar TEST para seleccionar arquitectura, umbral o pesos.
 
 ## 1. G0 — protocolo aprobado
 
@@ -24,9 +24,9 @@ Estado al 2026-11-21: **7/21; G0 v1.3.2 aprobado y G1 v1.3.1 revalidado y cerrad
 
 ## 4. TRAIN/VAL y congelamiento
 
-- [ ] 4.1 Entrenar candidatos solo con TRAIN G1 v1.3.1 bajo G0 v1.3.2 y documentar semilla, hashes, arquitectura, dependencias, CPU/RAM y tiempo; verificar reproducción y registro de acceso sin TEST.
-- [ ] 4.2 Comparar en VAL al menos dos rutas de rechazo con preprocesado/presupuesto iguales; registrar F1, recall, cobertura, error selectivo, FPR de sana y otro cultivo por separado, calibración y latencia con numeradores/denominadores.
-- [ ] 4.3 Elegir pesos, calibración y umbral solo con VAL, congelar bundle, protocolo y manifiestos antes de TEST; verificar hashes, carga independiente preliminar y rechazo de alteraciones.
+- [x] 4.1 Entrenar candidatos solo con TRAIN G1 v1.3.1 bajo G0 v1.3.2 y documentar semilla, hashes, arquitectura, dependencias, CPU/RAM y tiempo; verificar reproducción y registro de acceso sin TEST. [Entrenamiento y repetición bit a bit](../../../docs/evidence/INCREMENTO-4-TRAIN-VAL-V1.3.2.md): pesos, reporte y predicciones VAL con SHA idénticos; TEST sin inferencia.
+- [x] 4.2 Comparar en VAL al menos dos rutas de rechazo con preprocesado/presupuesto iguales; registrar F1, recall, cobertura, error selectivo, FPR de sana y otro cultivo por separado, calibración y latencia con numeradores/denominadores. [Comparación de argmax y puerta sana](../../../docs/evidence/INCREMENTO-4-TRAIN-VAL-V1.3.2.md) bajo los mismos pesos y VAL, con latencia de decisión y CPU del modelo medidas.
+- [x] 4.3 Elegir pesos, calibración y umbral solo con VAL, congelar bundle, protocolo y manifiestos antes de TEST; verificar hashes, carga independiente preliminar y rechazo de alteraciones. [Congelamiento privado y verificación](../../../docs/evidence/INCREMENTO-4-TRAIN-VAL-V1.3.2.md), SHA-256 de `freeze.json` `d07dcc40376d4d74e581553c817e4610f7bf7716cae0d6af98a3919930141eb7`. Es candidato offline, no release G2 ni bundle integrado al worker.
 
 ## 5. TEST nuevo y G2
 

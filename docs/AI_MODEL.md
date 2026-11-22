@@ -1,4 +1,4 @@
-> Estado vigente 2026-11-21: [G0 v1.3.2 aprobado](evidence/INCREMENTO-4-G0-V1.3.2-APROBACION.md) fija en TEST sano máximo 3/32 diagnósticos visibles de tizón y mínimo 29/32 `NO_CONCLUYENTE`. [G1 v1.3.1](evidence/INCREMENTO-4-G1-V1.3.1-ADMISION.md) sigue cerrado y su TEST sellado no se ha evaluado. No hay entrenamiento v1.3.2; G2/G3 siguen abiertos. El bundle y resultados v1.2.0 son históricos; la aceptación local de ese ciclo encontró 4/4 falsas aceptaciones sanas. El texto inferior conserva el diseño anterior.
+> Estado vigente 2026-11-22: [G0 v1.3.2 aprobado](evidence/INCREMENTO-4-G0-V1.3.2-APROBACION.md) fija en TEST sano máximo 3/32 diagnósticos visibles de tizón y mínimo 29/32 `NO_CONCLUYENTE`. [G1 v1.3.1](evidence/INCREMENTO-4-G1-V1.3.1-ADMISION.md) sigue cerrado. El [candidato MobileNetV3-Small](evidence/INCREMENTO-4-TRAIN-VAL-V1.3.2.md) se entrenó con TRAIN y quedó congelado tras cumplir criterios en VAL; TEST sigue sellado y G2/G3 abiertos. El bundle y resultados v1.2.0 son históricos; la aceptación local de ese ciclo encontró 4/4 falsas aceptaciones sanas. El texto inferior conserva el diseño anterior.
 
 # Datos y modelo de IA
 
