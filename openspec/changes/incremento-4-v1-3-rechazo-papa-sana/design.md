@@ -1,6 +1,6 @@
 # Design — ciclo G0 v1.3.0 aprobado
 
-> Estado vigente 2026-11-22: [G0 v1.3.2](../../../docs/evidence/INCREMENTO-4-G0-V1.3.2-APROBACION.md) sustituyó el criterio TEST de papa sana antes de entrenar; [G1 v1.3.1](../../../docs/evidence/INCREMENTO-4-G1-V1.3.1-ADMISION.md) sigue cerrado con el mismo sello. El [candidato TRAIN/VAL](../../../docs/evidence/INCREMENTO-4-TRAIN-VAL-V1.3.2.md) quedó congelado antes de TEST; G2 sigue abierto. El diseño histórico de v1.3.0 y la decisión v1.3.1 se conservan abajo.
+> Estado vigente 2026-11-22: [G0 v1.3.2](../../../docs/evidence/INCREMENTO-4-G0-V1.3.2-APROBACION.md) sustituyó el criterio TEST de papa sana antes de entrenar; [G1 v1.3.1](../../../docs/evidence/INCREMENTO-4-G1-V1.3.1-ADMISION.md) quedó cerrado. El [candidato TRAIN/VAL](../../../docs/evidence/INCREMENTO-4-TRAIN-VAL-V1.3.2.md) se congeló antes del [TEST nuevo](../../../docs/evidence/INCREMENTO-4-TEST-V1.3.2-UNICO.md), que **falló** rechazo sano; G2 sigue abierto. El diseño histórico de v1.3.0 y la decisión v1.3.1 se conservan abajo.
 
 > Actualización del 2026-11-21: [G0 v1.3.1 aprobado](../../../docs/evidence/INCREMENTO-4-G0-V1.3.1-APROBACION.md) reduce **solo** mínimos de papa sana tras el inventario real G1. [G1 v1.3.1 cerrado](../../../docs/evidence/INCREMENTO-4-G1-V1.3.1-ADMISION.md) admite el lote privado y sella un nuevo TEST. D2 y el resto del diseño conservan el protocolo v1.3.0 histórico; para el ciclo nuevo manda v1.3.1. No se ha entrenado ni evaluado TEST nuevo.
 

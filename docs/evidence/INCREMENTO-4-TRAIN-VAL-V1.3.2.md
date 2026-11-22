@@ -1,6 +1,6 @@
 # Ciclo v1.3.2 — entrenamiento y selección con TRAIN/VAL
 
-Fecha del expediente: **2026-11-22** (America/Lima). Estado: **candidato congelado antes de TEST; G2 y G3 abiertos**. Esta evidencia usa el [G0 v1.3.2 aprobado](../../ml/evaluation/protocol-g0.v1.3.2.json) y el [G1 v1.3.1 admitido](INCREMENTO-4-G1-V1.3.1-ADMISION.md). El TEST nuevo sigue sellado y sin inferencia. Los resultados v1.2.0 y sus pesos no se modificaron.
+Fecha del expediente: **2026-11-22** (America/Lima). Este es el **corte anterior a TEST**, fijado en el commit `94b3d422afe4008226a70623b96824ba003cf139`: candidato congelado, G2/G3 abiertos y TEST todavía sin inferencia en ese momento. Después, [TEST se evaluó una sola vez y falló el rechazo sano](INCREMENTO-4-TEST-V1.3.2-UNICO.md). Esta evidencia usa el [G0 v1.3.2 aprobado](../../ml/evaluation/protocol-g0.v1.3.2.json) y el [G1 v1.3.1 admitido](INCREMENTO-4-G1-V1.3.1-ADMISION.md). Los resultados v1.2.0 y sus pesos no se modificaron.
 
 ## Datos, entrenamiento y trazabilidad
 

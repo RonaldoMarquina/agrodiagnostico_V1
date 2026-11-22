@@ -1,6 +1,6 @@
 # Proposal
 
-> Estado vigente 2026-11-22: [G0 v1.3.2 aprobado](../../../docs/evidence/INCREMENTO-4-G0-V1.3.2-APROBACION.md) fija el conteo de rechazo sano sobre el [G1 v1.3.1 admitido y sellado](../../../docs/evidence/INCREMENTO-4-G1-V1.3.1-ADMISION.md). El [candidato TRAIN/VAL](../../../docs/evidence/INCREMENTO-4-TRAIN-VAL-V1.3.2.md) quedó congelado; TEST sigue sin evaluar y G2 abierto. La nota siguiente conserva la secuencia anterior.
+> Estado vigente 2026-11-22: [G0 v1.3.2 aprobado](../../../docs/evidence/INCREMENTO-4-G0-V1.3.2-APROBACION.md) y [G1 v1.3.1 admitido](../../../docs/evidence/INCREMENTO-4-G1-V1.3.1-ADMISION.md). El [candidato TRAIN/VAL](../../../docs/evidence/INCREMENTO-4-TRAIN-VAL-V1.3.2.md) quedó congelado antes de [un TEST nuevo](../../../docs/evidence/INCREMENTO-4-TEST-V1.3.2-UNICO.md), que **falló** el rechazo sano. G2 sigue abierto; la nota siguiente conserva la secuencia anterior.
 
 > Actualización del 2026-11-21: el inventario G1 motivó una [tabla reducida G0 v1.3.1 aprobada](../../../docs/evidence/INCREMENTO-4-G0-V1.3.1-APROBACION.md). [G1 v1.3.1 cerró](../../../docs/evidence/INCREMENTO-4-G1-V1.3.1-ADMISION.md) tras admisión individual y sello de TEST. Las referencias inferiores a v1.3.0 conservan la decisión histórica; v1.2.0 permanece inalterado. No se entrenó ni evaluó TEST nuevo.
 

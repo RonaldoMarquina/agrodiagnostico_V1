@@ -1,6 +1,6 @@
 # Tasks — ciclo v1.3.2 (v1.3.0 y v1.3.1 históricos)
 
-Estado al 2026-11-22: **10/21; G0 v1.3.2 aprobado, G1 v1.3.1 cerrado y candidato TRAIN/VAL congelado**. Las aprobaciones G0/G1/G2 v1.2.0 son históricas. El TEST conocido v1.2.0 y los cuatro controles sanos G3 solo justifican el nuevo ciclo; sus tres grupos de hoja quedaron excluidos. La [aprobación de los criterios sanos 3/32 y 29/32](../../../docs/evidence/INCREMENTO-4-G0-V1.3.2-APROBACION.md) conserva la [admisión privada de 2.391 fotos/606 grupos](../../../docs/evidence/INCREMENTO-4-G1-V1.3.1-ADMISION.md) sin repartición ni nuevo sello. El [expediente TRAIN/VAL](../../../docs/evidence/INCREMENTO-4-TRAIN-VAL-V1.3.2.md) acredita 4.1–4.3; el TEST nuevo sigue sellado, sin evaluación ni G2. No usar TEST para seleccionar arquitectura, umbral o pesos.
+Estado al 2026-11-22: **11/21; G0 v1.3.2 aprobado, G1 v1.3.1 cerrado y TEST único evaluado con fallo de rechazo sano**. Las aprobaciones G0/G1/G2 v1.2.0 son históricas. El TEST conocido v1.2.0 y los cuatro controles sanos G3 solo justificaron este ciclo; sus tres grupos de hoja quedaron excluidos. El [expediente TRAIN/VAL](../../../docs/evidence/INCREMENTO-4-TRAIN-VAL-V1.3.2.md) acredita 4.1–4.3. El [TEST v1.3.2 único](../../../docs/evidence/INCREMENTO-4-TEST-V1.3.2-UNICO.md) registró **8/32** falsas publicaciones sanas y **24/32** `NO_CONCLUYENTE`, frente a ≤3/32 y ≥29/32: G2/G3 permanecen abiertos. No reutilizar este TEST para seleccionar arquitectura, umbral, pesos o política.
 
 ## 1. G0 — protocolo aprobado
 
@@ -30,7 +30,7 @@ Estado al 2026-11-22: **10/21; G0 v1.3.2 aprobado, G1 v1.3.1 cerrado y candidato
 
 ## 5. TEST nuevo y G2
 
-- [ ] 5.1 Ejecutar una evaluación única del TEST G1 v1.3.1 sellado contra G0 v1.3.2; publicar por clase y estrato, incluidas ≤3/32 publicaciones erróneas sanas y ≥29/32 `NO_CONCLUYENTE` como criterios, abstenciones, confusión, ECE, latencia, memoria, numeradores/denominadores y grupos. No ajustar el modelo con TEST.
+- [x] 5.1 Ejecutar una evaluación única del TEST G1 v1.3.1 sellado contra G0 v1.3.2; publicar por clase y estrato, incluidas ≤3/32 publicaciones erróneas sanas y ≥29/32 `NO_CONCLUYENTE` como criterios, abstenciones, confusión, ECE, latencia, memoria, numeradores/denominadores y grupos. No ajustar el modelo con TEST. [Reporte único](../../../docs/evidence/INCREMENTO-4-TEST-V1.3.2-UNICO.md): las metas sanas **fallaron**; esta casilla acredita ejecutar y publicar la evaluación, no aprobar G0 TEST ni G2.
 - [ ] 5.2 Verificar carga independiente y checksums del bundle; obtener revisión G2 explícita del responsable solo si se cumplen criterios, documentando EXTERNAL ausente y límites sin modificar resultados v1.2.0.
 
 ## 6. Repetición de aceptación y G3

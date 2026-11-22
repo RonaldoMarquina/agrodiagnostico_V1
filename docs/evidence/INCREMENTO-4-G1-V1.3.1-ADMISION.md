@@ -1,6 +1,6 @@
 # G1 v1.3.1 — admisión y nuevo TEST sellado
 
-> Estado vigente: [G0 v1.3.2](INCREMENTO-4-G0-V1.3.2-APROBACION.md) reutiliza este mismo G1 sin alterar imágenes, particiones, informe ni sello. La revalidación independiente pasó; TEST sigue sin evaluación y G2 abierto.
+> Estado posterior: [G0 v1.3.2](INCREMENTO-4-G0-V1.3.2-APROBACION.md) reutilizó este mismo G1 sin alterar imágenes, particiones, informe ni sello. Tras congelar el candidato, [TEST se evaluó una vez](INCREMENTO-4-TEST-V1.3.2-UNICO.md) y falló el rechazo sano; G2 sigue abierto. El texto inferior describe el cierre G1 antes de esa evaluación.
 
 Fecha: **2026-11-21** (America/Lima). Estado: **G1 cerrado para el lote privado v1.3.1**, después de la [aprobación explícita G0](INCREMENTO-4-G0-V1.3.1-APROBACION.md). El cierre acredita procedencia, derechos, revisión interna, grupos y particiones; **no acredita rendimiento de un modelo**. No hubo entrenamiento, selección de umbral, inferencia ni evaluación del nuevo TEST.
 
