@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "protocol_version": "1.4.0",
+  "sealed_at": "2026-11-22",
+  "partition": "EXTERNAL",
+  "source_id": "sikkim-solanaceae-v1",
+  "record_count": 362,
+  "counts_by_stratum": {
+    "OTHER_CROP": 194,
+    "POTATO_EARLY_BLIGHT": 42,
+    "POTATO_HEALTHY": 50,
+    "POTATO_LATE_BLIGHT": 76
+  },
+  "manifest_sha256": "3c8d95e9e4d198dedf821133cb4d5f0c119a327b496396c25d4b71a493580992",
+  "canonical_records_sha256": "1481922bfdded000c02243fbc8088ae5a38746523129aeefcff56cd117f4963f",
+  "protocol_sha256": "e3dad24755550c574f33c5fa5b736eec639c9a36b054fcb3fee9e2c3e96550af",
+  "independence_unit": "UNIQUE_IMAGE_SHA256_ONLY",
+  "plant_independence_verified": false
+}

@@ -1,0 +1,132 @@
+{
+  "protocol_version": "1.4.0",
+  "status": "APPROVED_G0_DESIGN",
+  "proposed_at": "2026-11-22",
+  "approved_at": "2026-11-22",
+  "decision_author_role": "PROJECT_OWNER",
+  "decision_scope": "G0 v1.4.0 aprobado antes de entrenar: PlantVillage color fijado exclusivamente para TRAIN/VAL y Sikkim v1 exclusivamente como EXTERNAL sellado. Sikkim no participa en entrenamiento, calibración, comparación ni selección de umbral.",
+  "supersedes_for_new_cycle": "1.3.2",
+  "historical_evidence": {
+    "v1_3_2_status": "EVALUATED_NOT_APPROVED_FOR_PUBLICATION",
+    "v1_3_2_test_and_bundle": "IMMUTABLE_AND_NOT_REUSED_FOR_V1_4_SELECTION",
+    "reason_for_new_cycle": "El ciclo v1.3.2 publicó tizón en 8/32 controles de papa sana y solo rechazó 24/32. Es evidencia histórica, no datos de ajuste v1.4.0."
+  },
+  "pilot_input": "Fotografía de una hoja de papa previamente identificada por el usuario",
+  "publishable_classes": [
+    "POTATO_EARLY_BLIGHT",
+    "POTATO_LATE_BLIGHT"
+  ],
+  "technical_training_classes": [
+    "POTATO_EARLY_BLIGHT",
+    "POTATO_LATE_BLIGHT",
+    "POTATO_HEALTHY"
+  ],
+  "technical_rejection_targets": [
+    "POTATO_HEALTHY",
+    "OTHER_CROP"
+  ],
+  "source_topology": {
+    "TRAIN": "PlantVillage color revision 9e97599868962bd0079b8db4b7f1efa9185fa1e7; three technical classes only",
+    "VAL": "PlantVillage color same revision; three technical classes plus OTHER_CROP rejection stratum",
+    "EXTERNAL": "Sikkim Solanaceae Leaf Image Dataset v1 DOI 10.17632/4wz7zbk635.1; all 362 unique files",
+    "TEST": "No new internal TEST in v1.4.0; v1.3.2 TEST remains immutable historical evidence"
+  },
+  "plantvillage_train_val_expected": {
+    "POTATO_EARLY_BLIGHT": {
+      "TRAIN": {"photos": 541, "leaf_groups": 136},
+      "VAL": {"photos": 165, "leaf_groups": 42}
+    },
+    "POTATO_LATE_BLIGHT": {
+      "TRAIN": {"photos": 499, "leaf_groups": 129},
+      "VAL": {"photos": 153, "leaf_groups": 39}
+    },
+    "POTATO_HEALTHY": {
+      "TRAIN": {"photos": 80, "leaf_groups": 20},
+      "VAL": {"photos": 28, "leaf_groups": 7}
+    },
+    "OTHER_CROP": {
+      "VAL": {"photos": 150, "leaf_groups": 38}
+    }
+  },
+  "external_source": {
+    "source_id": "sikkim-solanaceae-v1",
+    "name": "Sikkim Solanaceae Leaf Image Dataset",
+    "version": 1,
+    "doi": "10.17632/4wz7zbk635.1",
+    "url": "https://data.mendeley.com/datasets/4wz7zbk635/1",
+    "author_attribution": "Kishor Chettri; Sikkim University",
+    "license": "CC-BY-4.0",
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "publisher_file_uuid": "23a902c9-9fea-4113-97db-8fee07632abd",
+    "archive_name": "Sikkim Solanaceae Leaf Image Dataset.zip",
+    "archive_size_bytes": 170561971,
+    "archive_sha256": "5288c8f9d4628049ae1f827c961dc3df97167de294cec020cbce0bc19b2574dc",
+    "independence_unit": "UNIQUE_IMAGE_SHA256_ONLY",
+    "plant_leaf_session_or_plot_independence_verified": false,
+    "allowed_use_in_cycle": "ONE_FINAL_EXTERNAL_EVALUATION_AFTER_COMPLETE_FREEZE",
+    "forbidden_uses": [
+      "TRAIN",
+      "VAL",
+      "CALIBRATION",
+      "ARCHITECTURE_SELECTION",
+      "BALANCE_SELECTION",
+      "HYPERPARAMETER_SELECTION",
+      "THRESHOLD_SELECTION"
+    ],
+    "counts": {
+      "POTATO_EARLY_BLIGHT": 42,
+      "POTATO_LATE_BLIGHT": 76,
+      "POTATO_HEALTHY": 50,
+      "OTHER_CROP": 194,
+      "TOTAL": 362
+    }
+  },
+  "external_acceptance": {
+    "macro_f1_two_blights_min": 0.75,
+    "early_blight_recall_min": 0.75,
+    "early_blight_correct_min": 32,
+    "early_blight_denominator": 42,
+    "late_blight_recall_min": 0.75,
+    "late_blight_correct_min": 57,
+    "late_blight_denominator": 76,
+    "healthy_visible_blight_max": 5,
+    "healthy_no_concluyente_min": 45,
+    "healthy_denominator": 50,
+    "other_crop_visible_blight_max": 9,
+    "other_crop_denominator": 194,
+    "disease_abstention_or_failure": "FALSE_NEGATIVE_FOR_CLASS_RECALL",
+    "zero_or_incomplete_denominator": "CRITERION_NOT_MET"
+  },
+  "threshold_selection": {
+    "selected_on": "VAL",
+    "value": null,
+    "freeze_before": "EXTERNAL",
+    "external_allowed_to_change_threshold": false
+  },
+  "freeze_requirements": [
+    "bundle_sha256",
+    "configuration_sha256",
+    "preprocessing_sha256",
+    "class_map_sha256",
+    "calibration_sha256",
+    "threshold_selected_on_VAL"
+  ],
+  "compute_budget_cpu": {
+    "latency_median_ms_max": 1000,
+    "latency_p95_ms_max": 2500,
+    "latency_hard_limit_ms": 4000,
+    "max_rss_mb": 1024
+  },
+  "gates": {
+    "G0": "CLOSED_APPROVED",
+    "G1": "PENDING_PRIVATE_MATERIALIZATION_AND_EXTERNAL_SEAL_AT_PROTOCOL_APPROVAL",
+    "G2": "OPEN_NOT_TRAINED_OR_MEASURED",
+    "G3": "OPEN"
+  },
+  "approval": {
+    "approved_at": "2026-11-22",
+    "approved_by_role": "PROJECT_OWNER",
+    "decision_evidence": "Instrucción expresa del responsable: mantener F1 macro externo >=0.75; recall externo por tizón >=0.75 con 32/42 y 57/76; papa sana <=5/50 publicaciones y >=45/50 NO_CONCLUYENTE; otro cultivo <=9/194; Sikkim exclusivamente EXTERNAL sellado e independencia solo por imagen única."
+  },
+  "results_status": "NO_TRAINING_OR_EXTERNAL_EVALUATION_PERFORMED"
+}

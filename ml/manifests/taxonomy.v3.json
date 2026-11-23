@@ -1,0 +1,60 @@
+{
+  "schema_version": 3,
+  "version": "3.0.0",
+  "active_protocol_version": "1.4.0",
+  "pilot_input": "POTATO_LEAF_IDENTIFIED_BY_USER",
+  "publishable_candidate_codes": [
+    "POTATO_EARLY_BLIGHT",
+    "POTATO_LATE_BLIGHT"
+  ],
+  "technical_training_codes": [
+    "POTATO_EARLY_BLIGHT",
+    "POTATO_LATE_BLIGHT",
+    "POTATO_HEALTHY"
+  ],
+  "technical_rejection_strata": [
+    "POTATO_HEALTHY",
+    "OTHER_CROP"
+  ],
+  "classes": [
+    {
+      "class_code": "POTATO_EARLY_BLIGHT",
+      "crop_code": "POTATO",
+      "name": "Tizón temprano",
+      "status": "CANDIDATE_PENDING_G2_V1_4",
+      "publishable_only_if_g2_approved": true,
+      "source_review": "PlantVillage publisher expert-curated label plus internal quality control; no new independent agronomic review"
+    },
+    {
+      "class_code": "POTATO_LATE_BLIGHT",
+      "crop_code": "POTATO",
+      "name": "Tizón tardío o rancha",
+      "status": "CANDIDATE_PENDING_G2_V1_4",
+      "publishable_only_if_g2_approved": true,
+      "source_review": "PlantVillage publisher expert-curated label plus internal quality control; no new independent agronomic review"
+    },
+    {
+      "class_code": "POTATO_HEALTHY",
+      "crop_code": "POTATO",
+      "name": "Papa visualmente sana",
+      "status": "TECHNICAL_REJECTION_TARGET_NOT_PUBLISHABLE",
+      "publishable_only_if_g2_approved": false,
+      "visible_outcome": "NO_CONCLUYENTE",
+      "limitation": "La etiqueta no demuestra ausencia de toda enfermedad o plaga."
+    }
+  ],
+  "other_crop": {
+    "kind": "REJECTION_STRATUM_NOT_MODEL_CLASS_AND_NOT_DIAGNOSIS",
+    "visible_outcome": "NO_CONCLUYENTE"
+  },
+  "out_of_scope": [
+    "MAIZE_HEALTHY",
+    "MAIZE_COMMON_RUST",
+    "MAIZE_LEAF_BLIGHT",
+    "MAIZE_GRAY_LEAF_SPOT",
+    "AUTOMATIC_CROP_DETECTION",
+    "PEST_DETECTION"
+  ],
+  "code_policy": "NO_CONCLUYENTE es estado, no clase. OTHER_CROP es estrato de rechazo, no diagnóstico. Los códigos históricos no se reciclan.",
+  "results_status": "NO_V1_4_MODEL_TRAINED_OR_APPROVED"
+}

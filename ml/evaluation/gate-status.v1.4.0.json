@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-11-22",
+  "protocol_version": "1.4.0",
+  "approved_protocol_sha256": "e3dad24755550c574f33c5fa5b736eec639c9a36b054fcb3fee9e2c3e96550af",
+  "G0": "CLOSED_APPROVED_BY_PROJECT_OWNER",
+  "G1": "CLOSED_PRIVATE_MANIFESTS_VERIFIED_EXTERNAL_SEALED",
+  "G1_private_report_sha256": "88e14ef0d668bdea6deb291533d45797e9ce77592256d893e0673ce2bef1d101",
+  "plantvillage_train_val_manifest_sha256": "b7bcdc87b1ae252c55370b1354c579c4b0fa80da962ce47b83c7a28ca66824e1",
+  "sikkim_external_manifest_sha256": "3c8d95e9e4d198dedf821133cb4d5f0c119a327b496396c25d4b71a493580992",
+  "external_seal_sha256": "ab0e7e7c8a28a70a5bce4fd6424912454e2a31b31f463406233d811ed3f9a69a",
+  "G2": "OPEN_NOT_TRAINED_OR_MEASURED",
+  "G3": "OPEN",
+  "external_access": "SEALED_NOT_OPENED_FOR_MODELING",
+  "status_note": "G0 y G1 acreditan diseño, procedencia, conteos, separación y sello. No existen pesos, umbral, métricas VAL ni resultados EXTERNAL v1.4.0."
+}

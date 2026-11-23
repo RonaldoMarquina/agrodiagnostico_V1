@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "status": "PLANNED_NOT_TRAINED",
+  "protocol_version": "1.4.0",
+  "architecture": "mobilenet_v3_small",
+  "base_weights": "RANDOM_INITIALIZATION_NO_DOWNLOADS",
+  "normalization": "GROUP_NORM",
+  "seed": 42,
+  "epochs": 10,
+  "cpu_threads": 4,
+  "learning_rate": 0.001,
+  "class_codes": [
+    "POTATO_EARLY_BLIGHT",
+    "POTATO_LATE_BLIGHT",
+    "POTATO_HEALTHY"
+  ],
+  "publishable_classes": [
+    "POTATO_EARLY_BLIGHT",
+    "POTATO_LATE_BLIGHT"
+  ],
+  "train_original_counts": {
+    "POTATO_EARLY_BLIGHT": {"photos": 541, "leaf_groups": 136},
+    "POTATO_LATE_BLIGHT": {"photos": 499, "leaf_groups": 129},
+    "POTATO_HEALTHY": {"photos": 80, "leaf_groups": 20}
+  },
+  "val_original_counts": {
+    "POTATO_EARLY_BLIGHT": {"photos": 165, "leaf_groups": 42},
+    "POTATO_LATE_BLIGHT": {"photos": 153, "leaf_groups": 39},
+    "POTATO_HEALTHY": {"photos": 28, "leaf_groups": 7},
+    "OTHER_CROP": {"photos": 150, "leaf_groups": 38}
+  },
+  "strategies_to_compare_on_same_val": [
+    {
+      "strategy_id": "weighted-cross-entropy-full-train",
+      "batch_size": 16,
+      "samples_per_epoch": 1120,
+      "class_weights_n_over_k_nclass": {
+        "POTATO_EARLY_BLIGHT": 0.6900800986,
+        "POTATO_LATE_BLIGHT": 0.7481629927,
+        "POTATO_HEALTHY": 4.6666666667
+      },
+      "sampling": "all original TRAIN rows once per epoch in deterministic seeded shuffle"
+    },
+    {
+      "strategy_id": "group-aware-balanced-sampler",
+      "batch_size": 15,
+      "samples_per_class_per_epoch": 80,
+      "samples_per_epoch": 240,
+      "class_probability": 0.3333333333,
+      "sampling": "choose class uniformly, then leaf_id uniformly, then one original image within leaf_id; deterministic seed per epoch",
+      "effective_exposure_required": "log originals, leaf_ids and augmented views per class for every epoch"
+    }
+  ],
+  "healthy_train_only_augmentation": {
+    "enabled": true,
+    "allowed_split": "TRAIN",
+    "allowed_class": "POTATO_HEALTHY",
+    "operations": {
+      "random_horizontal_flip_probability": 0.5,
+      "random_rotation_degrees": 15,
+      "color_jitter_brightness": 0.1,
+      "color_jitter_contrast": 0.1,
+      "color_jitter_saturation": 0.05
+    },
+    "lineage": "Every view retains original SHA-256 and leaf_id; views never increase original-photo or independent-group counts",
+    "forbidden_splits": ["VAL", "TEST", "EXTERNAL"]
+  },
+  "selection": {
+    "source": "PlantVillage VAL only",
+    "metrics": [
+      "macro_f1_two_blights",
+      "recall_per_blight",
+      "selective_coverage",
+      "selective_error",
+      "healthy_rejection",
+      "other_crop_rejection",
+      "calibration",
+      "cpu_latency",
+      "max_rss"
+    ],
+    "calibration_split": "VAL",
+    "threshold_split": "VAL",
+    "external_access": "FORBIDDEN_UNTIL_COMPLETE_FREEZE"
+  },
+  "external": {
+    "source": "Sikkim v1",
+    "use_during_this_plan": "NONE",
+    "manifest_sha256": "3c8d95e9e4d198dedf821133cb4d5f0c119a327b496396c25d4b71a493580992"
+  },
+  "execution_status": "NOT_EXECUTED"
+}

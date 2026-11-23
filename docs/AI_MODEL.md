@@ -1,4 +1,4 @@
-> Estado vigente 2026-11-22: [G0 v1.3.2 aprobado](evidence/INCREMENTO-4-G0-V1.3.2-APROBACION.md) fija en TEST sano máximo 3/32 diagnósticos visibles de tizón y mínimo 29/32 `NO_CONCLUYENTE`. [G1 v1.3.1](evidence/INCREMENTO-4-G1-V1.3.1-ADMISION.md) sigue cerrado. El [candidato MobileNetV3-Small](evidence/INCREMENTO-4-TRAIN-VAL-V1.3.2.md) se congeló tras VAL; [TEST único](evidence/INCREMENTO-4-TEST-V1.3.2-UNICO.md) **falló** con 8/32 fotos sanas publicadas como tizón y solo 24/32 `NO_CONCLUYENTE`. G2/G3 permanecen abiertos; no se ajusta este bundle con TEST. El bundle y resultados v1.2.0 son históricos. El texto inferior conserva el diseño anterior.
+> Estado vigente 2026-11-22: v1.3.2 se conserva como ciclo evaluado no aprobado tras fallar papa sana (8/32 publicaciones de tizón; 24/32 `NO_CONCLUYENTE`). Para [v1.4.0](evidence/INCREMENTO-4-G0-G1-V1.4.0-MATERIALIZACION.md), G0 y G1 están cerrados: PlantVillage aporta solo TRAIN/VAL por `leaf_id` y Sikkim v1 está sellado exclusivamente como EXTERNAL de 362 archivos, con independencia declarada solo por imagen. No se ha entrenado v1.4.0 ni abierto EXTERNAL para modelado; G2/G3 permanecen abiertos.
 
 # Datos y modelo de IA
 
@@ -19,7 +19,7 @@ Tras aceptar y decodificar la carga, para cultivo ajeno, imagen visualmente defe
 
 ## Inventario del dataset
 
-Antes de entrenar, documenta para cada fuente: nombre/autor, permiso o licencia, fecha de acceso, etiquetas y definición diagnóstica, cantidades por clase, condiciones de captura, revisión de etiquetas, duplicados, exclusiones y restricciones de uso. La revisión fijada de PlantVillage `color` tiene un lote privado G1 admitido solo para los dos tizones y negativos de tomate. PlantDoc y PlantSeg siguen pendientes de admisión. Un conjunto de campo de Ayacucho con permisos adecuados se reserva para evaluación externa si se obtiene; su ausencia debe declararse.
+Antes de entrenar, documenta para cada fuente: nombre/autor, permiso o licencia, fecha de acceso, etiquetas y definición diagnóstica, cantidades por clase, condiciones de captura, revisión de etiquetas, duplicados, exclusiones y restricciones de uso. En v1.4.0, la revisión fijada de PlantVillage `color` aporta tres clases técnicas a TRAIN/VAL y `OTHER_CROP` solo a VAL. Sikkim v1 está registrado bajo CC BY 4.0 y sellado únicamente como EXTERNAL; no puede intervenir en calibración ni selección. Su unidad es archivo único, sin independencia demostrada por planta. PlantDoc y PlantSeg siguen pendientes de admisión.
 
 El manifiesto versionado CSV o Parquet incluirá como mínimo `image_id`, `sha256`, `crop_code`, `class_code`, `source`, `license`, `capture_context`, `label_quality`, `split_group` y `split` (`TRAIN`, `VAL`, `TEST`, `EXTERNAL`). Define y congela los dos `class_code` activos antes de entrenar; nunca recicles un código retirado. Mantén imágenes privadas y ubicación precisa fuera del repositorio.
 

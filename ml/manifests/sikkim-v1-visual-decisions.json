@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "reviewed_at": "2026-11-22",
+  "reviewed_by_role": "PROJECT_OWNER_DELEGATED_INTERNAL_DATA_REVIEW",
+  "method": "dHash 64-bit BILINEAR, Hamming distance <= 6, followed by side-by-side visual inspection",
+  "cross_source_review": {
+    "reference": "6059 local PlantVillage files from the pinned historical batch",
+    "decision": "DISTINCT_BY_VISUAL_REVIEW",
+    "limitation": "Visual review rules out the same visible file/scene for these alerts; it is not agronomic label review.",
+    "pairs": [
+      {"external_sha256":"cf7dd8d84fb0f4ed4974ed68f446dede96f273f69334a264489750d851a60a27","plantvillage_sha256":"449fdf26b94b36cf919a2207c51bd7a84dccdb4153cc000ba91510667271a1f2","distance":5},
+      {"external_sha256":"07e64a7d18d6c08f3b4090b2df875278e9c61c29c5585d262a6dc17d9893d0a6","plantvillage_sha256":"822033e5545d6d286d979e20a1e717de8e104df0a42253bced632a1e54f147cb","distance":5},
+      {"external_sha256":"06ee610e9186bacebaa9d46b0dfb62fafbeac6b7b797e039d7c951f1970abf0b","plantvillage_sha256":"da3c91a37dcb96e770265548781477f2b38490bb5d565f34a072812d6b104852","distance":5},
+      {"external_sha256":"138910b8737fc54163a9114235c8d45f4df935394ac23954612a6cdecf675cb9","plantvillage_sha256":"257bde63d6e5b13b981a9c1be2738dfc7c1579e6ecb953f390fbef4deaa4773d","distance":4},
+      {"external_sha256":"4eaa325e3b677d9bfc3c3317b345c5efa0f7f4403133dae98ccb4888b7c2fa6e","plantvillage_sha256":"bdb95a89a53fd1c5c3fe79f35389e8f2ab385cbb458acfccc28f1ff5e3d9a835","distance":4},
+      {"external_sha256":"045abbc5c987d919c52544e9b445cfd3685c2ba1a3b15e3937a9b6b8fb3e2ca4","plantvillage_sha256":"15b3136c0c7224232fdbdb70d38dc595627fb641065a9144c61395665b3005b1","distance":5},
+      {"external_sha256":"b5a9edb78fdb926363789f7f2cb2afd5bdc98e2019074b659ed827bbf4b8a5e0","plantvillage_sha256":"985c89cec5dbdae06f911223c09c0c62c973c75b8d6ed46ebefe84ade74dff62","distance":6},
+      {"external_sha256":"abcedbf89c53244fae700a3bfc92796662c25148809d692b5286a01adfbd81c9","plantvillage_sha256":"71fbeec16565d7cbc02983ac64ef38b9ebba540792f1011c2c7407c3f5b86439","distance":4},
+      {"external_sha256":"bd903eea29559f134694429adb4870cff220072d21eae7b06cfcd00d5f3e4fc5","plantvillage_sha256":"e832e6c2ce72520e784ec19cd4d815f3f23a585d366d571ebd136c57226f4865","distance":3},
+      {"external_sha256":"e42a313701999a3bebe80090515abb3f4afbdb97096776cd3c3525fe17d98318","plantvillage_sha256":"e832e6c2ce72520e784ec19cd4d815f3f23a585d366d571ebd136c57226f4865","distance":5},
+      {"external_sha256":"8603a42a6a42c01c136b8be965c0c4c6c6bbe2b6cf2a6a06021aa58d4f78488e","plantvillage_sha256":"2dfa2e4fd0d31d5722555a3648dec746cc21084f143fb52700d97df7db82793c","distance":6},
+      {"external_sha256":"e49fb4cb34d4e1332915ee5f43c2fb95678539cd1f6de922e564d873bd8d4e04","plantvillage_sha256":"352b633d21319c77aa80dc6381f30d30ee739940b2c793f4a7268a311cfd9c2a","distance":4},
+      {"external_sha256":"c55c3fda8ffc3c04441aaef831df0431f14d7950ecb1277e225533a2e860f573","plantvillage_sha256":"1baad128bb564a543a8371ff0d194618e6910dccc08fc31411791e58669f7dab","distance":6},
+      {"external_sha256":"b209907b1e4b1401cb6029647e311fe53876c97a0e92039e6593eae1ae3c278a","plantvillage_sha256":"34a734a25c26edec16d86483e88c2ef5b8a3d6ef036b1b4a391aa87b17047406","distance":3},
+      {"external_sha256":"6868919948388f76212cfd61698344bd8664781bec05f1390b087a4e1fee6707","plantvillage_sha256":"f801bd44afda9996b9cf5c3d3cca85645b63651bb4e0430a3d34499918a3cc2d","distance":6},
+      {"external_sha256":"39c9c529e4c17bbe0710109dc8885fba6c824823de4aeae8c4d18cc2c663adfa","plantvillage_sha256":"e367ee04ce1b126de9b61e9cb052c11e361290bd8fe5c62734eb50b94d918411","distance":5},
+      {"external_sha256":"261394d84e48f547f465de08af4180d2a322706c06f4560059dca6b69fd22fb1","plantvillage_sha256":"be8ebcb4c7590d8002975e7a7dde857a367ce7e7d82166150308b6fdac369625","distance":5},
+      {"external_sha256":"dad213ec1f2c121c27e56f161539bf9793d11addec3b6d4029bede58317e68bd","plantvillage_sha256":"be8ebcb4c7590d8002975e7a7dde857a367ce7e7d82166150308b6fdac369625","distance":6},
+      {"external_sha256":"ef761ecda04222cebada6c0bdc74e327f35f1ed6410c7f9f17e99509c5fd65c6","plantvillage_sha256":"be8ebcb4c7590d8002975e7a7dde857a367ce7e7d82166150308b6fdac369625","distance":5},
+      {"external_sha256":"0611aa28dfc91d679f957d6a33b8a838f2730e7ee756390899e80f149790a087","plantvillage_sha256":"16965c19f35fc1c8110f5eb7bc3fb892726a6b7d70f45259fe11de13cd014daa","distance":6}
+    ]
+  },
+  "internal_review": {
+    "alert_pair_count": 37,
+    "decision": "RETAIN_UNIQUE_SHA_FILES_WITH_CORRELATION_LIMITATION",
+    "note": "Several pairs are visibly related or possibly derived views. They remain unique files in the publisher's fixed EXTERNAL denominator, but are never called independent plants, leaves, sessions or plots."
+  }
+}
