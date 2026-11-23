@@ -25,18 +25,18 @@
 
 ## 4. Entrenamiento balanceado y aumentos seguros
 
-- [ ] 4.1 Extender la configuración reproducible para tres clases técnicas, ponderación de pérdida y muestreo balanceado consciente de `leaf_id`, y verificar que cada ejecución registra semilla, conteos originales, pesos o probabilidades y exposición efectiva por clase
-- [ ] 4.2 Implementar aumentos configurables de `POTATO_HEALTHY` exclusivamente en TRAIN con vínculo al original y `leaf_id`, y verificar que no elevan conteos de originales/grupos y que VAL/EXTERNAL rechazan cualquier aumento
-- [ ] 4.3 Añadir pruebas del cargador y sampler que demuestren balance efectivo sin tratar vistas de una misma hoja como grupos independientes, incluyendo clases minoritarias, semillas repetibles y configuraciones inválidas
+- [x] 4.1 Extender la configuración reproducible para tres clases técnicas, ponderación de pérdida y muestreo balanceado consciente de `leaf_id`, y verificar que cada ejecución registra semilla, conteos originales, pesos o probabilidades y exposición efectiva por clase
+- [x] 4.2 Implementar aumentos configurables de `POTATO_HEALTHY` exclusivamente en TRAIN con vínculo al original y `leaf_id`, y verificar que no elevan conteos de originales/grupos y que VAL/EXTERNAL rechazan cualquier aumento
+- [x] 4.3 Añadir pruebas del cargador y sampler que demuestren balance efectivo sin tratar vistas de una misma hoja como grupos independientes, incluyendo clases minoritarias, semillas repetibles y configuraciones inválidas
 - [ ] 4.4 Documentar comandos CPU sin descargas implícitas para entrenar, reanudar y auditar cada estrategia, y verificar con fixtures que no existe acceso a EXTERNAL ni se presentan fixtures como rendimiento agronómico
 
 ## 5. Comparación exclusiva con PlantVillage TRAIN/VAL
 
-- [ ] 5.1 Entrenar los candidatos aprobados usando solo PlantVillage TRAIN, registrando dependencias, manifiestos, semillas, CPU/RAM, tiempos y memoria, y verificar que el log no contiene rutas ni hashes Sikkim
-- [ ] 5.2 Evaluar candidatos solo con PlantVillage VAL y comparar F1/recall de tizones, cobertura, error selectivo, rechazo sano, rechazo de otro cultivo, calibración, latencia y memoria con numeradores y denominadores, verificando igualdad de particiones y presupuesto
+- [x] 5.1 Entrenar los candidatos aprobados usando solo PlantVillage TRAIN, registrando dependencias, manifiestos, semillas, CPU/RAM, tiempos y memoria, y verificar que el log no contiene rutas ni hashes Sikkim
+- [x] 5.2 Evaluar candidatos solo con PlantVillage VAL y comparar F1/recall de tizones, cobertura, error selectivo, rechazo sano, rechazo de otro cultivo, calibración, latencia y memoria con numeradores y denominadores, verificando igualdad de particiones y presupuesto
 - [ ] 5.3 Seleccionar arquitectura, balance, calibración, política de rechazo y umbral únicamente con VAL, y verificar que `POTATO_HEALTHY` y `OTHER_CROP` nunca son diagnósticos publicables y que una abstención de tizón cuenta como falso negativo
 - [ ] 5.4 Congelar el candidato v1.4.0 con pesos, configuración, mapa, preprocesado, calibración, umbral, manifiestos, dependencias y comandos, y verificar carga independiente y coincidencia de todos los SHA-256 antes de habilitar EXTERNAL
-- [ ] 5.5 Publicar el expediente TRAIN/VAL y la decisión de congelamiento, verificando que compara estrategias, conserva limitaciones y no contiene predicciones ni métricas Sikkim
+- [x] 5.5 Publicar el expediente TRAIN/VAL y la decisión de congelamiento, verificando que compara estrategias, conserva limitaciones y no contiene predicciones ni métricas Sikkim
 
 ## 6. EXTERNAL único y revisión G2
 

@@ -67,7 +67,8 @@ class V14TrainingPrimitivesTests(unittest.TestCase):
         self.assertFalse(torch.equal(first, changed))
         self.assertEqual((3, 224, 224), tuple(first.shape))
         self.assertEqual(77, lineage["seed"])
-        for split, code in (("VAL", HEALTHY), ("TRAIN", TARGETS[0])):
+        for split, code in (("VAL", HEALTHY), ("EXTERNAL", HEALTHY),
+                            ("TRAIN", TARGETS[0])):
             with self.assertRaises(V14TrainingError):
                 validate_augmentation_request(split, code, True)
 

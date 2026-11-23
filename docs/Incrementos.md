@@ -1,6 +1,6 @@
 # Incrementos de AgroDiagnóstico V1
 
-Estado actual: incrementos 0–3 implementados y verificados. Los ciclos v1.2.0 y v1.3.2 del incremento 4 son históricos; v1.3.2 falló el rechazo sano con **8/32 falsas publicaciones y 24/32 abstenciones**. Para [v1.4.0](evidence/INCREMENTO-4-G0-G1-V1.4.0-MATERIALIZACION.md), G0/G1 están cerrados: PlantVillage se limita a TRAIN/VAL y Sikkim v1 está sellado solo como EXTERNAL. Todavía no se entrenó ni se evaluó EXTERNAL; G2/G3 y la activación siguen pendientes. Incremento 5 pendiente.
+Estado actual: incrementos 0–3 implementados y verificados. Los ciclos v1.2.0 y v1.3.2 del incremento 4 son históricos; v1.3.2 falló el rechazo sano con **8/32 falsas publicaciones y 24/32 abstenciones**. Para [v1.4.0](evidence/INCREMENTO-4-G0-G1-V1.4.0-MATERIALIZACION.md), G0/G1 están cerrados. La [comparación TRAIN/VAL](evidence/INCREMENTO-4-TRAIN-VAL-V1.4.0.md) terminó sin candidato elegible: las dos estrategias fallaron el rechazo de `OTHER_CROP`, no se congeló bundle y Sikkim EXTERNAL permanece sellado sin abrir. G2/G3 y la activación siguen pendientes. Incremento 5 pendiente.
 
 | Incremento | Resultado previsto | Estado |
 | --- | --- | --- |
@@ -8,7 +8,7 @@ Estado actual: incrementos 0–3 implementados y verificados. Los ciclos v1.2.0 
 | 1 | Registro, sesiones, roles, perfil, cambio y recuperación de contraseña, autorización | Implementado y revisado mediante correctivo posterior; 12 operaciones de identidad. Véase evidencia INCREMENTO-1-CORRECCION |
 | 2 | Imágenes privadas, validación y formatos, diagnósticos, catálogo, historial, feedback | Implementado; cierre original rectificado por [corrección](evidence/INCREMENTO-2-CORRECCION.md). 20 operaciones de negocio de Diagnosis |
 | 3 | RabbitMQ, outbox/inbox, lease, worker provisional e idempotencia | Verificado y archivado; CI local 17/17. [Evidencia](evidence/INCREMENTO-3-CIERRE.md). Resultados sintéticos, sin modelo real |
-| 4 | Piloto de dos tizones de papa, datos autorizados, entrenamiento, evaluación y modelo validado | En desarrollo. v1.2.0 y v1.3.2 son históricos; [TEST v1.3.2 falló](evidence/INCREMENTO-4-TEST-V1.3.2-UNICO.md) en papa sana. [Ciclo v1.4.0](../openspec/changes/incremento-4-v1-4-rechazo-sano-balanceado/tasks.md): G0/G1 cerrados, PlantVillage TRAIN/VAL verificado y Sikkim EXTERNAL sellado; entrenamiento, G2, G3 e integración pendientes. |
+| 4 | Piloto de dos tizones de papa, datos autorizados, entrenamiento, evaluación y modelo validado | En desarrollo. v1.2.0 y v1.3.2 son históricos; [TEST v1.3.2 falló](evidence/INCREMENTO-4-TEST-V1.3.2-UNICO.md) en papa sana. [Ciclo v1.4.0](../openspec/changes/incremento-4-v1-4-rechazo-sano-balanceado/tasks.md): G0/G1 cerrados; dos candidatos TRAIN/VAL medidos, pero ninguno pasó rechazo de otro cultivo. Sin bundle congelado ni apertura de EXTERNAL; G2/G3 e integración pendientes. |
 | 5 | Notificaciones, lectura de avisos, interfaz final, observabilidad, recuperación, pruebas y despliegue con dominio, HTTPS, Cloudflare y CDN | Pendiente |
 
 Gemini, voz, PWA y detector de plagas son extensiones posteriores opcionales.

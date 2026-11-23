@@ -1,6 +1,6 @@
 # G0/G1 v1.4.0 — materialización y sello EXTERNAL
 
-Fecha: **2026-11-22** (America/Lima). Responsable: **PROJECT_OWNER**. Estado: **G0 aprobado y G1 cerrado; G2/G3 abiertos**. No se entrenó un modelo, no se calibró un umbral, no se abrió EXTERNAL para modelado y no existen métricas v1.4.0.
+Fecha: **2026-11-22** (America/Lima). Responsable: **PROJECT_OWNER**. Estado de esta compuerta: **G0 aprobado y G1 cerrado; G2/G3 abiertos**. Al cerrar G1 todavía no se había entrenado un modelo ni abierto EXTERNAL. El estado posterior de TRAIN/VAL está en [INCREMENTO-4-TRAIN-VAL-V1.4.0](INCREMENTO-4-TRAIN-VAL-V1.4.0.md): se midieron dos candidatos, ninguno fue elegible y EXTERNAL continúa sin abrir.
 
 ## Decisión y topología
 
@@ -73,11 +73,11 @@ python3 scripts/materialize_g0_v1_4.py \
 
 Resultado: `G1_V1_4_0_CLOSED_EXTERNAL_SEALED_NOT_OPENED_FOR_MODELING`; reporte privado SHA-256 `88e14ef0d668bdea6deb291533d45797e9ce77592256d893e0673ce2bef1d101`. La compuerta conserva imágenes/manifiestos privados fuera de Git.
 
-## Plan de entrenamiento, aún no ejecutado
+## Plan de entrenamiento fijado en G1
 
 [`potato-v14-balanced-cpu.plan.json`](../../ml/configs/potato-v14-balanced-cpu.plan.json) fija dos estrategias comparables en la misma VAL:
 
 1. MobileNetV3-Small con inicialización aleatoria, pérdida ponderada y los 1.120 originales por época. Pesos `N/(K*n_clase)`: temprano `0,6900800986`, tardío `0,7481629927`, sana `4,6666666667`.
 2. El mismo modelo y preprocesado con sampler consciente de `leaf_id`: clase uniforme, grupo uniforme y una imagen del grupo; 80 muestras por clase/época, 240 totales, semilla registrada.
 
-Solo `POTATO_HEALTHY` en TRAIN puede recibir flip horizontal p=0,5, rotación ±15° y jitter conservador definido en la configuración. Cada vista conserva SHA original y `leaf_id`; VAL/EXTERNAL rechazan aumentos. Arquitectura, balance, calibración y umbral se eligen solo con VAL. **Este documento no registra ejecución ni rendimiento.**
+Solo `POTATO_HEALTHY` en TRAIN puede recibir flip horizontal p=0,5, rotación ±15° y jitter conservador definido en la configuración. Cada vista conserva SHA original y `leaf_id`; VAL/EXTERNAL rechazan aumentos. Arquitectura, balance, calibración y umbral se eligen solo con VAL. **Este documento conserva la materialización previa; la ejecución y su decisión de no congelar están en el [expediente TRAIN/VAL](INCREMENTO-4-TRAIN-VAL-V1.4.0.md).**

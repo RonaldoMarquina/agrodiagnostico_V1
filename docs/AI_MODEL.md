@@ -1,4 +1,4 @@
-> Estado vigente 2026-11-22: v1.3.2 se conserva como ciclo evaluado no aprobado tras fallar papa sana (8/32 publicaciones de tizón; 24/32 `NO_CONCLUYENTE`). Para [v1.4.0](evidence/INCREMENTO-4-G0-G1-V1.4.0-MATERIALIZACION.md), G0 y G1 están cerrados: PlantVillage aporta solo TRAIN/VAL por `leaf_id` y Sikkim v1 está sellado exclusivamente como EXTERNAL de 362 archivos, con independencia declarada solo por imagen. No se ha entrenado v1.4.0 ni abierto EXTERNAL para modelado; G2/G3 permanecen abiertos.
+> Estado vigente 2026-11-22: v1.3.2 se conserva como ciclo evaluado no aprobado tras fallar papa sana (8/32 publicaciones de tizón; 24/32 `NO_CONCLUYENTE`). Para [v1.4.0](evidence/INCREMENTO-4-G0-G1-V1.4.0-MATERIALIZACION.md), G0 y G1 están cerrados. La [comparación real TRAIN/VAL](evidence/INCREMENTO-4-TRAIN-VAL-V1.4.0.md) no produjo candidato elegible: ambas estrategias fallaron el rechazo de otro cultivo. No existe bundle congelado, Sikkim EXTERNAL sigue sellado sin abrir y G2/G3 permanecen abiertos.
 
 # Datos y modelo de IA
 

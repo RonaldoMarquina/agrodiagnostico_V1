@@ -9,8 +9,18 @@
   "plantvillage_train_val_manifest_sha256": "b7bcdc87b1ae252c55370b1354c579c4b0fa80da962ce47b83c7a28ca66824e1",
   "sikkim_external_manifest_sha256": "3c8d95e9e4d198dedf821133cb4d5f0c119a327b496396c25d4b71a493580992",
   "external_seal_sha256": "ab0e7e7c8a28a70a5bce4fd6424912454e2a31b31f463406233d811ed3f9a69a",
-  "G2": "OPEN_NOT_TRAINED_OR_MEASURED",
+  "train_val_comparison": {
+    "code_git_head": "bd9df36cf0573730ea37704987cedd7f2177a5a8",
+    "comparison_sha256": "06500735222e3534af7e5631e690470a331fccbe73f641354378451409c035ec",
+    "weighted_weights_sha256": "fea1fae23b20432f17b46c53a57bd2b486f388a428c84e0ca44171dc20ccd947",
+    "balanced_weights_sha256": "5a2827817de5c5edc15b2ec23f90fedafb85e6b6bedb92e63e3877cf17f4da4c",
+    "relative_leader": "weighted-cross-entropy-full-train",
+    "eligible_candidate_count": 0,
+    "freeze_created": false,
+    "blocking_condition": "PlantVillage VAL OTHER_CROP: 83/150 weighted and 82/150 balanced published as blight; maximum 7/150"
+  },
+  "G2": "OPEN_VAL_CANDIDATES_FAILED_NO_FREEZE",
   "G3": "OPEN",
   "external_access": "SEALED_NOT_OPENED_FOR_MODELING",
-  "status_note": "G0 y G1 acreditan diseño, procedencia, conteos, separación y sello. No existen pesos, umbral, métricas VAL ni resultados EXTERNAL v1.4.0."
+  "status_note": "G0/G1 siguen cerrados. Dos candidatos TRAIN/VAL fueron ejecutados desde código fijado; ninguno cumple todas las mínimas VAL, no hay bundle congelado y EXTERNAL continúa sellado sin abrir."
 }
