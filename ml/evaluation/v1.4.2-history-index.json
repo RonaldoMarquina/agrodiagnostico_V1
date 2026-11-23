@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "cycle_version": "1.4.2",
+  "status": "HISTORICAL_BOUNDARY_LOCKED",
+  "baseline_commits": {
+    "implementation_before_training": "7377819bec40d0c8c0ce3250e89164ee1adebf26",
+    "v1_4_1_val_result": "e709f272fb5f07cd381b7583fdddc79b1c94fec5"
+  },
+  "tracked_evidence": {
+    "ml/evaluation/protocol-g0.v1.4.1.json": "a6efb7041bc958549df4bce602aa0b083336b9bb6e7470325a55588bd8123c93",
+    "ml/evaluation/gate-status.v1.4.1.json": "73eed9da3cf22ef63243bea0f629e4c33eb2ade142ecabb840527ba8cdc5ac77",
+    "ml/evaluation/train-val-result.v1.4.1.json": "d63d1424112555a7a570652408427b700a2c0131b9aa7cb5bc4cbbbde66a6e3f"
+  },
+  "private_g1_evidence": {
+    "g1-report.json": "5463272ec6f335be7a8cb2fa88f1c8739399547a53e6bf1da60db15eb6b40a59",
+    "plantvillage-train-val.jsonl": "b16533a8cdce48463c1fd8d43e451a696cddfc6860244a7c10157eaa5a0db884"
+  },
+  "comparison_policy": {
+    "v1_4_1_source": "TRACKED_AGGREGATE_RESULT_ONLY",
+    "forbidden": [
+      "V1_4_1_WEIGHTS",
+      "V1_4_1_PREDICTIONS",
+      "HISTORICAL_TEST",
+      "SIKKIM_EXTERNAL"
+    ]
+  }
+}

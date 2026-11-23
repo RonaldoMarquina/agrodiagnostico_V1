@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "preprocessing_version": "1.4.2",
+  "implementation": "ml/src/agro_ml/data/tensor_preprocessing.py:image_to_tensor",
+  "shared_by": ["TRAIN", "VAL", "INFERENCE"],
+  "decode": {
+    "exif_transpose": true,
+    "color_space": "RGB",
+    "allowed_formats": ["JPEG", "PNG", "WEBP"]
+  },
+  "resize": {
+    "method": "DIRECT_RESIZE",
+    "width": 224,
+    "height": 224,
+    "interpolation": "BILINEAR"
+  },
+  "tensor": {
+    "layout": "CHW",
+    "dtype": "float32",
+    "range_before_normalization": [0.0, 1.0],
+    "mean": [0.485, 0.456, 0.406],
+    "std": [0.229, 0.224, 0.225]
+  },
+  "reference_difference": {
+    "torchvision_imagenet1k_v1": "resize 256 then center crop 224",
+    "project_contract": "direct resize 224x224 inherited from v1.4.1",
+    "decision": "Keep the fixed project geometry; RGB and ImageNet normalization are exactly compatible and the same implementation is used by training and inference. Model selection remains VAL-only."
+  },
+  "augmentation": {
+    "allowed_only_for": {"split": "TRAIN", "class_code": "POTATO_HEALTHY"},
+    "forbidden_splits": ["VAL", "TEST", "EXTERNAL", "INFERENCE"],
+    "forbidden_classes": ["POTATO_EARLY_BLIGHT", "POTATO_LATE_BLIGHT", "OTHER_CROP"]
+  }
+}

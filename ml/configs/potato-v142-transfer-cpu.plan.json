@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "status": "PREFLIGHT_NOT_TRAINED",
+  "cycle_version": "1.4.2",
+  "g0_protocol_version": "1.4.1",
+  "architecture": "mobilenet_v3_small",
+  "base_weights": {
+    "provider": "TorchVision",
+    "torchvision_version": "0.29.2+cpu",
+    "enum": "MobileNet_V3_Small_Weights.IMAGENET1K_V1",
+    "official_url": "https://download.pytorch.org/models/mobilenet_v3_small-047dcff4.pth",
+    "filename": "mobilenet_v3_small-047dcff4.pth",
+    "size_bytes": 10306551,
+    "sha256": "047dcff4addef86ea5bc2eff13c9614dc11f47ab1160d0a71a25e7db994f4e1f",
+    "redistribute": false,
+    "use_scope": "ACADEMIC_RESEARCH_EDUCATION_NON_COMMERCIAL_ONLY"
+  },
+  "seed": 42,
+  "cpu_threads": 4,
+  "batch_size": 16,
+  "technical_class_codes": [
+    "POTATO_EARLY_BLIGHT",
+    "POTATO_LATE_BLIGHT",
+    "POTATO_HEALTHY",
+    "OTHER_CROP"
+  ],
+  "publishable_classes": ["POTATO_EARLY_BLIGHT", "POTATO_LATE_BLIGHT"],
+  "preprocessing_contract": "ml/preprocessing/potato-v142-imagenet-compatible.json",
+  "sampler": {
+    "strategy_id": "four-class-group-aware-balanced-sampler",
+    "samples_per_class_per_epoch": 80,
+    "samples_per_epoch": 320
+  },
+  "healthy_train_only_augmentation": {
+    "enabled": true,
+    "allowed_split": "TRAIN",
+    "allowed_class": "POTATO_HEALTHY",
+    "operations": {
+      "random_horizontal_flip_probability": 0.5,
+      "random_rotation_degrees": 15,
+      "color_jitter_brightness": 0.1,
+      "color_jitter_contrast": 0.1,
+      "color_jitter_saturation": 0.05
+    },
+    "forbidden_classes": ["OTHER_CROP"],
+    "forbidden_splits": ["VAL", "TEST", "EXTERNAL"]
+  },
+  "phases": [
+    {
+      "id": "HEAD",
+      "epochs": 3,
+      "trainable": ["classifier"],
+      "optimizer": "AdamW",
+      "head_learning_rate": 0.001,
+      "batch_norm": "FROZEN_EVAL"
+    },
+    {
+      "id": "FINE_TUNE",
+      "epochs": 12,
+      "trainable": ["features.last_3_blocks", "classifier"],
+      "optimizer": "AdamW",
+      "backbone_learning_rate": 0.00001,
+      "head_learning_rate": 0.0001,
+      "batch_norm": "FROZEN_EVAL"
+    }
+  ],
+  "selection": {
+    "source": "PlantVillage VAL only",
+    "minimums": {
+      "macro_f1_two_blights_min": 0.8,
+      "recall_each_blight_min": 0.8,
+      "selective_coverage_min": 0.7,
+      "selective_error_max": 0.1,
+      "healthy_visible_blight_max": 2,
+      "other_crop_visible_blight_max": 7,
+      "calibration_ece_max": 0.15
+    },
+    "select_epoch_on": "VAL",
+    "calibration_split": "VAL",
+    "threshold_split": "VAL"
+  },
+  "forbidden_inputs": [
+    "HISTORICAL_TEST",
+    "SIKKIM_EXTERNAL",
+    "V1_4_1_PREDICTIONS",
+    "V1_4_1_WEIGHTS"
+  ],
+  "external_access": "NONE"
+}
