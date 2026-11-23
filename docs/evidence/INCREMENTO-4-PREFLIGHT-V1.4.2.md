@@ -54,3 +54,6 @@ Los commits históricos `7377819bec40d0c8c0ce3250e89164ee1adebf26` y
 `e709f272fb5f07cd381b7583fdddc79b1c94fec5` se verificaron como objetos commit
 en el host antes de transferir su lista exacta al contenedor sin herramientas
 Git. El preflight no abrió imágenes ni creó una salida de entrenamiento.
+
+Commit local previo a cualquier época: `2173263c20f92678bec9b3326d3f4e48679b2d01`
+(`feat(ml): preflight ImageNet transfer cycle v1.4.2`). No se realizó push.

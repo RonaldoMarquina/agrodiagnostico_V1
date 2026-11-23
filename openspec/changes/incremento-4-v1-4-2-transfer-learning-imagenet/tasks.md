@@ -27,7 +27,7 @@
 - [x] 4.1 Validar los manifiestos privados existentes con 1.623/412 TRAIN y 496/126 VAL, incluido `OTHER_CROP` 503/127 y 150/38, y probar rechazo de filas, grupos o SHA distintos sin volver a admitir datos
 - [x] 4.2 Implementar la compuerta que prohíbe rutas, montajes, hashes, predicciones o métricas de Sikkim y TEST histórico, y probar que falla antes de leer bytes protegidos
 - [x] 4.3 Ejecutar pruebas de procedencia, carga segura, cuatro logits, abstención, fases, sampler, aumentos, manifiestos y aislamiento; verificar contratos/OpenSpec sin cambios HTTP o de eventos
-- [ ] 4.4 Presentar el expediente exacto del checkpoint y el diseño ejecutable al responsable, hacer commit local de código/configuración/evidencia antes de entrenar y registrar su hash sin push
+- [x] 4.4 Presentar el expediente exacto del checkpoint y el diseño ejecutable al responsable, hacer commit local de código/configuración/evidencia antes de entrenar y registrar su hash sin push
 
 ## 5. Entrenamiento y selección exclusiva con VAL
 
