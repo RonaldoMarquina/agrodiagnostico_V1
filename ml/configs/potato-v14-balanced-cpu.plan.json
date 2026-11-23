@@ -9,6 +9,15 @@
   "epochs": 10,
   "cpu_threads": 4,
   "learning_rate": 0.001,
+  "preprocessing": {
+    "input_size": [224, 224],
+    "channels": 3,
+    "color_space": "RGB",
+    "mean": [0.485, 0.456, 0.406],
+    "std": [0.229, 0.224, 0.225],
+    "min_dimension": 200,
+    "max_dimension": 6000
+  },
   "class_codes": [
     "POTATO_EARLY_BLIGHT",
     "POTATO_LATE_BLIGHT",
@@ -80,6 +89,24 @@
     ],
     "calibration_split": "VAL",
     "threshold_split": "VAL",
+    "minimums_before_priority_ranking": {
+      "macro_f1_two_blights_min": 0.8,
+      "recall_each_blight_min": 0.8,
+      "selective_coverage_min": 0.7,
+      "selective_error_max": 0.1,
+      "healthy_visible_blight_max": 2,
+      "other_crop_visible_blight_max": 7,
+      "calibration_ece_max": 0.15
+    },
+    "priority_after_minimums": [
+      "minimize_healthy_visible_blight",
+      "minimize_other_crop_visible_blight",
+      "maximize_minimum_blight_recall",
+      "maximize_macro_f1",
+      "minimize_selective_error",
+      "maximize_coverage",
+      "minimize_ece"
+    ],
     "external_access": "FORBIDDEN_UNTIL_COMPLETE_FREEZE"
   },
   "external": {
