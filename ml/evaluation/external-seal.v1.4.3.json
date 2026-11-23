@@ -1,0 +1,24 @@
+{
+  "approval_sha256": "e5d9288c6cc7c78263d29bd311d9257df503dc39abc3eda4427ada51eee842b7",
+  "compatibility_jsonl_sha256": "0e821b81fe83615d106c45b7ee5514678f3a689a7477c3c24cefaae6d79ffcc4",
+  "counts_by_stratum": {
+    "OTHER_CROP": 200,
+    "POTATO_EARLY_BLIGHT": 50,
+    "POTATO_HEALTHY": 50,
+    "POTATO_LATE_BLIGHT": 50
+  },
+  "cycle_version": "1.4.3",
+  "manifest_sha256": "20e0ba6729d08920cae3b93d914ddbaaed6c44c1f3ef6dc8b5c661700bd5e9d1",
+  "opened_for_evaluation": false,
+  "partition": "EXTERNAL",
+  "preflight_summary_sha256": "3104fe4b42cd2166e11bea50ac1af82a2a2d9709b2043285154a86c8df8ab050",
+  "preprocessing_contract_sha256": "76debfc7c16b9d8b9567fca95012e091d0379e4d622ac21b871e9ead9ba0befb",
+  "record_count": 350,
+  "schema_version": 1,
+  "sealed_at": "2026-11-23T22:18:33.203260+00:00",
+  "sikkim_reused": false,
+  "status": "SEALED_NOT_OPENED_FOR_EVALUATION",
+  "temperature": 0.5,
+  "threshold": 0.8,
+  "weights_sha256": "e96201dc79bfd5aa99a55430f5a523f47ff91fe82d6d9de1ffc8249c06c6472c"
+}

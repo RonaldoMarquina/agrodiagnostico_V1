@@ -20,7 +20,32 @@ from torchvision.transforms.functional import pil_to_tensor
 
 
 MAX_IMAGE_BYTES = 15 * 1024 * 1024
-ALLOWED_FORMATS = {"JPEG", "PNG", "WEBP"}
+ALLOWED_FORMATS = {"JPEG", "MPO", "PNG", "TIFF", "WEBP"}
+ALLOWED_MODES = {"1", "L", "LA", "P", "RGB", "RGBA", "CMYK", "I;16"}
+MULTIFRAME_PRIMARY_ONLY_FORMATS = {"MPO"}
+MULTIFRAME_REJECTED_FORMATS = {"PNG", "TIFF", "WEBP"}
+
+
+@dataclass(frozen=True)
+class DecodeMetadata:
+    """Metadatos observados antes de convertir una imagen a RGB."""
+
+    format: str
+    mode: str
+    width: int
+    height: int
+    frames: int
+    selected_frame: int
+
+    def to_dict(self) -> dict:
+        return {
+            "format": self.format,
+            "mode": self.mode,
+            "width": self.width,
+            "height": self.height,
+            "frames": self.frames,
+            "selected_frame": self.selected_frame,
+        }
 
 
 @dataclass(frozen=True)
@@ -60,6 +85,63 @@ class TensorSpec:
                    tuple(value["mean"]), tuple(value["std"]))
 
 
+def _alpha_to_rgb(image: Image.Image) -> Image.Image:
+    has_alpha = image.mode in {"LA", "RGBA"} or (
+        image.mode == "P" and "transparency" in image.info
+    )
+    if not has_alpha:
+        return image.convert("RGB")
+    rgba = image.convert("RGBA")
+    background = Image.new("RGBA", rgba.size, (255, 255, 255, 255))
+    return Image.alpha_composite(background, rgba).convert("RGB")
+
+
+def decode_image_to_rgb(image_bytes: bytes, spec: TensorSpec) -> tuple[Image.Image, DecodeMetadata]:
+    """Verifica el contenedor y devuelve el frame autorizado convertido a RGB."""
+    if not isinstance(image_bytes, bytes) or not image_bytes or len(image_bytes) > MAX_IMAGE_BYTES:
+        raise ValueError("Bytes de imagen ausentes o excesivos")
+    try:
+        with warnings.catch_warnings():
+            warnings.simplefilter("error", Image.DecompressionBombWarning)
+            with Image.open(io.BytesIO(image_bytes)) as probe:
+                fmt = probe.format
+                mode = probe.mode
+                width, height = probe.size
+                frames = int(getattr(probe, "n_frames", 1))
+                probe.verify()
+            if fmt not in ALLOWED_FORMATS:
+                raise ValueError("Formato de imagen no permitido")
+            if mode not in ALLOWED_MODES:
+                raise ValueError("Modo de imagen no permitido")
+            if frames < 1:
+                raise ValueError("Imagen sin frame decodificable")
+            if fmt in MULTIFRAME_REJECTED_FORMATS and frames != 1:
+                raise ValueError("Imagen animada o multipágina no permitida")
+            if fmt not in MULTIFRAME_PRIMARY_ONLY_FORMATS and frames != 1:
+                raise ValueError("Contenedor multiframe no permitido")
+            if not (spec.min_dimension <= width <= spec.max_dimension and
+                    spec.min_dimension <= height <= spec.max_dimension):
+                raise ValueError("Dimensiones de imagen fuera de rango")
+            with Image.open(io.BytesIO(image_bytes)) as image:
+                if image.format != fmt or image.mode != mode or image.size != (width, height):
+                    raise ValueError("Metadatos de imagen inconsistentes")
+                image.seek(0)
+                image.load()
+                oriented = ImageOps.exif_transpose(image)
+                rgb = _alpha_to_rgb(oriented)
+                metadata = DecodeMetadata(
+                    format=fmt,
+                    mode=mode,
+                    width=width,
+                    height=height,
+                    frames=frames,
+                    selected_frame=0,
+                )
+                return rgb.copy(), metadata
+    except (UnidentifiedImageError, OSError, Image.DecompressionBombError, Image.DecompressionBombWarning) as exc:
+        raise ValueError("Imagen corrupta, excesiva o no decodificable") from exc
+
+
 def image_to_tensor(image_bytes: bytes, spec: TensorSpec, *, split: str, augment: bool = False, seed: int | None = None) -> torch.Tensor:
     """Decodifica bytes reales y devuelve tensor float32 CHW en CPU."""
     if split not in {"TRAIN", "VAL", "TEST", "EXTERNAL", "INFERENCE"}:
@@ -68,28 +150,11 @@ def image_to_tensor(image_bytes: bytes, spec: TensorSpec, *, split: str, augment
         raise ValueError("Aumentación permitida solo en TRAIN")
     if augment and (type(seed) is not int or seed < 0):
         raise ValueError("Aumentación TRAIN requiere semilla reproducible")
-    if not isinstance(image_bytes, bytes) or not image_bytes or len(image_bytes) > MAX_IMAGE_BYTES:
-        raise ValueError("Bytes de imagen ausentes o excesivos")
-    try:
-        with warnings.catch_warnings():
-            warnings.simplefilter("error", Image.DecompressionBombWarning)
-            with Image.open(io.BytesIO(image_bytes)) as probe:
-                fmt = probe.format
-                probe.verify()
-            with Image.open(io.BytesIO(image_bytes)) as image:
-                image.load()
-                if fmt not in ALLOWED_FORMATS:
-                    raise ValueError("Formato de imagen no permitido")
-                if not (spec.min_dimension <= image.width <= spec.max_dimension and
-                        spec.min_dimension <= image.height <= spec.max_dimension):
-                    raise ValueError("Dimensiones de imagen fuera de rango")
-                rgb = ImageOps.exif_transpose(image).convert("RGB")
-                if augment and random.Random(seed).random() < 0.5:
-                    rgb = ImageOps.mirror(rgb)
-                resized = rgb.resize((spec.width, spec.height), Image.Resampling.BILINEAR)
-                tensor = pil_to_tensor(resized).to(dtype=torch.float32).div_(255.0)
-    except (UnidentifiedImageError, OSError, Image.DecompressionBombError, Image.DecompressionBombWarning) as exc:
-        raise ValueError("Imagen corrupta, excesiva o no decodificable") from exc
+    rgb, _ = decode_image_to_rgb(image_bytes, spec)
+    if augment and random.Random(seed).random() < 0.5:
+        rgb = ImageOps.mirror(rgb)
+    resized = rgb.resize((spec.width, spec.height), Image.Resampling.BILINEAR)
+    tensor = pil_to_tensor(resized).to(dtype=torch.float32).div_(255.0)
     mean = torch.tensor(spec.mean, dtype=torch.float32).view(3, 1, 1)
     std = torch.tensor(spec.std, dtype=torch.float32).view(3, 1, 1)
     result = (tensor - mean) / std

@@ -1,4 +1,4 @@
-> Estado vigente 2026-11-23: G0/G1 v1.4.1 siguen vigentes. [v1.4.2](evidence/INCREMENTO-4-TRAIN-VAL-V1.4.2.md) cumplió VAL, pero su [apertura única de Sikkim EXTERNAL](evidence/INCREMENTO-4-EXTERNAL-V1.4.2-FALLO-TECNICO.md) falló por formato real no permitido antes de producir métricas completas. G2/G3 siguen abiertos; no hay reintento autorizado y el worker real está inactivo.
+> Estado vigente 2026-11-23: G0/G1 v1.4.1 siguen vigentes. [v1.4.2](evidence/INCREMENTO-4-TRAIN-VAL-V1.4.2.md) cumplió VAL, pero su [apertura única de Sikkim EXTERNAL](evidence/INCREMENTO-4-EXTERNAL-V1.4.2-FALLO-TECNICO.md) falló por dos contenedores `MPO/RGB` antes de producir métricas completas. El [ciclo v1.4.3](evidence/INCREMENTO-4-V1.4.3-COMPATIBILIDAD-Y-PREFLIGHT.md) corrigió la compatibilidad y completó admisión, preflight, aprobación G0 y sello de un EXTERNAL sustituto de 350 imágenes. El lote sigue sin abrirse; G2/G3 están abiertos, Sikkim no se reintenta y el worker real está inactivo.
 
 # Datos y modelo de IA
 
@@ -19,9 +19,16 @@ Tras aceptar y decodificar la carga, para cultivo ajeno, imagen visualmente defe
 
 ## Inventario del dataset
 
-Antes de entrenar, documenta para cada fuente: nombre/autor, permiso o licencia, fecha de acceso, etiquetas y definición diagnóstica, cantidades por clase, condiciones de captura, revisión de etiquetas, duplicados, exclusiones y restricciones de uso. En v1.4.1, PlantVillage `color` aporta cuatro clases técnicas a TRAIN/VAL; sano y otro cultivo se transforman en abstención visible. Sikkim v1 está registrado bajo CC BY 4.0 y sellado únicamente como EXTERNAL; no puede intervenir en calibración ni selección. Su unidad es archivo único, sin independencia demostrada por planta. PlantDoc y PlantSeg siguen pendientes de admisión.
+Antes de entrenar, documenta para cada fuente: nombre/autor, permiso o licencia, fecha de acceso, etiquetas y definición diagnóstica, cantidades por clase, condiciones de captura, revisión de etiquetas, duplicados, exclusiones y restricciones de uso. En v1.4.1, PlantVillage `color` aporta cuatro clases técnicas a TRAIN/VAL; sano y otro cultivo se transforman en abstención visible. Sikkim v1 se conserva solo como evidencia histórica del fallo técnico y no puede reutilizarse. El candidato EXTERNAL v1.4.3 usa PLDD-UP para tres estratos de papa y CornLeafDiseaseCollection para `OTHER_CROP`; ambos declaran CC BY 4.0 y fueron auditados por archivo. Su unidad es imagen única, sin independencia demostrada por planta o sesión. Pota-Toma-To fue descartado por falta de procedencia y derechos por fotografía. PlantDoc y PlantSeg siguen pendientes de admisión.
 
 El manifiesto versionado CSV o Parquet incluirá como mínimo `image_id`, `sha256`, `crop_code`, `class_code`, `source`, `license`, `capture_context`, `label_quality`, `split_group` y `split` (`TRAIN`, `VAL`, `TEST`, `EXTERNAL`). Define y congela los dos `class_code` activos antes de entrenar; nunca recicles un código retirado. Mantén imágenes privadas y ubicación precisa fuera del repositorio.
+
+Desde v1.4.3, todo candidato EXTERNAL debe decodificarse por completo antes
+del sello. Se registran contenedor, modo, dimensiones, frames, conversión RGB y
+tensor finito por SHA-256, sin cargar el modelo. MPO usa de forma determinista
+el frame 0; una animación o archivo multipágina no autorizado bloquea el lote.
+El preflight no acredita etiquetas, derechos ni rendimiento: esas compuertas
+siguen siendo independientes.
 
 Divide por planta, sesión, sitio o fuente cuando existan imágenes relacionadas; evita que duplicados o vistas de la misma planta crucen particiones. Verifica corruptos, desbalance y coincidencias exactas/visuales. El test sellado no sirve para elegir hiperparámetros ni umbral. No pases fotos de producción a entrenamiento sin consentimiento, etiquetado y revisión posteriores.
 

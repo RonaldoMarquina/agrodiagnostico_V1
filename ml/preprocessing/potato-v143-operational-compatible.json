@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "preprocessing_version": "1.4.3",
+  "implementation": "ml/src/agro_ml/data/tensor_preprocessing.py:image_to_tensor",
+  "shared_by": ["TRAIN", "VAL", "TEST", "EXTERNAL", "INFERENCE"],
+  "decode": {
+    "identify_from_bytes": true,
+    "verify_before_decode": true,
+    "allowed_formats": ["JPEG", "MPO", "PNG", "TIFF", "WEBP"],
+    "allowed_modes": ["1", "L", "LA", "P", "RGB", "RGBA", "CMYK", "I;16"],
+    "frame_policy": {
+      "MPO": "PRIMARY_FRAME_ZERO_ONLY",
+      "PNG": "SINGLE_FRAME_REQUIRED",
+      "TIFF": "SINGLE_FRAME_REQUIRED",
+      "WEBP": "SINGLE_FRAME_REQUIRED"
+    },
+    "exif_transpose": true,
+    "alpha_composite": "OPAQUE_WHITE",
+    "output_color_space": "RGB"
+  },
+  "resize": {
+    "method": "DIRECT_RESIZE",
+    "width": 224,
+    "height": 224,
+    "interpolation": "BILINEAR"
+  },
+  "tensor": {
+    "layout": "CHW",
+    "dtype": "float32",
+    "range_before_normalization": [0.0, 1.0],
+    "mean": [0.485, 0.456, 0.406],
+    "std": [0.229, 0.224, 0.225]
+  },
+  "frozen_model_parameters": {
+    "source_cycle": "1.4.2",
+    "freeze_digest": "07ef4eac80f59b7ca1fc42031092f3353e7e2dd89d6c8c8c17fda4865c85110a",
+    "weights_sha256": "e96201dc79bfd5aa99a55430f5a523f47ff91fe82d6d9de1ffc8249c06c6472c",
+    "architecture": "MOBILENET_V3_SMALL",
+    "temperature": 0.5,
+    "threshold": 0.8,
+    "technical_classes": [
+      "POTATO_EARLY_BLIGHT",
+      "POTATO_LATE_BLIGHT",
+      "POTATO_HEALTHY",
+      "OTHER_CROP"
+    ],
+    "publishable_classes": [
+      "POTATO_EARLY_BLIGHT",
+      "POTATO_LATE_BLIGHT"
+    ]
+  },
+  "augmentation": {
+    "allowed_only_for": {"split": "TRAIN", "class_code": "POTATO_HEALTHY"},
+    "forbidden_splits": ["VAL", "TEST", "EXTERNAL", "INFERENCE"]
+  },
+  "external_policy": {
+    "full_decode_preflight_required_before_seal": true,
+    "model_loading_forbidden_during_preflight": true,
+    "sikkim_reuse_forbidden": true
+  }
+}

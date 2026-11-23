@@ -1,6 +1,6 @@
 # Incrementos de AgroDiagnóstico V1
 
-Estado actual: incrementos 0–3 implementados y verificados. El candidato v1.4.2 cumplió VAL, pero la [evaluación Sikkim EXTERNAL](evidence/INCREMENTO-4-EXTERNAL-V1.4.2-FALLO-TECNICO.md) consumió su única apertura y falló por formato no admitido antes de obtener métricas completas. G2/G3 y activación permanecen pendientes; no hay reintento autorizado. Incremento 5 pendiente.
+Estado actual: incrementos 0–3 implementados y verificados. El candidato v1.4.2 cumplió VAL. Tras el fallo técnico histórico de Sikkim, v1.4.3 corrigió el decodificador y selló sin abrir un EXTERNAL sustituto de 350 imágenes. G2/G3 y activación permanecen pendientes hasta su evaluación única; Sikkim no se reintenta. Incremento 5 pendiente.
 
 | Incremento | Resultado previsto | Estado |
 | --- | --- | --- |
@@ -8,7 +8,7 @@ Estado actual: incrementos 0–3 implementados y verificados. El candidato v1.4.
 | 1 | Registro, sesiones, roles, perfil, cambio y recuperación de contraseña, autorización | Implementado y revisado mediante correctivo posterior; 12 operaciones de identidad. Véase evidencia INCREMENTO-1-CORRECCION |
 | 2 | Imágenes privadas, validación y formatos, diagnósticos, catálogo, historial, feedback | Implementado; cierre original rectificado por [corrección](evidence/INCREMENTO-2-CORRECCION.md). 20 operaciones de negocio de Diagnosis |
 | 3 | RabbitMQ, outbox/inbox, lease, worker provisional e idempotencia | Verificado y archivado; CI local 17/17. [Evidencia](evidence/INCREMENTO-3-CIERRE.md). Resultados sintéticos, sin modelo real |
-| 4 | Piloto de dos tizones de papa, datos autorizados, entrenamiento, evaluación y modelo validado | En desarrollo. v1.4.2 cumplió VAL; EXTERNAL falló técnicamente por formato incompatible y no produjo métricas completas. G2/G3 abiertos, worker inactivo. |
+| 4 | Piloto de dos tizones de papa, datos autorizados, entrenamiento, evaluación y modelo validado | En desarrollo. v1.4.2 cumplió VAL; v1.4.3 selló un EXTERNAL sustituto de 350 imágenes todavía sin abrir. G2/G3 abiertos, worker inactivo. |
 | 5 | Notificaciones, lectura de avisos, interfaz final, observabilidad, recuperación, pruebas y despliegue con dominio, HTTPS, Cloudflare y CDN | Pendiente |
 
 Gemini, voz, PWA y detector de plagas son extensiones posteriores opcionales.

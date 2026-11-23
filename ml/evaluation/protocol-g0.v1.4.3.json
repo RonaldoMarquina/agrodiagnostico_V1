@@ -1,0 +1,79 @@
+{
+  "protocol_version": "1.4.3",
+  "cycle_version": "1.4.3",
+  "status": "APPROVED_BY_PROJECT_OWNER",
+  "approved_at": "2026-11-23T17:17:54-05:00",
+  "approved_by_role": "PROJECT_OWNER",
+  "justification": "Límites enteros definidos y aprobados antes del sello a partir de los 350 archivos admitidos y compatibles del nuevo EXTERNAL independiente.",
+  "scope": "NEW_EXTERNAL_ONLY_NO_MODEL_CHANGE",
+  "frozen_model": {
+    "freeze_digest_v1_4_2": "07ef4eac80f59b7ca1fc42031092f3353e7e2dd89d6c8c8c17fda4865c85110a",
+    "weights_sha256": "e96201dc79bfd5aa99a55430f5a523f47ff91fe82d6d9de1ffc8249c06c6472c",
+    "architecture": "mobilenet_v3_small",
+    "temperature": 0.5,
+    "threshold": 0.8,
+    "preprocessing_contract_sha256": "76debfc7c16b9d8b9567fca95012e091d0379e4d622ac21b871e9ead9ba0befb",
+    "parameters_changed": false
+  },
+  "counts_by_stratum": {
+    "OTHER_CROP": 200,
+    "POTATO_EARLY_BLIGHT": 50,
+    "POTATO_HEALTHY": 50,
+    "POTATO_LATE_BLIGHT": 50
+  },
+  "external_manifest": {
+    "status": "ADMITTED_PREFLIGHT_COMPLETE_NOT_SEALED",
+    "manifest_sha256": "20e0ba6729d08920cae3b93d914ddbaaed6c44c1f3ef6dc8b5c661700bd5e9d1",
+    "preflight_summary_sha256": "3104fe4b42cd2166e11bea50ac1af82a2a2d9709b2043285154a86c8df8ab050",
+    "compatibility_jsonl_sha256": "0e821b81fe83615d106c45b7ee5514678f3a689a7477c3c24cefaae6d79ffcc4",
+    "independence_unit": "UNIQUE_IMAGE_ONLY_NOT_PLANT_OR_SESSION"
+  },
+  "external_criteria": {
+    "macro_f1_min": 0.75,
+    "recall_min_by_blight": {
+      "rate": 0.75,
+      "POTATO_EARLY_BLIGHT": {
+        "correct_min": 38,
+        "denominator": 50
+      },
+      "POTATO_LATE_BLIGHT": {
+        "correct_min": 38,
+        "denominator": 50
+      },
+      "abstention": "FALSE_NEGATIVE_FOR_RECALL"
+    },
+    "healthy_false_publication_max": {
+      "count": 5,
+      "denominator": 50
+    },
+    "healthy_rejection_min": {
+      "count": 45,
+      "denominator": 50
+    },
+    "other_crop_false_publication_max": {
+      "count": 10,
+      "denominator": 200
+    }
+  },
+  "measurement_rules": {
+    "publishable_classes": [
+      "POTATO_EARLY_BLIGHT",
+      "POTATO_LATE_BLIGHT"
+    ],
+    "POTATO_HEALTHY": "NO_CONCLUYENTE",
+    "OTHER_CROP": "NO_CONCLUYENTE",
+    "publish_numerators_denominators": true,
+    "external_results_measured": false
+  },
+  "limitations": [
+    "La independencia está demostrada solo por imagen única, no por planta o sesión.",
+    "La revisión visual interna no equivale a una nueva revisión agronómica independiente.",
+    "PLDD-UP y CornLeafDiseaseCollection representan India y Ecuador, no Ayacucho."
+  ],
+  "gates": {
+    "G0_v1_4_3": "CLOSED_APPROVED_BY_PROJECT_OWNER",
+    "EXTERNAL_SEAL": "AUTHORIZED",
+    "G2": "OPEN_NO_EVALUATION",
+    "worker_real": "INACTIVE"
+  }
+}

@@ -2,7 +2,7 @@
 
 Plataforma web de apoyo para analizar fotografías. El piloto de modelo real se limita a hoja de papa previamente identificada por el usuario. Muestra una condición visual probable solo cuando la clase está validada y la evidencia es suficiente. En los demás casos devuelve **NO_CONCLUYENTE** y orienta al usuario para repetir la fotografía. No reemplaza una evaluación profesional.
 
-> Estado: incrementos 0–3 implementados y verificados. Incremento 4 en desarrollo. [v1.4.2](docs/evidence/INCREMENTO-4-TRAIN-VAL-V1.4.2.md) cumplió VAL y fue congelado, pero su [única evaluación Sikkim EXTERNAL](docs/evidence/INCREMENTO-4-EXTERNAL-V1.4.2-FALLO-TECNICO.md) terminó por formato de imagen no admitido antes de obtener métricas completas. **G2/G3 permanecen abiertos y el worker real apagado.** No se autoriza reintento ni uso comercial. Incremento 5 pendiente.
+> Estado: incrementos 0–3 implementados y verificados. Incremento 4 en desarrollo. [v1.4.2](docs/evidence/INCREMENTO-4-TRAIN-VAL-V1.4.2.md) cumplió VAL y fue congelado; tras el fallo técnico histórico de Sikkim, [v1.4.3](docs/evidence/INCREMENTO-4-V1.4.3-COMPATIBILIDAD-Y-PREFLIGHT.md) corrigió el decodificador y selló sin abrir un EXTERNAL sustituto de 350 imágenes. **G2/G3 permanecen abiertos y el worker real apagado.** Sikkim no se reintenta y no se autoriza uso comercial. Incremento 5 pendiente.
 
 ## Alcance del piloto G0 v1.2.0
 

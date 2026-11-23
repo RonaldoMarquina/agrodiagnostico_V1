@@ -38,6 +38,41 @@ Pruebas técnicas: `bash scripts/check_ml_runtime.sh`. No acreditan G2/G3. El wo
 
 El motor `agro_ml.evaluation.metrics.generate_evaluation_report` calcula métricas de entradas suministradas, se verifica con fixtures y produjo reportes reales de VAL y TEST. Con máscara de abstención, una predicción técnica acertada publicada como `NO_CONCLUYENTE` cuenta como falso negativo y no como acierto visible; reporta numeradores/denominadores de cobertura, error selectivo y negativos. Sin aceptados, el error selectivo es `null`; sin negativos, su FPR es `null`, por lo que ninguno acredita el límite G0. Si una clase no tiene muestras, los macros son `null`. El evaluador de TEST añade Brier, calibración por intervalos, entropía y margen desde las salidas reales, y memoria medida. La tarea 5.3 está cerrada; el comando heredado de release `evaluate` permanece bloqueado hasta la aprobación G2.
 
+## Preflight EXTERNAL v1.4.3
+
+El contrato [`potato-v143-operational-compatible.json`](preprocessing/potato-v143-operational-compatible.json)
+identifica el formato desde bytes y convierte explícitamente a RGB. MPO usa
+siempre el frame 0; PNG/WEBP animados y TIFF multipágina se rechazan. Antes de
+sellar un nuevo EXTERNAL se debe recorrer el manifiesto completo, sin pesos ni
+inferencia:
+
+```bash
+PYTHONPATH=ml/src python3 scripts/preflight_v143_external.py \
+  --manifest /ruta/privada/external-v143.jsonl \
+  --images-root /ruta/privada/images \
+  --output-dir /ruta/privada/preflight-v143
+```
+
+El comando solo produce salida cuando todas las filas pasan. El sello exige
+además aprobación del responsable con conteos y límites exactos:
+
+```bash
+PYTHONPATH=ml/src python3 scripts/seal_v143_external.py \
+  --manifest /ruta/privada/external-v143.jsonl \
+  --preflight-dir /ruta/privada/preflight-v143 \
+  --approval ml/evaluation/protocol-g0.v1.4.3.json \
+  --output /ruta/privada/external-v143-seal.json
+```
+
+Ninguno de estos comandos ejecuta predicciones o métricas. Sikkim está vetado
+como entrada v1.4.3 y se conserva solo como evidencia histórica. El lote
+privado actual contiene 50/50/50 imágenes PLDD-UP de temprano/tardío/sana y
+200 imágenes de maíz de CornLeafDiseaseCollection. Su preflight 350/350 pasó y
+el responsable aprobó el
+[`protocol-g0.v1.4.3.json`](evaluation/protocol-g0.v1.4.3.json). El
+[`sello`](evaluation/external-seal.v1.4.3.json) continúa cerrado para inferencia;
+la apertura única pertenece al cambio OpenSpec de evaluación G2.
+
 ## Comprobación G0–G3 y preflight de aceptación
 
 G0 aprobado: [`protocol-g0.v1.2.0.json`](evaluation/protocol-g0.v1.2.0.json) y [ficha](../docs/evidence/INCREMENTO-4-FICHA-G0.md). G1 admitido: `PYTHONPATH=ml/src python3 scripts/verify_plantvillage_pilot_g1.py .local/pv-g1/pilot-v1.2 .local/pv-g1/batch-v1`; conservar su reporte y sello TEST. G2 aprobado: verificar el bundle sin abrir imágenes con:
