@@ -1,4 +1,4 @@
-> Estado vigente 2026-11-22: v1.3.2 se conserva como ciclo evaluado no aprobado tras fallar papa sana (8/32 publicaciones de tizón; 24/32 `NO_CONCLUYENTE`). Para [v1.4.0](evidence/INCREMENTO-4-G0-G1-V1.4.0-MATERIALIZACION.md), G0 y G1 están cerrados. La [comparación real TRAIN/VAL](evidence/INCREMENTO-4-TRAIN-VAL-V1.4.0.md) no produjo candidato elegible: ambas estrategias fallaron el rechazo de otro cultivo. No existe bundle congelado, Sikkim EXTERNAL sigue sellado sin abrir y G2/G3 permanecen abiertos.
+> Estado vigente 2026-11-23: v1.4.0 se conserva como ciclo VAL no elegible por 83/150 publicaciones sobre `OTHER_CROP`. [G0/G1 v1.4.1](evidence/INCREMENTO-4-G0-G1-V1.4.1.md) están cerrados con `OTHER_CROP` como cuarta clase técnica de rechazo. Solo ambos tizones son diagnósticos publicables. En este corte aún no se había ejecutado el entrenamiento v1.4.1; Sikkim EXTERNAL y TEST históricos continúan bloqueados, y G2/G3 abiertos.
 
 # Datos y modelo de IA
 
@@ -19,7 +19,7 @@ Tras aceptar y decodificar la carga, para cultivo ajeno, imagen visualmente defe
 
 ## Inventario del dataset
 
-Antes de entrenar, documenta para cada fuente: nombre/autor, permiso o licencia, fecha de acceso, etiquetas y definición diagnóstica, cantidades por clase, condiciones de captura, revisión de etiquetas, duplicados, exclusiones y restricciones de uso. En v1.4.0, la revisión fijada de PlantVillage `color` aporta tres clases técnicas a TRAIN/VAL y `OTHER_CROP` solo a VAL. Sikkim v1 está registrado bajo CC BY 4.0 y sellado únicamente como EXTERNAL; no puede intervenir en calibración ni selección. Su unidad es archivo único, sin independencia demostrada por planta. PlantDoc y PlantSeg siguen pendientes de admisión.
+Antes de entrenar, documenta para cada fuente: nombre/autor, permiso o licencia, fecha de acceso, etiquetas y definición diagnóstica, cantidades por clase, condiciones de captura, revisión de etiquetas, duplicados, exclusiones y restricciones de uso. En v1.4.1, PlantVillage `color` aporta cuatro clases técnicas a TRAIN/VAL; sano y otro cultivo se transforman en abstención visible. Sikkim v1 está registrado bajo CC BY 4.0 y sellado únicamente como EXTERNAL; no puede intervenir en calibración ni selección. Su unidad es archivo único, sin independencia demostrada por planta. PlantDoc y PlantSeg siguen pendientes de admisión.
 
 El manifiesto versionado CSV o Parquet incluirá como mínimo `image_id`, `sha256`, `crop_code`, `class_code`, `source`, `license`, `capture_context`, `label_quality`, `split_group` y `split` (`TRAIN`, `VAL`, `TEST`, `EXTERNAL`). Define y congela los dos `class_code` activos antes de entrenar; nunca recicles un código retirado. Mantén imágenes privadas y ubicación precisa fuera del repositorio.
 

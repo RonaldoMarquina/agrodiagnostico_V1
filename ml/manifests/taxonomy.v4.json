@@ -1,0 +1,32 @@
+{
+  "schema_version": 4,
+  "version": "4.0.0",
+  "active_protocol_version": "1.4.1",
+  "pilot_input": "POTATO_LEAF_IDENTIFIED_BY_USER",
+  "publishable_candidate_codes": [
+    "POTATO_EARLY_BLIGHT",
+    "POTATO_LATE_BLIGHT"
+  ],
+  "technical_training_codes": [
+    "POTATO_EARLY_BLIGHT",
+    "POTATO_LATE_BLIGHT",
+    "POTATO_HEALTHY",
+    "OTHER_CROP"
+  ],
+  "technical_rejection_codes": [
+    "POTATO_HEALTHY",
+    "OTHER_CROP"
+  ],
+  "visible_mapping": {
+    "POTATO_EARLY_BLIGHT": "POTATO_EARLY_BLIGHT_IF_POLICY_PASSES",
+    "POTATO_LATE_BLIGHT": "POTATO_LATE_BLIGHT_IF_POLICY_PASSES",
+    "POTATO_HEALTHY": "NO_CONCLUYENTE",
+    "OTHER_CROP": "NO_CONCLUYENTE"
+  },
+  "rejection_reason_codes": {
+    "POTATO_HEALTHY": "LOW_CONFIDENCE",
+    "OTHER_CROP": "UNSUPPORTED_CROP"
+  },
+  "code_policy": "NO_CONCLUYENTE es estado, no clase. POTATO_HEALTHY y OTHER_CROP son salidas técnicas no publicables.",
+  "results_status": "G0_APPROVED_G1_PENDING_NOT_TRAINED"
+}

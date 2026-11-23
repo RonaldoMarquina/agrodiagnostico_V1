@@ -24,6 +24,7 @@ Lock generado con Python 3.12, pip-tools 7.5.2; entrada en [requirements.in](too
 - [Escenarios HTTP](http-scenarios.json): precondición y respuesta esperada; `runtime_verified: false` evita confundirlos con handlers probados.
 - [Obligaciones pendientes](deferred-operations.json): contratos futuros, responsables y rutas conceptuales antes de consumidores; no son endpoints publicados.
 - [Entrega de eventos](events/README.md) y [routing](events/routing.json): obligaciones futuras e incremento responsable.
+- [Model bundle](ml/model-bundle.v1.schema.json) y [publication policy](ml/publication-policy.v1.schema.json): desde G0 v1.4.1 distinguen cuatro salidas técnicas de solo dos diagnósticos publicables. `POTATO_HEALTHY` y `OTHER_CROP` son señales internas de rechazo y no pueden aparecer en `approved_classes`.
 
 El OpenAPI generado por las APIs se compara solamente con las rutas de salud durante la aceptación integrada. Cada operación tiene `x-status`, `x-owner`, `x-increment`. `x-upload-policy` y `x-idempotency` fijan límites y semántica que JSON Schema no puede imponer sobre bytes reales o sobre el historial de solicitudes. No se genera un servidor ficticio para hacer pasar estas pruebas. El validador exige inventario completo, ejemplos por respuesta con cuerpo, seguridad explícita, IDs únicos y referencias resolubles dentro de `contracts/`; rechaza referencias externas y esquemas recursivos no soportados por esta herramienta.
 

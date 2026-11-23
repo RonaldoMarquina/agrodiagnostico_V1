@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "cycle_version": "1.4.0",
+  "status": "VAL_EVALUATED_NOT_ELIGIBLE_NO_FREEZE",
+  "immutable_from": "2026-11-23",
+  "code_commit": "bd9df36cf0573730ea37704987cedd7f2177a5a8",
+  "evidence_commit": "c0973c5",
+  "protocol_sha256": "e3dad24755550c574f33c5fa5b736eec639c9a36b054fcb3fee9e2c3e96550af",
+  "plan_sha256": "04a45a9425b99ca47e9048c5d91ac42f1fe65565a2381e18413a39ae6e20f263",
+  "plantvillage_manifest_sha256": "b7bcdc87b1ae252c55370b1354c579c4b0fa80da962ce47b83c7a28ca66824e1",
+  "comparison": {
+    "private_path": ".local/ml-v1.4.0-train-val/comparison.json",
+    "sha256": "06500735222e3534af7e5631e690470a331fccbe73f641354378451409c035ec",
+    "decision": "BLOCKED_NO_CANDIDATE_PASSES_VAL",
+    "relative_leader": "weighted-cross-entropy-full-train",
+    "other_crop_published": 83,
+    "other_crop_denominator": 150,
+    "other_crop_maximum": 7
+  },
+  "candidates": {
+    "weighted": {
+      "weights_sha256": "fea1fae23b20432f17b46c53a57bd2b486f388a428c84e0ca44171dc20ccd947",
+      "val_report_sha256": "4fcd4fe37ba2219d4e82528d0d2b6a2e15a8e35f318f7ea8c1e1276eb9b01783"
+    },
+    "group_balanced": {
+      "weights_sha256": "5a2827817de5c5edc15b2ec23f90fedafb85e6b6bedb92e63e3877cf17f4da4c",
+      "val_report_sha256": "b09a3e58ca39b96e7245112babe84df57b5b7ead27bde9e67058cabd05dc3130"
+    }
+  },
+  "freeze_created": false,
+  "historical_test_reused": false,
+  "external_opened": false
+}

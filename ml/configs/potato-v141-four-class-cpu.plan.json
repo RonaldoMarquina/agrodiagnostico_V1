@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "status": "PLANNED_NOT_TRAINED",
+  "protocol_version": "1.4.1",
+  "architecture": "mobilenet_v3_small",
+  "base_weights": "RANDOM_INITIALIZATION_NO_DOWNLOADS",
+  "normalization": "GROUP_NORM",
+  "seed": 42,
+  "epochs": 10,
+  "cpu_threads": 4,
+  "learning_rate": 0.001,
+  "batch_size": 16,
+  "preprocessing": {
+    "input_size": [224, 224],
+    "channels": 3,
+    "color_space": "RGB",
+    "mean": [0.485, 0.456, 0.406],
+    "std": [0.229, 0.224, 0.225],
+    "min_dimension": 200,
+    "max_dimension": 6000
+  },
+  "technical_class_codes": [
+    "POTATO_EARLY_BLIGHT",
+    "POTATO_LATE_BLIGHT",
+    "POTATO_HEALTHY",
+    "OTHER_CROP"
+  ],
+  "publishable_classes": [
+    "POTATO_EARLY_BLIGHT",
+    "POTATO_LATE_BLIGHT"
+  ],
+  "sampler": {
+    "strategy_id": "four-class-group-aware-balanced-sampler",
+    "samples_per_class_per_epoch": 80,
+    "samples_per_epoch": 320,
+    "selection_order": "class_then_leaf_id_then_original"
+  },
+  "healthy_train_only_augmentation": {
+    "enabled": true,
+    "allowed_split": "TRAIN",
+    "allowed_class": "POTATO_HEALTHY",
+    "operations": {
+      "random_horizontal_flip_probability": 0.5,
+      "random_rotation_degrees": 15,
+      "color_jitter_brightness": 0.1,
+      "color_jitter_contrast": 0.1,
+      "color_jitter_saturation": 0.05
+    },
+    "forbidden_classes": ["OTHER_CROP"],
+    "forbidden_splits": ["VAL", "TEST", "EXTERNAL"]
+  },
+  "selection": {
+    "source": "PlantVillage VAL only",
+    "minimums": {
+      "macro_f1_two_blights_min": 0.8,
+      "recall_each_blight_min": 0.8,
+      "selective_coverage_min": 0.7,
+      "selective_error_max": 0.1,
+      "healthy_visible_blight_max": 2,
+      "other_crop_visible_blight_max": 7,
+      "calibration_ece_max": 0.15
+    },
+    "select_epoch_on": "VAL",
+    "calibration_split": "VAL",
+    "threshold_split": "VAL"
+  },
+  "forbidden_inputs": [
+    "HISTORICAL_TEST",
+    "SIKKIM_EXTERNAL",
+    "V1_4_0_PREDICTIONS",
+    "V1_4_0_WEIGHTS"
+  ],
+  "external_access": "NONE"
+}

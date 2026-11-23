@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-11-23",
+  "protocol_version": "1.4.1",
+  "approved_protocol_sha256": "a6efb7041bc958549df4bce602aa0b083336b9bb6e7470325a55588bd8123c93",
+  "history_index_sha256": "ad9ea975759b90574c9d6b534b49a3cab62450bca6280cbcf101fc0e32d2a030",
+  "training_plan_sha256": "8f7dd66ce4620a5564e56da8dce51d324473f515bc7c107e19181375c35503da",
+  "taxonomy_sha256": "f3c0618e57e9f3a61dfa344ef28529ae96b3ffd6cdfb7e4ece488fcd90ba2386",
+  "G0": "CLOSED_APPROVED_BY_PROJECT_OWNER",
+  "G1": "CLOSED_PRIVATE_MANIFEST_VERIFIED",
+  "G1_private_report_sha256": "5463272ec6f335be7a8cb2fa88f1c8739399547a53e6bf1da60db15eb6b40a59",
+  "plantvillage_train_val_manifest_sha256": "b16533a8cdce48463c1fd8d43e451a696cddfc6860244a7c10157eaa5a0db884",
+  "train": {"photos": 1623, "leaf_groups": 412, "other_crop_photos": 503, "other_crop_groups": 127},
+  "val": {"photos": 496, "leaf_groups": 126, "other_crop_photos": 150, "other_crop_groups": 38},
+  "historical_test_group_count_blocked": 68,
+  "sikkim_external_manifest_sha256": "3c8d95e9e4d198dedf821133cb4d5f0c119a327b496396c25d4b71a493580992",
+  "external_seal_sha256": "ab0e7e7c8a28a70a5bce4fd6424912454e2a31b31f463406233d811ed3f9a69a",
+  "external_access": "SEALED_NOT_OPENED_FOR_MODELING",
+  "external_rows_read_during_materialization": 0,
+  "G2": "OPEN_NOT_TRAINED",
+  "G3": "OPEN"
+}

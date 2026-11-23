@@ -2,7 +2,7 @@
 
 Plataforma web de apoyo para analizar fotografías. El piloto de modelo real se limita a hoja de papa previamente identificada por el usuario. Muestra una condición visual probable solo cuando la clase está validada y la evidencia es suficiente. En los demás casos devuelve **NO_CONCLUYENTE** y orienta al usuario para repetir la fotografía. No reemplaza una evaluación profesional.
 
-> Estado: incrementos 0–3 implementados y verificados. Incremento 4 en desarrollo: v1.2.0 y v1.3.2 son ciclos históricos; el [TEST v1.3.2](docs/evidence/INCREMENTO-4-TEST-V1.3.2-UNICO.md) falló el rechazo sano con 8/32 publicaciones de tizón y 24/32 `NO_CONCLUYENTE`. En el [ciclo v1.4.0](openspec/changes/incremento-4-v1-4-rechazo-sano-balanceado/tasks.md), [G0/G1 están cerrados](docs/evidence/INCREMENTO-4-G0-G1-V1.4.0-MATERIALIZACION.md). La [comparación TRAIN/VAL](docs/evidence/INCREMENTO-4-TRAIN-VAL-V1.4.0.md) ejecutó las dos estrategias previstas, pero ninguna pasó el rechazo de otro cultivo; no se congeló bundle y Sikkim EXTERNAL sigue sellado sin abrir. **G2/G3 permanecen abiertos y el worker real apagado.** Incremento 5 pendiente.
+> Estado: incrementos 0–3 implementados y verificados. Incremento 4 en desarrollo. v1.4.0 quedó como evidencia histórica al fallar `OTHER_CROP` con 83/150 publicaciones. En [v1.4.1](docs/evidence/INCREMENTO-4-G0-G1-V1.4.1.md), G0/G1 están cerrados con cuatro clases técnicas, TRAIN 1.623/412 grupos y VAL 496/126; solo ambos tizones son publicables. En este corte aún no se había entrenado. Sikkim EXTERNAL y los TEST históricos siguen bloqueados. **G2/G3 permanecen abiertos y el worker real apagado.** Incremento 5 pendiente.
 
 ## Alcance del piloto G0 v1.2.0
 

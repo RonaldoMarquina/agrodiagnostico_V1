@@ -1,0 +1,93 @@
+{
+  "protocol_version": "1.4.1",
+  "status": "APPROVED_G0_DESIGN",
+  "approved_at": "2026-11-23",
+  "approved_by_role": "PROJECT_OWNER",
+  "supersedes_for_new_selection": "1.4.0",
+  "reason": "v1.4.0 published blight for 83/150 OTHER_CROP VAL images; maximum was 7/150",
+  "historical_v1_4_0": {
+    "index_path": "ml/evaluation/v1.4.0-history-index.json",
+    "status": "IMMUTABLE_VAL_EVIDENCE_NOT_A_BUNDLE",
+    "weights_reused": false,
+    "predictions_used_for_selection": false
+  },
+  "pilot_input": "POTATO_LEAF_IDENTIFIED_BY_USER",
+  "technical_class_map": {
+    "0": "POTATO_EARLY_BLIGHT",
+    "1": "POTATO_LATE_BLIGHT",
+    "2": "POTATO_HEALTHY",
+    "3": "OTHER_CROP"
+  },
+  "publishable_classes": [
+    "POTATO_EARLY_BLIGHT",
+    "POTATO_LATE_BLIGHT"
+  ],
+  "rejection_classes": {
+    "POTATO_HEALTHY": "NO_CONCLUYENTE",
+    "OTHER_CROP": "NO_CONCLUYENTE"
+  },
+  "plantvillage_expected": {
+    "source_revision": "9e97599868962bd0079b8db4b7f1efa9185fa1e7",
+    "POTATO_EARLY_BLIGHT": {"TRAIN": {"photos": 541, "leaf_groups": 136}, "VAL": {"photos": 165, "leaf_groups": 42}},
+    "POTATO_LATE_BLIGHT": {"TRAIN": {"photos": 499, "leaf_groups": 129}, "VAL": {"photos": 153, "leaf_groups": 39}},
+    "POTATO_HEALTHY": {"TRAIN": {"photos": 80, "leaf_groups": 20}, "VAL": {"photos": 28, "leaf_groups": 7}},
+    "OTHER_CROP": {"TRAIN": {"photos": 503, "leaf_groups": 127}, "VAL": {"photos": 150, "leaf_groups": 38}},
+    "TRAIN_TOTAL": {"photos": 1623, "leaf_groups": 412},
+    "VAL_TOTAL": {"photos": 496, "leaf_groups": 126}
+  },
+  "training": {
+    "architecture": "mobilenet_v3_small",
+    "base_weights": "RANDOM_INITIALIZATION_NO_DOWNLOADS",
+    "normalization": "GROUP_NORM",
+    "sampler": "CLASS_THEN_LEAF_ID_THEN_ORIGINAL",
+    "samples_per_class_per_epoch": 80,
+    "samples_per_epoch": 320,
+    "healthy_augmentation_only_in_train": true,
+    "other_crop_augmentation": false
+  },
+  "val_acceptance": {
+    "macro_f1_two_blights_min": 0.8,
+    "recall_each_blight_min": 0.8,
+    "selective_coverage_min": 0.7,
+    "selective_error_max": 0.1,
+    "healthy_visible_blight_max": 2,
+    "healthy_denominator": 28,
+    "other_crop_visible_blight_max": 7,
+    "other_crop_denominator": 150,
+    "calibration_ece_max": 0.15,
+    "blight_abstention": "FALSE_NEGATIVE_FOR_RECALL"
+  },
+  "external_inherited": {
+    "source": "Sikkim v1",
+    "manifest_sha256": "3c8d95e9e4d198dedf821133cb4d5f0c119a327b496396c25d4b71a493580992",
+    "seal_sha256": "ab0e7e7c8a28a70a5bce4fd6424912454e2a31b31f463406233d811ed3f9a69a",
+    "seal_protocol_version": "1.4.0",
+    "seal_protocol_sha256": "e3dad24755550c574f33c5fa5b736eec639c9a36b054fcb3fee9e2c3e96550af",
+    "access": "FORBIDDEN_UNTIL_V1_4_1_COMPLETE_FREEZE_AND_EXPLICIT_REVIEW",
+    "resealed": false,
+    "criteria_unchanged": {
+      "macro_f1_two_blights_min": 0.75,
+      "early_recall_min": 0.75,
+      "early_correct_min": 32,
+      "early_denominator": 42,
+      "late_recall_min": 0.75,
+      "late_correct_min": 57,
+      "late_denominator": 76,
+      "healthy_visible_blight_max": 5,
+      "healthy_no_concluyente_min": 45,
+      "healthy_denominator": 50,
+      "other_crop_visible_blight_max": 9,
+      "other_crop_denominator": 194
+    }
+  },
+  "historical_test": {
+    "status": "FORBIDDEN_FOR_TRAIN_VAL_CALIBRATION_THRESHOLD_OR_EVALUATION",
+    "reused": false
+  },
+  "gates": {
+    "G0": "CLOSED_APPROVED",
+    "G1": "PENDING_V1_4_1_PRIVATE_MANIFEST",
+    "G2": "OPEN_NOT_TRAINED",
+    "G3": "OPEN"
+  }
+}
