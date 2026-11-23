@@ -1,6 +1,6 @@
 # Tasks
 
-> Estado vigente del ciclo posterior (2026-11-21): [G0 v1.3.2 aprobado](../../../docs/evidence/INCREMENTO-4-G0-V1.3.2-APROBACION.md) y G1 v1.3.1 revalidado y cerrado; el TEST nuevo sigue sellado y sin evaluar. Las casillas históricas de este cambio v1.2.0 no se reinterpretan como aprobación G2/G3 v1.3.2. **9.1, 9.4 y G3 permanecen abiertos.** El [cambio activo de rechazo sano](../incremento-4-v1-3-rechazo-papa-sana/tasks.md) contiene las tareas siguientes.
+> Estado vigente del ciclo posterior (2026-11-23): la [evaluación EXTERNAL única v1.4.3](../../../docs/evidence/INCREMENTO-4-EXTERNAL-V1.4.3-UNICO.md) completó 350/350 casos con el freeze v1.4.2 intacto, pero incumplió F1, recall tardío y rechazo de sanas/otro cultivo. G2 permanece abierto y el lote no se reintenta ni se usa para ajuste. Las casillas históricas v1.2.0 no se reinterpretan como aprobación del ciclo actual. **9.1, 9.4 y G3 permanecen abiertos.**
 
 Plan ejecutado por Codex desde 2026-11-19. Estado rectificado el 2026-10-15: las casillas abiertas incluyen herramientas parciales y aprobaciones sin evidencia; una prueba con fixtures no completa la tarea real. Leer design.md D1–D7 y los cinco deltas antes de aplicar. G0/G1/G2/G3 son puertas verificables. El responsable define y aprueba G0; G1 exige derechos y revisión de imágenes concretas; G2 exige resultados medidos.
 

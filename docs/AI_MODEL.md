@@ -1,4 +1,4 @@
-> Estado vigente 2026-11-23: G0/G1 v1.4.1 siguen vigentes. [v1.4.2](evidence/INCREMENTO-4-TRAIN-VAL-V1.4.2.md) cumplió VAL, pero su [apertura única de Sikkim EXTERNAL](evidence/INCREMENTO-4-EXTERNAL-V1.4.2-FALLO-TECNICO.md) falló por dos contenedores `MPO/RGB` antes de producir métricas completas. El [ciclo v1.4.3](evidence/INCREMENTO-4-V1.4.3-COMPATIBILIDAD-Y-PREFLIGHT.md) corrigió la compatibilidad y completó admisión, preflight, aprobación G0 y sello de un EXTERNAL sustituto de 350 imágenes. El lote sigue sin abrirse; G2/G3 están abiertos, Sikkim no se reintenta y el worker real está inactivo.
+> Estado vigente 2026-11-23: la [evaluación EXTERNAL única v1.4.3](evidence/INCREMENTO-4-EXTERNAL-V1.4.3-UNICO.md) terminó 350/350 casos con el freeze v1.4.2 intacto. Solo cumplió recall temprano: fallaron F1 macro, recall tardío y rechazo de papa sana/otro cultivo. G2/G3 siguen abiertos, el lote no se reutiliza y el worker real está inactivo.
 
 # Datos y modelo de IA
 

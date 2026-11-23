@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "cycle_version": "1.4.3",
+  "split": "EXTERNAL",
+  "status": "COMPLETED_CRITERIA_FAILED",
+  "prediction_count": 350,
+  "temperature": 0.5,
+  "threshold": 0.8,
+  "macro_f1": 0.29370629370629364,
+  "per_class": {
+    "POTATO_EARLY_BLIGHT": {
+      "tp": 40,
+      "fp": 196,
+      "fn": 10,
+      "support": 50,
+      "precision": 0.1694915254237288,
+      "recall": 0.8,
+      "f1": 0.2797202797202797,
+      "abstained": 8
+    },
+    "POTATO_LATE_BLIGHT": {
+      "tp": 10,
+      "fp": 5,
+      "fn": 40,
+      "support": 50,
+      "precision": 0.6666666666666666,
+      "recall": 0.2,
+      "f1": 0.30769230769230765,
+      "abstained": 11
+    }
+  },
+  "healthy_false_publication": {
+    "numerator": 44,
+    "denominator": 50,
+    "maximum": 5
+  },
+  "healthy_no_concluyente": {
+    "numerator": 6,
+    "denominator": 50,
+    "minimum": 45
+  },
+  "other_crop_false_publication": {
+    "numerator": 126,
+    "denominator": 200,
+    "maximum": 10
+  },
+  "abstentions": {
+    "POTATO_EARLY_BLIGHT": 8,
+    "POTATO_LATE_BLIGHT": 11,
+    "POTATO_HEALTHY": 6,
+    "OTHER_CROP": 74
+  },
+  "visible_confusion_matrix": {
+    "rows_true": [
+      "POTATO_EARLY_BLIGHT",
+      "POTATO_LATE_BLIGHT",
+      "POTATO_HEALTHY",
+      "OTHER_CROP"
+    ],
+    "columns_published": [
+      "POTATO_EARLY_BLIGHT",
+      "POTATO_LATE_BLIGHT",
+      "NO_CONCLUYENTE"
+    ],
+    "counts": {
+      "POTATO_EARLY_BLIGHT": [40, 2, 8],
+      "POTATO_LATE_BLIGHT": [29, 10, 11],
+      "POTATO_HEALTHY": [44, 0, 6],
+      "OTHER_CROP": [123, 3, 74]
+    }
+  },
+  "latency": {
+    "inference": {
+      "count": 350,
+      "median_ms": 4.5249,
+      "p95_ms": 5.1391,
+      "max_ms": 10.252
+    },
+    "end_to_end": {
+      "count": 350,
+      "median_ms": 19.5756,
+      "p95_ms": 179.6654,
+      "max_ms": 199.6986
+    }
+  },
+  "peak_rss_mb": 594.54,
+  "criteria": {
+    "macro_f1": false,
+    "early_recall": true,
+    "late_recall": false,
+    "healthy_false_publication": false,
+    "healthy_rejection": false,
+    "other_crop_false_publication": false
+  },
+  "hashes": {
+    "freeze_digest": "07ef4eac80f59b7ca1fc42031092f3353e7e2dd89d6c8c8c17fda4865c85110a",
+    "weights_sha256": "e96201dc79bfd5aa99a55430f5a523f47ff91fe82d6d9de1ffc8249c06c6472c",
+    "manifest_sha256": "20e0ba6729d08920cae3b93d914ddbaaed6c44c1f3ef6dc8b5c661700bd5e9d1",
+    "seal_sha256": "d0c76dc4b9d398cb779d71f82e9baaa250ea8a097a2d2b3ad1a8bf89efade7d1",
+    "predictions_sha256": "ddfb1938f6fc883483248d0c1237bb9cd8a55eb684c5c03a9451d1fb5166a6bb",
+    "external_report_sha256": "09ac3b9b16f303dadc21b87772af03dbcfd0154aba792bfde9b48ba1544607ea",
+    "g2_decision_sha256": "6d45ca104a2e797130e1fdf5e74d5f99eefd7cb5eba9fa393e4925776583d48e"
+  },
+  "runtime": {
+    "cpu_model": "AMD Ryzen 7 5800XT 8-Core Processor",
+    "python": "3.12.14",
+    "torch": "2.15.0+cpu",
+    "torchvision": "0.29.2+cpu",
+    "threads": 4
+  },
+  "independence_unit": "UNIQUE_IMAGE_ONLY_NOT_PLANT_OR_SESSION",
+  "plant_or_session_independence_verified": false,
+  "worker_status": "INACTIVE_NOT_AUTHORIZED"
+}

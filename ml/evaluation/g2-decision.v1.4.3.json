@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "cycle_version": "1.4.3",
+  "status": "OPEN_EXTERNAL_CRITERIA_FAILED",
+  "decision_at": "2026-11-23T22:32:27.154753+00:00",
+  "approval_basis": "Project-owner G0 v1.4.3 approval dated 2026-11-23",
+  "freeze_digest": "07ef4eac80f59b7ca1fc42031092f3353e7e2dd89d6c8c8c17fda4865c85110a",
+  "seal_sha256": "d0c76dc4b9d398cb779d71f82e9baaa250ea8a097a2d2b3ad1a8bf89efade7d1",
+  "external_report_sha256": "09ac3b9b16f303dadc21b87772af03dbcfd0154aba792bfde9b48ba1544607ea",
+  "predictions_sha256": "ddfb1938f6fc883483248d0c1237bb9cd8a55eb684c5c03a9451d1fb5166a6bb",
+  "criteria": {
+    "early_recall": true,
+    "healthy_false_publication": false,
+    "healthy_rejection": false,
+    "late_recall": false,
+    "macro_f1": false,
+    "other_crop_false_publication": false
+  },
+  "worker_status": "INACTIVE_NOT_AUTHORIZED",
+  "policy_status": "INACTIVE_NOT_IMPORTED",
+  "external_reuse_authorized": false
+}

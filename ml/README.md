@@ -70,8 +70,11 @@ privado actual contiene 50/50/50 imágenes PLDD-UP de temprano/tardío/sana y
 200 imágenes de maíz de CornLeafDiseaseCollection. Su preflight 350/350 pasó y
 el responsable aprobó el
 [`protocol-g0.v1.4.3.json`](evaluation/protocol-g0.v1.4.3.json). El
-[`sello`](evaluation/external-seal.v1.4.3.json) continúa cerrado para inferencia;
-la apertura única pertenece al cambio OpenSpec de evaluación G2.
+[`sello`](evaluation/external-seal.v1.4.3.json) se abrió una sola vez mediante
+el cambio OpenSpec de evaluación G2. La
+[evaluación](../docs/evidence/INCREMENTO-4-EXTERNAL-V1.4.3-UNICO.md) completó
+350/350 predicciones, pero incumplió cinco de seis criterios; G2 permanece
+abierto. No se reintenta el lote ni se usa para ajustar parámetros.
 
 ## Comprobación G0–G3 y preflight de aceptación
 

@@ -15,11 +15,11 @@
 
 ## 3. Verificación previa y apertura real
 
-- [ ] 3.1 Ejecutar suites focalizadas y OpenSpec estricto sin abrir EXTERNAL, documentar comandos/resultados y hacer un commit local del evaluador antes de la apertura; verificar que el commit contiene código y compuertas pero no predicciones
-- [ ] 3.2 Ejecutar exactamente una vez con red deshabilitada y entradas de solo lectura; verificar 350 predicciones, hashes congelados, cero entrenamiento/calibración/selección y salida inmutable
-- [ ] 3.3 Validar desde un proceso independiente los hashes de acceso, predicciones, reporte y decisión, y recomputar matriz/métricas para verificar coincidencia exacta
+- [x] 3.1 Ejecutar suites focalizadas y OpenSpec estricto sin abrir EXTERNAL, documentar comandos/resultados y hacer un commit local del evaluador antes de la apertura; verificar que el commit contiene código y compuertas pero no predicciones
+- [x] 3.2 Ejecutar exactamente una vez con red deshabilitada y entradas de solo lectura; verificar 350 predicciones, hashes congelados, cero entrenamiento/calibración/selección y salida inmutable
+- [x] 3.3 Validar desde un proceso independiente los hashes de acceso, predicciones, reporte y decisión, y recomputar matriz/métricas para verificar coincidencia exacta
 
 ## 4. Evidencia y decisión G2
 
-- [ ] 4.1 Publicar evidencia sanitizada con numeradores/denominadores, F1 macro, recall de ambos tizones, rechazo sano/otro cultivo, abstenciones, matriz, latencia, memoria, hashes y limitaciones; verificar ausencia de rutas privadas e imágenes
-- [ ] 4.2 Registrar G2 cerrado solo si todos los criterios pasan o abierto con cada incumplimiento si alguno falla; actualizar README, AI_MODEL, Incrementos y OpenSpec, ejecutar validación estricta/pruebas pertinentes y hacer commit local sin activar worker, política ni G3
+- [x] 4.1 Publicar evidencia sanitizada con numeradores/denominadores, F1 macro, recall de ambos tizones, rechazo sano/otro cultivo, abstenciones, matriz, latencia, memoria, hashes y limitaciones; verificar ausencia de rutas privadas e imágenes
+- [x] 4.2 Registrar G2 cerrado solo si todos los criterios pasan o abierto con cada incumplimiento si alguno falla; actualizar README, AI_MODEL, Incrementos y OpenSpec, ejecutar validación estricta/pruebas pertinentes y hacer commit local sin activar worker, política ni G3
