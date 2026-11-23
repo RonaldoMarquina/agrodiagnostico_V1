@@ -1,5 +1,11 @@
 # ML — incremento 4, piloto de dos tizones
 
+> Cierre vigente: la [evaluación EXTERNAL v1.4.3](../docs/evidence/INCREMENTO-4-EXTERNAL-V1.4.3-UNICO.md)
+> terminó, pero el [modelo fue rechazado para producción](../docs/evidence/INCREMENTO-4-CIERRE-V1.4.3.md).
+> G2 está cerrado como rechazado y G3 no fue promovido. El bundle, sus hashes y
+> los resultados se conservan solo como evidencia histórica; no se reentrena,
+> recalibra, activa ni vuelve a evaluar en este incremento.
+
 ## Ciclo v1.3.2: candidato TRAIN/VAL congelado
 
 El [expediente de entrenamiento v1.3.2](../docs/evidence/INCREMENTO-4-TRAIN-VAL-V1.3.2.md) registra un MobileNetV3-Small de tres salidas técnicas, dos publicables, entrenado con TRAIN G1 v1.3.1 y seleccionado solo con VAL. `POTATO_HEALTHY` con argmax se abstiene; `OTHER_CROP` participa solo como negativo de entrenamiento y evaluación. El paquete privado quedó congelado con pesos, calibración, umbral y hashes antes de [evaluar TEST una sola vez](../docs/evidence/INCREMENTO-4-TEST-V1.3.2-UNICO.md). **G0 TEST falló en rechazo de papa sana; G2 permanece abierto.** No integrar ni activar este candidato. Los comandos reproducibles no descargan datos ni pesos. La evidencia histórica v1.2.0 que sigue abajo no se modifica.
@@ -73,8 +79,10 @@ el responsable aprobó el
 [`sello`](evaluation/external-seal.v1.4.3.json) se abrió una sola vez mediante
 el cambio OpenSpec de evaluación G2. La
 [evaluación](../docs/evidence/INCREMENTO-4-EXTERNAL-V1.4.3-UNICO.md) completó
-350/350 predicciones, pero incumplió cinco de seis criterios; G2 permanece
-abierto. No se reintenta el lote ni se usa para ajustar parámetros.
+350/350 predicciones, pero incumplió cinco de seis criterios. La decisión
+automática inicial quedó `OPEN_EXTERNAL_CRITERIA_FAILED`; el acta posterior
+cierra G2 como `CLOSED_REJECTED_EXTERNAL` y G3 como no promovido. No se
+reintenta el lote ni se usa para ajustar parámetros.
 
 ## Comprobación G0–G3 y preflight de aceptación
 

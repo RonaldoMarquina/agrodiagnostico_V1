@@ -42,9 +42,20 @@ Salud integrada: GET /health/live y /health/ready internos, sin publicación por
 
 El worker asíncrono (`app.worker`) procesa eventos `DiagnosisRequested` (v1 y v2) consumiendo de RabbitMQ, reclamando diagnósticos en `Diagnosis` vía API interna, obteniendo la imagen por lease token y produciendo eventos `DiagnosisAnalyzed` (v1).
 
-Dispone de dos perfiles de ejecución estrictamente aislados:
+Dispone de tres perfiles de ejecución estrictamente aislados:
 
-### 1. Perfil de Prueba (`async-test`)
+### 1. Perfil de demostración seguro (`demo`)
+
+- **Adaptador**: `DemoUnavailableInferenceAdapter`, sin pesos ni bundle.
+- **Resultado**: siempre `ABSTENTION/UNSUPPORTED_CLASS`; Diagnosis lo publica
+  como `NO_CONCLUYENTE` y no registra metadatos de un modelo inexistente.
+- **Activación explícita**:
+  ```bash
+  docker compose --profile demo up -d ai_inference-worker-demo
+  ```
+- No es el simulador de pruebas y no representa rendimiento agronómico.
+
+### 2. Perfil de Prueba (`async-test`)
 - **Adaptador**: `SimulatedInferenceAdapter`.
 - **Doble guardia mandatoria**: Requiere explícitamente `APP_ENV=test` y `ENABLE_SIMULATED_INFERENCE=true`. En cualquier otro entorno falla inmediatamente al arranque.
 - **Uso**: Pruebas de integración automatizadas y suites de CI.
@@ -53,9 +64,11 @@ Dispone de dos perfiles de ejecución estrictamente aislados:
   docker compose --profile async-test up -d ai_inference-worker-1
   ```
 
-### 2. Perfil real preparado (`ml-real`)
+### 3. Perfil real bloqueado (`ml-real`)
 
-`INFERENCE_MODE=real` exige los SHA-256 del bundle y del acta G2 fijados al arranque.
+`INFERENCE_MODE=real` exige `REAL_INFERENCE_AUTHORIZED=true`, además de los
+SHA-256 del bundle y del acta G2 fijados al arranque. El valor distribuido es
+`false`: el ciclo v1.4.3 fue rechazado externamente y no autoriza cambiarlo.
 Valida esquema, acta, hashes, pesos `safetensors`, mapa de solo dos tizones y
 preprocesado antes de abrir RabbitMQ; una ausencia o corrupción impide el consumo.
 Cada inferencia se ejecuta en un proceso CPU separado con límite de 20 segundos,
@@ -64,8 +77,9 @@ manteniendo el heartbeat del lease en el proceso del worker. El valor
 sin esa identificación o con cultivo ajeno se abstiene sin ejecutar el modelo.
 El adaptador JSON histórico permanece únicamente para fixtures bajo doble guardia.
 
-El perfil está **sin activar**. G3, política de publicación y catálogo revisado
-siguen pendientes; la preparación técnica no autoriza diagnósticos para usuarios.
+El perfil está **sin activar y bloqueado**. G2 cerró rechazado, G3 no fue
+promovido y no existe política de publicación activa. La preparación técnica
+histórica no autoriza diagnósticos para usuarios.
 Ver [operación del modelo](../../docs/operations/ai-model-operations.md).
 
 `INFERENCE_MODE=fixture` sirve únicamente para pruebas con APP_ENV=test y

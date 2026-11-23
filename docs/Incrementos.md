@@ -1,6 +1,6 @@
 # Incrementos de AgroDiagnóstico V1
 
-Estado actual: incrementos 0–3 implementados y verificados. La evaluación EXTERNAL única v1.4.3 completó 350 casos, pero falló F1, recall tardío y rechazo de sanas/otro cultivo. G2/G3 y activación permanecen pendientes; el lote no se reintenta ni se usa para ajustar. Incremento 5 pendiente.
+Estado actual: incrementos 0–3 implementados y verificados. El ciclo experimental de IA v1.4.3 completó 350 casos EXTERNAL y cerró sin aprobación de producción: G2 rechazado, G3 no promovido, worker real y política inactivos. El lote no se reintenta ni se usa para ajustar. Incremento 5 pendiente.
 
 | Incremento | Resultado previsto | Estado |
 | --- | --- | --- |
@@ -8,7 +8,7 @@ Estado actual: incrementos 0–3 implementados y verificados. La evaluación EXT
 | 1 | Registro, sesiones, roles, perfil, cambio y recuperación de contraseña, autorización | Implementado y revisado mediante correctivo posterior; 12 operaciones de identidad. Véase evidencia INCREMENTO-1-CORRECCION |
 | 2 | Imágenes privadas, validación y formatos, diagnósticos, catálogo, historial, feedback | Implementado; cierre original rectificado por [corrección](evidence/INCREMENTO-2-CORRECCION.md). 20 operaciones de negocio de Diagnosis |
 | 3 | RabbitMQ, outbox/inbox, lease, worker provisional e idempotencia | Verificado y archivado; CI local 17/17. [Evidencia](evidence/INCREMENTO-3-CIERRE.md). Resultados sintéticos, sin modelo real |
-| 4 | Piloto de dos tizones de papa, datos autorizados, entrenamiento, evaluación y modelo validado | En desarrollo. EXTERNAL v1.4.3: 350/350 evaluadas; solo recall temprano cumplió. G2/G3 abiertos, worker inactivo. |
+| 4 | Piloto de dos tizones de papa, datos autorizados, entrenamiento, evaluación y modelo validado | Ciclo experimental cerrado sin modelo de producción. EXTERNAL v1.4.3: 350/350; solo recall temprano cumplió. G2 rechazado, G3 no promovido; modo demo devuelve `NO_CONCLUYENTE`. El cambio original no se archiva como productivo. |
 | 5 | Notificaciones, lectura de avisos, interfaz final, observabilidad, recuperación, pruebas y despliegue con dominio, HTTPS, Cloudflare y CDN | Pendiente |
 
 Gemini, voz, PWA y detector de plagas son extensiones posteriores opcionales.
@@ -29,4 +29,4 @@ CI de cierre del incremento 2 (2026-10-07): 16/16 etapas locales aprobadas, incl
 
 Cierre del incremento 3 (2026-10-09): 33/33 tareas, cinco capacidades sincronizadas y [CI local completo](evidence/INCREMENTO-3-CI-LOCAL.json). [Tareas archivadas](../openspec/changes/archive/2026-10-09-incremento-3-flujo-asincrono-confiable/tasks.md). La comprobación remota de GitHub Actions permanece pendiente; el siguiente incremento es el 4 (datos autorizados y modelo validado).
 
-Estado del incremento 4 rectificado el 2026-10-15: se retira la declaración de 36/40 completadas y la aceptación real. Actualización del 2026-11-19: el responsable aprobó G0 como protocolo de diseño y se cerró G1 para el lote privado de dos tizones y negativos de tomate, con procedencia experta de etiquetas PlantVillage y control interno de calidad. Persisten entrenamiento, evaluación G2 y aceptación G3. No archivar.
+Estado del incremento 4 rectificado el 2026-10-15: se retira la declaración de 36/40 completadas y la aceptación real. El [cierre v1.4.3](evidence/INCREMENTO-4-CIERRE-V1.4.3.md) del 2026-11-23 conserva la validación interna y la evaluación EXTERNAL completa, pero rechaza el modelo para producción. G2 terminó `CLOSED_REJECTED_EXTERNAL` y G3 `CLOSED_NOT_PROMOTED_G2_REJECTED`; worker real, catálogo publicable y política permanecen inactivos. Las tareas 9.1 y 9.4 del plan original siguen abiertas porque exigen aceptación real aprobada, por lo que no se archiva como incremento productivo.

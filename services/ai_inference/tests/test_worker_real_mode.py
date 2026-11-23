@@ -23,7 +23,7 @@ from app.domain.models import (
     InferenceResult,
 )
 from app.infrastructure.auth import InternalTokenSigner, generate_worker_keypair
-from app.inference_adapter import RealModelInferenceAdapter
+from app.inference_adapter import DemoUnavailableInferenceAdapter, RealModelInferenceAdapter
 from app.worker import InferenceWorker, create_configured_inference_adapter
 try:
     from tests.test_model_adapter import _create_minimal_png
@@ -158,9 +158,98 @@ class TestWorkerRealMode(unittest.TestCase):
 
     def test_real_mode_rejects_unpinned_json_fixture(self):
         with patch.dict(os.environ, {"INFERENCE_MODE": "real", "APP_ENV": "local",
-                                  "MODEL_BUNDLE_PATH": str(self.bundle_file), "MODEL_BUNDLE_SHA256": ""}):
+                                  "REAL_INFERENCE_AUTHORIZED": "true",
+                                  "MODEL_BUNDLE_PATH": str(self.bundle_file), "MODEL_BUNDLE_SHA256": ""},
+                             clear=True):
             with self.assertRaisesRegex(RuntimeError, "MODEL_BUNDLE_SHA256"):
                 create_configured_inference_adapter()
+
+    def test_real_mode_is_blocked_without_explicit_authorization(self):
+        env = {
+            "INFERENCE_MODE": "real",
+            "APP_ENV": "local",
+            "REAL_INFERENCE_AUTHORIZED": "false",
+            "MODEL_BUNDLE_PATH": str(self.bundle_file),
+            "MODEL_BUNDLE_SHA256": "a" * 64,
+            "MODEL_APPROVAL_SHA256": "b" * 64,
+        }
+        with patch.dict(os.environ, env, clear=True):
+            with self.assertRaisesRegex(RuntimeError, "not authorized"):
+                create_configured_inference_adapter()
+
+    def test_demo_mode_abstains_without_model_metadata(self):
+        with patch.dict(
+            os.environ,
+            {
+                "INFERENCE_MODE": "demo",
+                "APP_ENV": "local",
+                "ENABLE_SIMULATED_INFERENCE": "false",
+            },
+            clear=True,
+        ):
+            adapter = create_configured_inference_adapter()
+
+        self.assertIsInstance(adapter, DemoUnavailableInferenceAdapter)
+        result = adapter.run_inference(uuid.uuid4(), _create_minimal_png(250, 250))
+        self.assertEqual(result["outcome"], "ABSTENTION")
+        self.assertEqual(result["reason_code"], "UNSUPPORTED_CLASS")
+        for key in (
+            "crop_code", "class_code", "raw_score", "model_id",
+            "model_version", "dataset_version", "inference_ms",
+        ):
+            self.assertIsNone(result[key])
+
+    def test_demo_mode_rejects_simulation_flag(self):
+        with patch.dict(
+            os.environ,
+            {
+                "INFERENCE_MODE": "demo",
+                "APP_ENV": "local",
+                "ENABLE_SIMULATED_INFERENCE": "true",
+            },
+            clear=True,
+        ):
+            with self.assertRaisesRegex(RuntimeError, "cannot run with simulation"):
+                create_configured_inference_adapter()
+
+    def test_demo_worker_emits_contractual_abstention(self):
+        diag_id = uuid.uuid4()
+        lease_token = uuid.uuid4()
+        self.mock_http.post.return_value = httpx.Response(
+            200, json={"lease_token": str(lease_token)}
+        )
+        self.mock_http.get.return_value = httpx.Response(
+            200, content=_create_minimal_png(250, 250)
+        )
+        self.worker.inference_adapter = DemoUnavailableInferenceAdapter()
+        channel = MockAMQPChannel()
+
+        self.assertTrue(
+            self.worker.process_message(
+                channel,
+                1,
+                json.dumps(self._create_sample_event(diag_id)).encode(),
+                "diagnosis.requested.v2",
+            )
+        )
+        self.assertEqual(channel.acked_tags, [1])
+        with self.Session() as session:
+            result = session.execute(
+                select(InferenceResult).where(InferenceResult.diagnosis_id == diag_id)
+            ).scalar_one()
+            self.assertEqual(result.outcome, "ABSTENTION")
+            self.assertEqual(result.reason_code, "UNSUPPORTED_CLASS")
+            self.assertIsNone(result.model_id)
+
+            outbox = session.execute(
+                select(InferenceOutbox).where(InferenceOutbox.diagnosis_id == diag_id)
+            ).scalar_one()
+            payload = outbox.envelope["payload"]
+            self.assertEqual(payload["outcome"], "ABSTENTION")
+            self.assertEqual(payload["reason_code"], "UNSUPPORTED_CLASS")
+            self.assertIsNone(payload["model_id"])
+            self.assertNotIn("class_code", payload)
+            self.assertNotIn("raw_score", payload)
 
     def test_worker_passes_identified_crop_to_pilot_adapter(self):
         diag_id = uuid.uuid4()

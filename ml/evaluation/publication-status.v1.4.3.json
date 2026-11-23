@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "cycle": "v1.4.3",
+  "recorded_at": "2026-11-23",
+  "status": "NOT_IMPORTED_INACTIVE_MODEL_REJECTED",
+  "is_policy_import_payload": false,
+  "policy_id": null,
+  "imported": false,
+  "active": false,
+  "real_worker_active": false,
+  "real_worker_authorized": false,
+  "model_production_approved": false,
+  "catalog_status_record": "docs/catalog/pilot-potato-guidance.v1.status.json",
+  "demo_mode": {
+    "enabled_by_profile_only": true,
+    "profile": "demo",
+    "loads_model": false,
+    "published_diagnosis": null,
+    "terminal_state": "NO_CONCLUYENTE",
+    "reason_code": "UNSUPPORTED_CLASS"
+  },
+  "reason": "G2_CLOSED_REJECTED_EXTERNAL",
+  "closure_record": "ml/evaluation/cycle-closure.v1.4.3.json"
+}

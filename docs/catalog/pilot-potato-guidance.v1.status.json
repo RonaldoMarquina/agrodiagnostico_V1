@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-11-23",
+  "content_file": "pilot-potato-guidance.v1.json",
+  "content_sha256": "dd614a5116515d6a8cd04ae5d4902234d7a15e8b729ca46003b8c33dc6295bc0",
+  "status": "HISTORICAL_REVIEWED_NOT_PUBLISHABLE",
+  "imported_for_v1_4_3": false,
+  "active_for_v1_4_3": false,
+  "supported_production_classes": [],
+  "reason": "The v1.4.3 model failed external acceptance and G3 was not promoted.",
+  "note": "The reviewed guidance is preserved as history; it does not authorize a diagnosis or a production policy."
+}

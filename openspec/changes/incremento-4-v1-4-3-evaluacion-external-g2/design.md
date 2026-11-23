@@ -23,7 +23,7 @@ Los pesos siguen siendo los de v1.4.2
 
 - Reentrenar, recalibrar, cambiar el umbral o comparar candidatos.
 - Reabrir Sikkim o usar resultados históricos para seleccionar parámetros.
-- Activar el worker, importar una política o cerrar G3.
+- Ejecutar aceptación G3 real o promover el bundle rechazado.
 
 ## Decisions
 
@@ -64,12 +64,22 @@ decisión visible y latencias. Un proceso independiente verificará sus hashes y
 recalculará matriz y métricas. La evidencia versionada solo contendrá agregados,
 hashes y limitaciones; no incluirá imágenes ni rutas privadas.
 
-### 6. Decisión G2 automática
+### 6. Decisión G2 automática y cierre terminal
 
-La decisión evaluará la conjunción exacta de los cinco grupos de límites
-aprobados. Si todos pasan, G2 se vinculará al freeze, sello y reporte; si uno
-falla, quedará `OPEN_EXTERNAL_CRITERIA_FAILED`. En ambos casos worker y política
-seguirán `INACTIVE_NOT_AUTHORIZED`.
+La decisión evaluará la conjunción exacta de los límites aprobados. El reporte
+ya demostró cinco incumplimientos. El acta final separará el resultado técnico
+del estado administrativo: `CLOSED_REJECTED_EXTERNAL` significa revisión G2
+terminada sin aprobación; G3 será `CLOSED_NOT_PROMOTED_G2_REJECTED`. Worker y
+política seguirán `INACTIVE_NOT_AUTHORIZED`.
+
+### 7. Demostración por abstención, sin bundle
+
+Un adaptador `demo` devolverá exclusivamente `ABSTENTION/UNSUPPORTED_CLASS`
+con metadatos nulos. El perfil local `demo` arrancará ese consumidor sin montar
+pesos; los workers sintéticos continuarán bajo el perfil `async-test`. El modo
+real exigirá además `REAL_INFERENCE_AUTHORIZED=true`, cuyo valor por defecto y
+en el perfil actual será falso. Se descarta reutilizar el simulador predictivo
+como demo porque puede publicar una enfermedad y está diseñado solo para CI.
 
 ## Risks / Trade-offs
 
@@ -91,7 +101,10 @@ seguirán `INACTIVE_NOT_AUTHORIZED`.
 3. Ejecutar una sola vez sin red y con entradas de solo lectura.
 4. Validar la salida desde otro proceso y publicar evidencia sanitizada.
 5. Registrar G2 cerrado o abierto según la conjunción, sin activar el worker.
+6. Tras la decisión del responsable, cerrar administrativamente G2 como
+   rechazado y G3 como no promovido, activar solo el worker de demostración y
+   conservar `ml-real` bloqueado.
 
-No existe rollback de la evaluación. Una falla técnica o de criterios queda
-como evidencia histórica y cualquier nueva evaluación exige otro ciclo y otro
-EXTERNAL independiente.
+No existe rollback de la evaluación. La falla queda como evidencia histórica;
+este incremento no abre otro ciclo de mejora. Una futura investigación exigiría
+otra decisión, otro cambio y otro EXTERNAL independiente.

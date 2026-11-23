@@ -18,8 +18,12 @@ selección de parámetros.
   cambio de temperatura o umbral.
 - Publicar métricas, numeradores, denominadores, abstenciones, matriz visible,
   latencia, memoria y hashes de la ejecución.
-- Cerrar G2 solo si se cumplen simultáneamente todos los límites aprobados; un
-  fallo conserva la evidencia y mantiene G2 y el worker real abiertos/inactivos.
+- Aprobar G2 solo si se cumplen simultáneamente todos los límites; tras el fallo
+  observado, cerrar la revisión G2 como rechazada y G3 como no promovida, sin
+  confundir cierre administrativo con aprobación del modelo.
+- Configurar el sistema en modo demostración de abstención: las solicitudes
+  terminan `NO_CONCLUYENTE/UNSUPPORTED_CLASS`, sin cargar pesos ni publicar una
+  enfermedad, mientras `ml-real` y la política permanecen bloqueados.
 - Mantener Sikkim fuera de la ejecución y de toda evidencia nueva.
 
 ## Capabilities
@@ -35,6 +39,7 @@ Ninguna.
 
 ## Impact
 
-Afecta herramientas privadas de `ml/`, pruebas de compuertas, evidencia del
-incremento 4 y documentación de estado. No modifica contratos HTTP o eventos,
-no cambia el modelo congelado y no activa inferencia real, política ni G3.
+Afecta herramientas privadas de `ml/`, selección del adaptador del worker,
+configuración Compose, pruebas de compuertas, catálogo/política operativa,
+evidencia y documentación. Reutiliza el evento de abstención existente, no
+cambia el modelo congelado y no activa inferencia real ni política.

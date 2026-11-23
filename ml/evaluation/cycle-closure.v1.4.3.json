@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "cycle": "v1.4.3",
+  "closed_at": "2026-11-23",
+  "closed_by": "project_owner",
+  "overall_status": "CLOSED_MODEL_NOT_APPROVED_FOR_PRODUCTION",
+  "gates": {
+    "G0": "CLOSED_APPROVED_DESIGN",
+    "G1": "CLOSED_EXTERNAL_ADMITTED_AND_SEALED",
+    "G2": "CLOSED_REJECTED_EXTERNAL",
+    "G3": "CLOSED_NOT_PROMOTED_G2_REJECTED"
+  },
+  "decision": {
+    "internal_validation": "PASSED_VAL_ONLY",
+    "external_evaluation": "COMPLETED_FAILED_ACCEPTANCE",
+    "production_approved": false,
+    "real_worker_authorized": false,
+    "publication_policy_imported": false,
+    "publication_policy_active": false,
+    "runtime_mode": "DEMO_ABSTENTION_ONLY",
+    "demo_visible_outcome": "NO_CONCLUYENTE",
+    "demo_reason_code": "UNSUPPORTED_CLASS"
+  },
+  "historical_commits": [
+    "3930efa",
+    "e5ca418"
+  ],
+  "immutable_references": {
+    "protocol_g0_v1_4_3_sha256": "e5d9288c6cc7c78263d29bd311d9257df503dc39abc3eda4427ada51eee842b7",
+    "internal_train_val_result_sha256": "ad2231e31a5e6de93391fd2e7026d458134ab8cb41f315b3e44f29dbc19d4ec7",
+    "internal_train_val_evidence_sha256": "3789c686b3bea61d4dc30eab62349ec9ef880444e7b0b8065aa106c1b4ac044b",
+    "external_seal_sha256": "d0c76dc4b9d398cb779d71f82e9baaa250ea8a097a2d2b3ad1a8bf89efade7d1",
+    "freeze_sha256": "07ef4eac80f59b7ca1fc42031092f3353e7e2dd89d6c8c8c17fda4865c85110a",
+    "weights_sha256": "e96201dc79bfd5aa99a55430f5a523f47ff91fe82d6d9de1ffc8249c06c6472c",
+    "private_predictions_sha256": "ddfb1938f6fc883483248d0c1237bb9cd8a55eb684c5c03a9451d1fb5166a6bb",
+    "private_report_sha256": "09ac3b9b16f303dadc21b87772af03dbcfd0154aba792bfde9b48ba1544607ea",
+    "private_decision_sha256": "6d45ca104a2e797130e1fdf5e74d5f99eefd7cb5eba9fa393e4925776583d48e",
+    "sanitized_report_sha256": "15b579bc80e63b086e5873756257349874f1b21b6f61a0ca9304b655de09dcc2",
+    "automatic_decision_sha256": "ca3e42ecc205f37b12d5f86b35e9fa1ba36c59da748b204dfebccdd12ee0251e",
+    "historical_catalog_sha256": "dd614a5116515d6a8cd04ae5d4902234d7a15e8b729ca46003b8c33dc6295bc0"
+  },
+  "external_result": {
+    "evaluated": 350,
+    "f1_macro_two_blights": 0.2937062937,
+    "early_blight_recall": {"numerator": 40, "denominator": 50, "passed": true},
+    "late_blight_recall": {"numerator": 10, "denominator": 50, "passed": false},
+    "healthy_published_as_blight": {"numerator": 44, "denominator": 50, "passed": false},
+    "healthy_no_concluyente": {"numerator": 6, "denominator": 50, "passed": false},
+    "other_crop_published_as_blight": {"numerator": 126, "denominator": 200, "passed": false},
+    "confusion_matrix": {
+      "columns": ["POTATO_EARLY_BLIGHT", "POTATO_LATE_BLIGHT", "NO_CONCLUYENTE"],
+      "POTATO_EARLY_BLIGHT": [40, 2, 8],
+      "POTATO_LATE_BLIGHT": [29, 10, 11],
+      "POTATO_HEALTHY": [44, 0, 6],
+      "OTHER_CROP": [123, 3, 74]
+    }
+  },
+  "constraints": [
+    "Do not retry or tune against the v1.4.3 EXTERNAL lot.",
+    "Do not activate ml-real or import/activate a publication policy for this bundle.",
+    "Preserve the frozen bundle, reports, hashes and historical commits unchanged."
+  ]
+}

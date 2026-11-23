@@ -50,6 +50,7 @@ from app.infrastructure.quarantine import (
     record_quarantine_message,
 )
 from app.inference_adapter import (
+    DemoUnavailableInferenceAdapter,
     InferenceAdapter,
     RealModelInferenceAdapter,
     SimulatedInferenceAdapter,
@@ -70,12 +71,23 @@ def create_configured_inference_adapter() -> InferenceAdapter:
             mode = "simulated"
         else:
             raise RuntimeError(
-                "No inference mode configured. For real mode set INFERENCE_MODE='real' "
+                "No inference mode configured. For demo mode set INFERENCE_MODE='demo'. "
+                "For real mode set INFERENCE_MODE='real' "
                 "and MODEL_BUNDLE_PATH='/path/to/bundle.json'. For simulation set "
                 "INFERENCE_MODE='simulated' with APP_ENV='test' and ENABLE_SIMULATED_INFERENCE='true'."
             )
 
+    if mode == "demo":
+        if os.environ.get("ENABLE_SIMULATED_INFERENCE", "").lower() == "true":
+            raise RuntimeError("Demo mode cannot run with simulation enabled")
+        logger.info("Initializing safe demo adapter: every request abstains")
+        return DemoUnavailableInferenceAdapter()
+
     if mode == "real":
+        if os.environ.get("REAL_INFERENCE_AUTHORIZED", "").lower() != "true":
+            raise RuntimeError(
+                "Real inference is not authorized for the current model cycle"
+            )
         bundle_path = os.environ.get("MODEL_BUNDLE_PATH")
         bundle_sha256 = os.environ.get("MODEL_BUNDLE_SHA256")
         approval_sha256 = os.environ.get("MODEL_APPROVAL_SHA256")
@@ -116,7 +128,10 @@ def create_configured_inference_adapter() -> InferenceAdapter:
         return SimulatedInferenceAdapter()
 
     else:
-        raise RuntimeError(f"Unknown INFERENCE_MODE: '{mode}'. Expected 'real' or 'simulated'.")
+        raise RuntimeError(
+            f"Unknown INFERENCE_MODE: '{mode}'. Expected 'demo', 'real', "
+            "'fixture' or 'simulated'."
+        )
 
 
 class InferenceWorker:

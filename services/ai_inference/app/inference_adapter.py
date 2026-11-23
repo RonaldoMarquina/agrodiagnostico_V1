@@ -101,6 +101,29 @@ class SimulatedInferenceAdapter(InferenceAdapter):
         return run_simulated_inference(diagnosis_id=diagnosis_id, image_bytes=image_bytes)
 
 
+class DemoUnavailableInferenceAdapter(InferenceAdapter):
+    """Adaptador seguro para demostración cuando no hay modelo aprobado.
+
+    No inspecciona la imagen, no carga pesos y nunca produce una predicción. La
+    abstención usa un ``reason_code`` existente del contrato para que Diagnosis
+    publique ``NO_CONCLUYENTE`` sin aparentar que existe inferencia real.
+    """
+
+    def run_inference(self, diagnosis_id: uuid.UUID, image_bytes: bytes) -> Dict[str, Any]:
+        del diagnosis_id, image_bytes
+        return {
+            "outcome": "ABSTENTION",
+            "crop_code": None,
+            "class_code": None,
+            "raw_score": None,
+            "model_id": None,
+            "model_version": None,
+            "dataset_version": None,
+            "inference_ms": None,
+            "reason_code": "UNSUPPORTED_CLASS",
+        }
+
+
 class RealModelInferenceAdapter(InferenceAdapter):
     """Adaptador de inferencia real basado en bundle de modelo inmutable en CPU."""
 

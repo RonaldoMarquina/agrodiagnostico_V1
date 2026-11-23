@@ -1,20 +1,46 @@
-# Operación ML — no habilitada para usuarios
+# Operación ML — demostración sin diagnóstico real
 
-Estado actualizado 2026-11-20: G0 de diseño aprobado por el responsable, G1 cerrado y [bundle del piloto aprobado G2](../evidence/INCREMENTO-4-APROBACION-G2-PILOTO.md). El adaptador CPU y el perfil `ml-real` pasaron un [recorrido aislado de aceptación](../evidence/INCREMENTO-4-G3-ACEPTACION-LOCAL.md), pero el rechazo de papa sana falló. **G3 pendiente: no activar `ml-real` para usuarios** hasta completar un nuevo ciclo de datos, entrenamiento y evaluación que verifique ese rechazo. No hay fallback al simulador.
+Estado terminal 2026-11-23: el ciclo v1.4.3 completó una evaluación EXTERNAL
+independiente, pero falló cinco de seis criterios. El
+[acta de cierre](../evidence/INCREMENTO-4-CIERRE-V1.4.3.md) registra G2
+`CLOSED_REJECTED_EXTERNAL`, G3 `CLOSED_NOT_PROMOTED_G2_REJECTED` y modelo no
+aprobado para producción. `ml-real` permanece apagado y bloqueado por
+`REAL_INFERENCE_AUTHORIZED=false`; no se importa ni activa una política. No hay
+fallback al simulador.
+
+Para una demostración del flujo asíncrono sin fingir un diagnóstico, usar:
+
+```bash
+docker compose --env-file .env.example --profile demo up -d ai_inference-worker-demo
+```
+
+Ese worker no monta un modelo, no inspecciona la imagen y siempre emite
+`ABSTENTION/UNSUPPORTED_CLASS`; Diagnosis termina en `NO_CONCLUYENTE`. Detenerlo
+con `docker compose --profile demo stop ai_inference-worker-demo`. No arrancar
+simultáneamente `async-test` ni `ml-real`.
 
 El CLI de políticas permite dry-run/importación/activación/retiro auditados, pero las referencias textuales no son prueba de revisión humana. No importar políticas para fixtures en bases reales. Retirar una política histórica inactiva conserva el soporte de la activa. Las pruebas usan bases aisladas; esta corrección no ha modificado datos reales.
 
-El catálogo no incluye un paquete aprobado de semillas. Las recomendaciones deben ser revisadas y publicadas por la API administrativa existente. La corrección no elimina recomendaciones que pudieran existir en bases de desarrollo: si se cargaron las semillas no acreditadas, requieren revisión y desactivación mediante el flujo administrativo.
+El catálogo conserva una guía revisada histórica, pero su
+[`status`](../catalog/pilot-potato-guidance.v1.status.json) la declara no
+publicable para v1.4.3 y sin clases productivas soportadas. No se importó para
+este ciclo. Cualquier contenido que exista en una base de desarrollo debe
+permanecer inactivo o retirarse mediante el flujo administrativo auditado.
 
-La aceptación con mocks es solo técnica. No utilizarla para G3 ni citar sus tiempos como latencia del flujo real. El bundle G2 aún no se ha importado como política activa; promoción operativa y rollback integrado siguen pendientes en el cambio OpenSpec.
+La aceptación con mocks es solo técnica. No utilizarla para G3 ni citar sus tiempos como latencia del flujo real. Ningún bundle del ciclo vigente se importó como política activa y la promoción operativa quedó cancelada por el rechazo EXTERNAL.
 
 ## G0–G3, política y rollback
+
+Los comandos de esta sección documentan el piloto histórico y su capacidad de
+retiro. **No deben ejecutarse para activar v1.4.3.** El estado terminal vigente
+está en `ml/evaluation/cycle-closure.v1.4.3.json` y la política en
+`ml/evaluation/publication-status.v1.4.3.json`.
 
 G0: leer [`protocol-g0.v1.2.0.json`](../../ml/evaluation/protocol-g0.v1.2.0.json) y la [ficha de aprobación](../evidence/INCREMENTO-4-FICHA-G0.md). G1: ejecutar `PYTHONPATH=ml/src python3 scripts/verify_plantvillage_pilot_g1.py .local/pv-g1/pilot-v1.2 .local/pv-g1/batch-v1`, conservar `g1-report.json` y `test-seal.json`. G2: ejecutar `python scripts/verify_pilot_g2_bundle.py --bundle .local/ml-pilot-v1.2/g2-bundle-v1/model-bundle.json --expected-sha256 93e2e65130a9c266be4bdba0262d1c98e30d0604f4d21466effba2d9c9ff0b41 --require-approval-record`; el acta G2 debe conservar SHA-256 `579404dfe711fcae00c5d8964db669b8a66477f853d48a1fed45f72946d165f9`.
 
 El comando `python scripts/check_ml_real_acceptance.py --release-bundle <bundle-G2> --g2-approval <acta-G2> --policy-file <política-privada> --g1-directory <directorio-G1> --output-report <reporte-nuevo>` comprueba requisitos G3 y registra hashes, manifiestos, sello y comando sin secretos. Rechaza fixtures, G1/G2 alterados y rutas simbólicas. **No ejecuta la aceptación E2E ni aprueba G3**; el reporte deja `full_flow_result=NOT_EXECUTED`. La ejecución E2E de v1.2.0 se documenta [por separado](../evidence/INCREMENTO-4-G3-ACEPTACION-LOCAL.md) y falló en papa sana.
 
-Preparar la política privada desde el bundle aprobado: `python scripts/prepare_pilot_publication_policy.py --release-bundle <bundle-G2> --g2-approval <acta-G2> --actor <operador> --output <política-privada>`. Con la base de Diagnosis migrada a `diagnosis_0007`, ejecutar en el entorno privado de Diagnosis `python -m app.policy import --policy-file <política-privada> --release-bundle <bundle-G2> --g2-approval <acta-G2> --actor <operador> --reason <motivo>`; sin `--apply` solo valida. La importación con `--apply` almacena la política inactiva y la audita. `python -m app.policy status` muestra la versión activa y soporte. **La activación para usuarios se aplaza hasta G3**; el ensayo aislado importó y activó la política solo en una base efímera. En un entorno de aceptación aislado se puede usar `python -m app.policy activate --policy-id <uuid> --actor <operador> --reason <motivo>` y después `--apply` explícito. La operación actualiza soporte de catálogo y auditoría en una transacción. Una clase soportada por política sin orientación revisada termina en `NO_CONCLUYENTE/CATALOG_UNAVAILABLE`.
+El procedimiento histórico preparaba una política privada desde el bundle aprobado mediante `python scripts/prepare_pilot_publication_policy.py --release-bundle <bundle-G2> --g2-approval <acta-G2> --actor <operador> --output <política-privada>`. Su importación y activación se ensayaron solo en una base efímera ya eliminada. **No ejecutar esos pasos con v1.4.3:** G3 terminó no promovido. La CLI y su auditoría se conservan para futuros ciclos aprobados; una clase sin orientación revisada sigue terminando en `NO_CONCLUYENTE/CATALOG_UNAVAILABLE`.
 
 Para retiro: detener nuevos reclamos de `ml-real`, esperar o recuperar leases y ejecutar primero `python -m app.policy retire --policy-id <uuid> --actor <operador> --reason <motivo>` en dry-run; repetir con `--apply` para retirar. Si existe una versión previa **aprobada**, restaurar exactamente su bundle y ejecutar `activate` con su ID tras comprobar hashes, contrato y catálogo. Si no existe, mantener el consumidor real detenido y sin política activa; el sistema falla cerrado, sin reactivar la simulación. No reescribir diagnósticos terminales, snapshots de política/confianza, recomendaciones ni auditoría, ni hacer downgrade destructivo. El ensayo reproducible de versiones de prueba y concurrencia está en [evidencia](../evidence/INCREMENTO-4-POLITICA-Y-PREFLIGHT-G3.md).
 
@@ -24,4 +50,4 @@ El paquete privado está en `.local/ml-pilot-v1.2/g2-bundle-v1/` y no forma part
 
 Desde un checkout sin `.env`, validar la configuración con `docker compose --env-file .env.example --profile ml-real config`; el worker real no publica puertos, y el perfil `async-test` no queda incluido. Construir sin iniciar: `docker compose --env-file .env.example --profile ml-real build ai_inference-worker-real`. Para el chequeo sintético aislado, ejecutar `scripts/check_pilot_worker_runtime.py` con `APP_ENV=local`, `INFERENCE_MODE=real`, `MODEL_BUNDLE_PATH`, `MODEL_BUNDLE_SHA256` y `MODEL_APPROVAL_SHA256` fijados; la prueba no usa TEST ni atiende colas.
 
-La futura activación operativa requiere G3 y sus verificaciones. Al activar, detener primero consumidores de prueba, comprobar la política/catálogo aprobados y arrancar el perfil `ml-real` solo con `docker compose --profile ml-real up -d ai_inference-worker-real`. Para parar nuevos reclamos: `docker compose --profile ml-real stop ai_inference-worker-real`; esperar o recuperar leases según el procedimiento asíncrono antes de retirar la política. Si falta el artefacto o falla el SHA, revisar la ruta privada y el acta, **sin cambiar el hash para hacer pasar el arranque**. Ante timeout se termina el proceso de inferencia; el worker no confirma resultado y reencola según el presupuesto de Diagnosis.
+Una futura activación requeriría otro ciclo aprobado y una autorización explícita distinta; v1.4.3 no puede promoverse. El comando histórico `docker compose --profile ml-real up -d ai_inference-worker-real` debe fallar mientras `REAL_INFERENCE_AUTHORIZED=false`. Si en otro ciclo faltara el artefacto o fallara el SHA, se debe revisar la ruta privada y el acta, **sin cambiar el hash para hacer pasar el arranque**.

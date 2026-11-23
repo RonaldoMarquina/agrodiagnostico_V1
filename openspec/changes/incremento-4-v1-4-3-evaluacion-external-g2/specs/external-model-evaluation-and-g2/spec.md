@@ -69,7 +69,7 @@ declararse únicamente por imagen única.
 - **THEN** el sistema no emite una decisión G2 aprobatoria
 
 ### Requirement: G2 se decide por conjunción estricta
-El sistema SHALL cerrar G2 únicamente si F1 macro de ambos tizones es al menos
+El sistema SHALL aprobar G2 únicamente si F1 macro de ambos tizones es al menos
 0,75, cada tizón tiene al menos 38/50 aciertos publicados, papa sana tiene como
 máximo 5/50 publicaciones como tizón y al menos 45/50 `NO_CONCLUYENTE`, y otro
 cultivo tiene como máximo 10/200 publicaciones como tizón. El worker y la
@@ -77,8 +77,39 @@ política real SHALL permanecer inactivos independientemente del resultado.
 
 #### Scenario: Todos los límites se cumplen
 - **WHEN** cada criterio aprobado es verdadero y la ejecución está completa
-- **THEN** el sistema registra G2 cerrado para los hashes exactos evaluados
+- **THEN** el sistema registra G2 cerrado y aprobado para los hashes exactos evaluados
 
 #### Scenario: Falla al menos un límite
 - **WHEN** cualquier criterio es falso o la ejecución no está completa
-- **THEN** el sistema conserva la evidencia, mantiene G2 abierto y no activa el worker ni la política real
+- **THEN** el sistema conserva la evidencia y registra la revisión G2 como `CLOSED_REJECTED_EXTERNAL`, sin activar el worker ni la política real
+
+### Requirement: El cierre rechazado impide la promoción G3
+Cuando G2 termina `CLOSED_REJECTED_EXTERNAL`, el sistema SHALL registrar G3
+como `CLOSED_NOT_PROMOTED_G2_REJECTED` y el incremento SHALL declarar el modelo
+no aprobado para producción. Este cierre SHALL preservar bundle, reportes,
+hashes y commits históricos, y SHALL prohibir reabrir EXTERNAL, reentrenar o
+ajustar parámetros dentro del ciclo v1.4.3.
+
+#### Scenario: Se registra el cierre del ciclo fallido
+- **WHEN** el responsable cierra v1.4.3 después de verificar el reporte EXTERNAL fallido
+- **THEN** G2 y G3 quedan terminales como rechazado/no promovido y ninguna política de publicación se activa
+
+#### Scenario: Se intenta promover el bundle rechazado
+- **WHEN** se solicita iniciar `INFERENCE_MODE=real` sin una autorización de producción explícita posterior
+- **THEN** el worker rechaza el arranque antes de cargar el bundle o consumir RabbitMQ
+
+### Requirement: El modo demostración siempre se abstiene
+El sistema SHALL disponer de un modo `demo` que no carga pesos ni ejecuta el
+modelo rechazado y que, para toda solicitud válida procesada, emite una
+abstención contractual con `reason_code=UNSUPPORTED_CLASS`, metadatos de modelo
+nulos y sin clase publicada. Diagnosis SHALL convertirla en
+`NO_CONCLUYENTE`. El simulador predictivo SHALL seguir limitado a pruebas con
+su doble guardia.
+
+#### Scenario: Solicitud procesada en demostración
+- **WHEN** el worker configurado con `INFERENCE_MODE=demo` recibe una solicitud válida
+- **THEN** emite `ABSTENTION/UNSUPPORTED_CLASS` sin clase, score, modelo, dataset ni latencia de inferencia inventados
+
+#### Scenario: Arranque del perfil de demostración
+- **WHEN** se inicia el stack local con el perfil `demo` y sin `async-test` o `ml-real`
+- **THEN** se ejecuta únicamente el worker demo y no se monta ningún bundle de modelo

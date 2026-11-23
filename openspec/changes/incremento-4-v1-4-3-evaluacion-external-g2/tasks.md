@@ -22,4 +22,12 @@
 ## 4. Evidencia y decisión G2
 
 - [x] 4.1 Publicar evidencia sanitizada con numeradores/denominadores, F1 macro, recall de ambos tizones, rechazo sano/otro cultivo, abstenciones, matriz, latencia, memoria, hashes y limitaciones; verificar ausencia de rutas privadas e imágenes
-- [x] 4.2 Registrar G2 cerrado solo si todos los criterios pasan o abierto con cada incumplimiento si alguno falla; actualizar README, AI_MODEL, Incrementos y OpenSpec, ejecutar validación estricta/pruebas pertinentes y hacer commit local sin activar worker, política ni G3
+- [x] 4.2 Registrar la decisión automática inicial: G2 aprobado solo si todos los criterios pasan o `OPEN_EXTERNAL_CRITERIA_FAILED` con cada incumplimiento si alguno falla; actualizar README, AI_MODEL, Incrementos y OpenSpec, ejecutar validación estricta/pruebas pertinentes y hacer commit local sin activar worker, política ni G3. El cierre administrativo posterior corresponde al grupo 5.
+
+## 5. Cierre rechazado y modo demostración
+
+- [x] 5.1 Registrar el acta terminal v1.4.3 con G2 `CLOSED_REJECTED_EXTERNAL`, G3 `CLOSED_NOT_PROMOTED_G2_REJECTED` y el incremento no aprobado para producción; verificar que referencia commits, bundle, sello, matriz, reportes y hashes sin modificar la evidencia histórica
+- [x] 5.2 Implementar el adaptador `demo` de abstención contractual y la autorización adicional de arranque real; probar metadatos nulos, `UNSUPPORTED_CLASS`, ausencia de carga de bundle y rechazo de `real` cuando no existe autorización explícita
+- [x] 5.3 Configurar el perfil Compose `demo` con un único worker de abstención sin volumen de modelo y mantener `ml-real` bloqueado por defecto; verificar perfiles `demo`, `async-test` y `ml-real` sin puertos internos ni activación simultánea implícita
+- [x] 5.4 Registrar el catálogo como contenido histórico no publicable y la política v1.4.3 como no importada/inactiva; verificar hashes y que ningún artefacto atribuye soporte productivo a los dos tizones
+- [x] 5.5 Publicar la evidencia final con matriz y límites incumplidos, actualizar README, AI_MODEL, Incrementos, operación y tareas históricas, ejecutar pruebas/OpenSpec estricto y crear un commit local limpio sin push
