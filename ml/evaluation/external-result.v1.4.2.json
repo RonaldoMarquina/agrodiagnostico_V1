@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "cycle_version": "1.4.2",
+  "evaluated_at": "2026-11-23",
+  "status": "FAILED_TECHNICAL_NO_COMPLETE_METRICS",
+  "single_access_consumed": true,
+  "access": {
+    "started_at": "2026-11-23T16:48:25.041364+00:00",
+    "failed_at": "2026-11-23T16:48:28.040842+00:00",
+    "private_access_record_sha256": "5c30483aefda269c648cedca5690115bbe0f0f7e65fef1b4e06304cc30dd3585",
+    "error_type": "ValueError",
+    "error": "Formato de imagen no permitido"
+  },
+  "inputs": {
+    "freeze_digest": "07ef4eac80f59b7ca1fc42031092f3353e7e2dd89d6c8c8c17fda4865c85110a",
+    "weights_sha256": "e96201dc79bfd5aa99a55430f5a523f47ff91fe82d6d9de1ffc8249c06c6472c",
+    "preprocessing_sha256": "9c7c28215e128b81130035106ed0042ed287a2b613ed392af3fbf5afc08f457d",
+    "manifest_sha256": "3c8d95e9e4d198dedf821133cb4d5f0c119a327b496396c25d4b71a493580992",
+    "seal_sha256": "ab0e7e7c8a28a70a5bce4fd6424912454e2a31b31f463406233d811ed3f9a69a",
+    "archive_sha256": "5288c8f9d4628049ae1f827c961dc3df97167de294cec020cbce0bc19b2574dc",
+    "protocol_sha256": "e3dad24755550c574f33c5fa5b736eec639c9a36b054fcb3fee9e2c3e96550af",
+    "temperature": 0.5,
+    "threshold": 0.8
+  },
+  "expected_denominators": {
+    "POTATO_EARLY_BLIGHT": 42,
+    "POTATO_LATE_BLIGHT": 76,
+    "POTATO_HEALTHY": 50,
+    "OTHER_CROP": 194
+  },
+  "persisted_prediction_count": 0,
+  "processed_before_failure": "NOT_RECORDED",
+  "metrics": {
+    "macro_f1": null,
+    "early_recall": null,
+    "late_recall": null,
+    "healthy_published_blight": null,
+    "healthy_no_concluyente": null,
+    "other_crop_published_blight": null,
+    "abstentions": null,
+    "visible_confusion_matrix": null,
+    "latency": null,
+    "peak_rss_mb": null
+  },
+  "criteria": {
+    "macro_f1": false,
+    "early_recall": false,
+    "late_recall": false,
+    "healthy_published": false,
+    "healthy_rejected": false,
+    "other_crop_published": false
+  },
+  "g2_status": "OPEN_EXTERNAL_TECHNICAL_FAILURE",
+  "worker_status": "INACTIVE_NOT_AUTHORIZED",
+  "policy_status": "INACTIVE_NOT_IMPORTED",
+  "rerun_authorized": false
+}

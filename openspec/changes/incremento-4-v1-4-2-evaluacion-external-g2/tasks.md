@@ -22,5 +22,13 @@
 ## 4. Evidencia y estado G2
 
 - [ ] 4.1 Publicar evidencia sanitizada con F1 macro, recall 42/76, rechazos 50/194, abstenciones, matriz, latencia, memoria, hashes y limitación de independencia por imagen; verificar que no contiene rutas privadas ni bytes de imágenes
-- [ ] 4.2 Registrar el acta G2 vinculada al freeze y reporte: cerrar solo si todos los criterios pasan o mantener abierto señalando cada fallo; verificar explícitamente worker y política real inactivos
-- [ ] 4.3 Actualizar README, AI_MODEL, Incrementos y OpenSpec con el resultado real, ejecutar validación estricta y pruebas pertinentes, y hacer commit local final sin push
+- [x] 4.2 Registrar el acta G2 vinculada al freeze y reporte: cerrar solo si todos los criterios pasan o mantener abierto señalando cada fallo; verificar explícitamente worker y política real inactivos
+- [x] 4.3 Actualizar README, AI_MODEL, Incrementos y OpenSpec con el resultado real, ejecutar validación estricta y pruebas pertinentes, y hacer commit local final sin push
+
+## Bloqueo tras la única apertura — 2026-11-23
+
+La ejecución real creó `access.json` y terminó `FAILED_TECHNICAL` al encontrar un
+formato no permitido por el preprocesado congelado. No produjo las 362
+predicciones ni métricas completas. Por ello 3.2, 3.3 y 4.1 permanecen abiertas;
+no se reintenta ni se reinterpretan como completadas. G2 permanece abierto y el
+worker/política real siguen inactivos.

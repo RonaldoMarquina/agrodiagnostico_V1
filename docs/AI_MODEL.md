@@ -1,4 +1,4 @@
-> Estado vigente 2026-11-23: G0/G1 v1.4.1 siguen vigentes para las cuatro clases técnicas. [v1.4.2](evidence/INCREMENTO-4-TRAIN-VAL-V1.4.2.md) cumplió todas las mínimas VAL y quedó congelado como candidato privado pre-EXTERNAL. Sikkim EXTERNAL y TEST históricos no se abrieron; G2/G3 siguen abiertos y el worker real está inactivo. Uso limitado a investigación/educación académica no comercial.
+> Estado vigente 2026-11-23: G0/G1 v1.4.1 siguen vigentes. [v1.4.2](evidence/INCREMENTO-4-TRAIN-VAL-V1.4.2.md) cumplió VAL, pero su [apertura única de Sikkim EXTERNAL](evidence/INCREMENTO-4-EXTERNAL-V1.4.2-FALLO-TECNICO.md) falló por formato real no permitido antes de producir métricas completas. G2/G3 siguen abiertos; no hay reintento autorizado y el worker real está inactivo.
 
 # Datos y modelo de IA
 

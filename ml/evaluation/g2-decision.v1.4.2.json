@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "cycle_version": "1.4.2",
+  "decision_at": "2026-11-23",
+  "status": "OPEN_EXTERNAL_TECHNICAL_FAILURE",
+  "reason": "La única apertura EXTERNAL terminó al encontrar un formato de imagen no permitido por el preprocesado congelado; no existen denominadores completos ni métricas válidas para aprobar G2.",
+  "freeze_digest": "07ef4eac80f59b7ca1fc42031092f3353e7e2dd89d6c8c8c17fda4865c85110a",
+  "external_result_sha256": "291d18062c8fbb2c8c085ae3371ba232b4eddc6b784616cd35cdf8c590309bb6",
+  "private_access_record_sha256": "5c30483aefda269c648cedca5690115bbe0f0f7e65fef1b4e06304cc30dd3585",
+  "all_criteria_passed": false,
+  "worker_status": "INACTIVE_NOT_AUTHORIZED",
+  "policy_status": "INACTIVE_NOT_IMPORTED",
+  "external_reuse_authorized": false,
+  "project_owner_instruction_applied": "Cerrar G2 solo si todos los criterios externos se cumplen; ante cualquier fallo mantener G2 abierto y no activar el worker."
+}
