@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "cycle_version": "1.4.2",
+  "evaluated_at": "2026-11-23",
+  "decision": "FROZEN_VAL_PASSED_EXTERNAL_NOT_OPENED",
+  "pretraining_commits": {
+    "implementation": "2173263c20f92678bec9b3326d3f4e48679b2d01",
+    "record": "1d6560694f20077cc7627f256f748ea15d2cb77f"
+  },
+  "base_checkpoint": {
+    "enum": "MobileNet_V3_Small_Weights.IMAGENET1K_V1",
+    "size_bytes": 10306551,
+    "sha256": "047dcff4addef86ea5bc2eff13c9614dc11f47ab1160d0a71a25e7db994f4e1f",
+    "use_scope": "ACADEMIC_RESEARCH_EDUCATION_NON_COMMERCIAL_ONLY",
+    "redistributed": false
+  },
+  "inputs": {
+    "protocol_sha256": "a6efb7041bc958549df4bce602aa0b083336b9bb6e7470325a55588bd8123c93",
+    "plan_sha256": "ef3c365d929bc6296dc115194eb756b6dd5c26e5400ac33aacf15aed1bc24db0",
+    "preprocessing_sha256": "9c7c28215e128b81130035106ed0042ed287a2b613ed392af3fbf5afc08f457d",
+    "g1_manifest_sha256": "b16533a8cdce48463c1fd8d43e451a696cddfc6860244a7c10157eaa5a0db884",
+    "train_manifest_sha256": "14a1b5cb9d7e5f8cc3d4258414242ab78b90c206341f337092d8b897602b0e47",
+    "val_manifest_sha256": "59c3acb30c70b05cb997fd4c27b6fbd842f8ab9bd052122b0306e19c20d245ae"
+  },
+  "dataset": {
+    "TRAIN": {"photos": 1623, "groups": 412},
+    "VAL": {"photos": 496, "groups": 126},
+    "OTHER_CROP_TRAIN": {"photos": 503, "groups": 127},
+    "OTHER_CROP_VAL": {"photos": 150, "groups": 38}
+  },
+  "training": {
+    "seed": 42,
+    "sampler": "80x4=320 exposures per epoch",
+    "HEAD": {"epochs": 3, "head_lr": 0.001, "backbone": "FROZEN", "batch_norm": "FROZEN_EVAL"},
+    "FINE_TUNE": {"epochs": 12, "backbone_lr": 0.00001, "head_lr": 0.0001, "trainable_backbone_blocks": 3, "batch_norm": "FROZEN_EVAL"},
+    "total_seconds": 31.940654912000355,
+    "peak_rss_mb": 3383.52
+  },
+  "candidate": {
+    "architecture": "mobilenet_v3_small",
+    "selected_epoch": 13,
+    "selected_phase": "FINE_TUNE",
+    "weights_sha256": "e96201dc79bfd5aa99a55430f5a523f47ff91fe82d6d9de1ffc8249c06c6472c",
+    "configuration_sha256": "08265ab5233b60f680277f91dd4e30b3c7582e477cd4ef2ca8f37a57bc101c19",
+    "val_report_sha256": "1852cfe94f70a48a113704be707f19fc06dd02a1616f128966a8d06e2389f5f9",
+    "val_predictions_sha256": "96bc9d606ce19775f555481ec16c9216763c7e5424a11a421d241f813d5d556a",
+    "experiment_sha256": "085e84aadecb8184d3e353dbef247f15c37b5ab28c528a40a4c9afe26d497db8",
+    "temperature": 0.5,
+    "threshold": 0.8
+  },
+  "epoch_metrics": [
+    {"epoch":1,"phase":"HEAD","loss":0.57297349,"macro_f1":0.9366666667,"early_recall":0.8181818182,"late_recall":0.9542483660,"healthy_published":0,"other_published":0,"threshold":0.85},
+    {"epoch":2,"phase":"HEAD","loss":0.12562450,"macro_f1":0.9439429618,"early_recall":0.8909090909,"late_recall":0.9084967320,"healthy_published":1,"other_published":0,"threshold":0.95},
+    {"epoch":3,"phase":"HEAD","loss":0.07821719,"macro_f1":0.9887003944,"early_recall":0.9878787879,"late_recall":0.9738562092,"healthy_published":0,"other_published":0,"threshold":0.65},
+    {"epoch":4,"phase":"FINE_TUNE","loss":0.05728516,"macro_f1":0.9805316973,"early_recall":0.9757575758,"late_recall":0.9542483660,"healthy_published":0,"other_published":0,"threshold":0.90},
+    {"epoch":5,"phase":"FINE_TUNE","loss":0.03762311,"macro_f1":0.9798361754,"early_recall":0.9939393939,"late_recall":0.9281045752,"healthy_published":0,"other_published":0,"threshold":0.90},
+    {"epoch":6,"phase":"FINE_TUNE","loss":0.04506405,"macro_f1":0.9780720799,"early_recall":0.9939393939,"late_recall":0.9215686275,"healthy_published":0,"other_published":0,"threshold":0.95},
+    {"epoch":7,"phase":"FINE_TUNE","loss":0.03349964,"macro_f1":0.9884802432,"early_recall":0.9939393939,"late_recall":0.9607843137,"healthy_published":0,"other_published":0,"threshold":0.85},
+    {"epoch":8,"phase":"FINE_TUNE","loss":0.04380300,"macro_f1":0.9783438840,"early_recall":1.0,"late_recall":0.9281045752,"healthy_published":0,"other_published":0,"threshold":0.85},
+    {"epoch":9,"phase":"FINE_TUNE","loss":0.03305533,"macro_f1":0.9884802432,"early_recall":0.9939393939,"late_recall":0.9607843137,"healthy_published":0,"other_published":0,"threshold":0.85},
+    {"epoch":10,"phase":"FINE_TUNE","loss":0.03387437,"macro_f1":0.9884802432,"early_recall":0.9939393939,"late_recall":0.9607843137,"healthy_published":0,"other_published":0,"threshold":0.90},
+    {"epoch":11,"phase":"FINE_TUNE","loss":0.02311349,"macro_f1":0.9819900252,"early_recall":0.9818181818,"late_recall":0.9477124183,"healthy_published":0,"other_published":0,"threshold":0.95},
+    {"epoch":12,"phase":"FINE_TUNE","loss":0.01649963,"macro_f1":0.9871071962,"early_recall":0.9818181818,"late_recall":0.9673202614,"healthy_published":0,"other_published":0,"threshold":0.95},
+    {"epoch":13,"phase":"FINE_TUNE","loss":0.02957967,"macro_f1":0.9918577266,"early_recall":0.9939393939,"late_recall":0.9738562092,"healthy_published":0,"other_published":0,"threshold":0.80},
+    {"epoch":14,"phase":"FINE_TUNE","loss":0.01841231,"macro_f1":0.9887903275,"early_recall":0.9818181818,"late_recall":0.9738562092,"healthy_published":0,"other_published":0,"threshold":0.95},
+    {"epoch":15,"phase":"FINE_TUNE","loss":0.01624497,"macro_f1":0.9903287030,"early_recall":0.9878787879,"late_recall":0.9738562092,"healthy_published":0,"other_published":0,"threshold":0.95}
+  ],
+  "val": {
+    "photos": 496,
+    "macro_f1_two_blights": 0.9918577266048028,
+    "early_recall": {"numerator": 164, "denominator": 165, "rate": 0.9939393939393939},
+    "late_recall": {"numerator": 149, "denominator": 153, "rate": 0.9738562091503268},
+    "coverage": {"numerator": 313, "denominator": 318, "rate": 0.9842767295597484},
+    "selective_error": {"numerator": 0, "denominator": 313, "rate": 0.0},
+    "healthy_published_blight": {"numerator": 0, "denominator": 28, "maximum": 2},
+    "other_crop_published_blight": {"numerator": 0, "denominator": 150, "maximum": 7},
+    "ece_four_class": 0.006919974912669468,
+    "latency_ms": {"median": 4.4429, "p95": 4.8259, "max": 5.4777}
+  },
+  "conditions": {
+    "macro_f1": true,
+    "recall_each_blight": true,
+    "coverage": true,
+    "selective_error": true,
+    "healthy_rejection": true,
+    "other_crop_rejection": true,
+    "calibration": true
+  },
+  "historical_comparison": {
+    "v1_4_1_result_sha256": "d63d1424112555a7a570652408427b700a2c0131b9aa7cb5bc4cbbbde66a6e3f",
+    "v1_4_1_decision": "BLOCKED_NO_CANDIDATE_PASSES_VAL",
+    "v1_4_1_weights_or_predictions_loaded": false,
+    "interpretation": "Comparison of complete configurations, not a causal ablation of initialization"
+  },
+  "freeze": {
+    "created": true,
+    "freeze_digest": "07ef4eac80f59b7ca1fc42031092f3353e7e2dd89d6c8c8c17fda4865c85110a",
+    "independent_load": "PASSED",
+    "external_access_authorized": false
+  },
+  "isolation": {
+    "network": "NONE",
+    "historical_test_mounted": false,
+    "historical_test_accessed": false,
+    "sikkim_external_mounted": false,
+    "sikkim_external_accessed": false,
+    "historical_weights_or_predictions_reused": false
+  },
+  "g2_status": "OPEN_PENDING_EXTERNAL",
+  "worker_status": "INACTIVE"
+}

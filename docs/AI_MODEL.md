@@ -1,4 +1,4 @@
-> Estado vigente 2026-11-23: [G0/G1 v1.4.1](evidence/INCREMENTO-4-G0-G1-V1.4.1.md) cerraron con cuatro clases técnicas. El [entrenamiento/selección VAL](evidence/INCREMENTO-4-TRAIN-VAL-V1.4.1.md) no produjo candidato elegible: 107/165 recall temprano y 9/28 sanas publicadas como tizón. No existe bundle congelado; Sikkim EXTERNAL y TEST históricos no se abrieron, y G2/G3 siguen abiertos.
+> Estado vigente 2026-11-23: G0/G1 v1.4.1 siguen vigentes para las cuatro clases técnicas. [v1.4.2](evidence/INCREMENTO-4-TRAIN-VAL-V1.4.2.md) cumplió todas las mínimas VAL y quedó congelado como candidato privado pre-EXTERNAL. Sikkim EXTERNAL y TEST históricos no se abrieron; G2/G3 siguen abiertos y el worker real está inactivo. Uso limitado a investigación/educación académica no comercial.
 
 # Datos y modelo de IA
 

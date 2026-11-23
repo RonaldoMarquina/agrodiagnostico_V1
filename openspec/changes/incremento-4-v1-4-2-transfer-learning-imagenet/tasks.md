@@ -31,13 +31,13 @@
 
 ## 5. Entrenamiento y selección exclusiva con VAL
 
-- [ ] 5.1 Ejecutar una sola corrida pre-registrada HEAD+FINE_TUNE usando solo TRAIN, checkpoint admitido y contenedor sin red; verificar 15 épocas, 320 exposiciones por época, cuatro clases y cero acceso histórico/EXTERNAL
-- [ ] 5.2 Evaluar cada época solo sobre las 496 filas VAL y seleccionar época, temperatura y umbral con los límites vigentes; verificar numeradores/denominadores, matriz, abstenciones, ECE, latencia y memoria
-- [ ] 5.3 Comparar contra v1.4.1 únicamente mediante su resumen histórico fijado, y verificar que no se cargaron pesos/predicciones previos ni se reoptimizó su política
-- [ ] 5.4 Publicar el expediente TRAIN/VAL v1.4.2 con recall temprano/tardío, sano ≤2/28, otro cultivo ≤7/150 y restantes mínimas, dejando explícito todo incumplimiento sin ajustar tasas, épocas o política después de ver VAL
+- [x] 5.1 Ejecutar una sola corrida pre-registrada HEAD+FINE_TUNE usando solo TRAIN, checkpoint admitido y contenedor sin red; verificar 15 épocas, 320 exposiciones por época, cuatro clases y cero acceso histórico/EXTERNAL
+- [x] 5.2 Evaluar cada época solo sobre las 496 filas VAL y seleccionar época, temperatura y umbral con los límites vigentes; verificar numeradores/denominadores, matriz, abstenciones, ECE, latencia y memoria
+- [x] 5.3 Comparar contra v1.4.1 únicamente mediante su resumen histórico fijado, y verificar que no se cargaron pesos/predicciones previos ni se reoptimizó su política
+- [x] 5.4 Publicar el expediente TRAIN/VAL v1.4.2 con recall temprano/tardío, sano ≤2/28, otro cultivo ≤7/150 y restantes mínimas, dejando explícito todo incumplimiento sin ajustar tasas, épocas o política después de ver VAL
 
 ## 6. Congelamiento condicionado sin abrir EXTERNAL
 
-- [ ] 6.1 Si todas las mínimas pasan, congelar checkpoint base, pesos ajustados, configuración, mapa, preprocesado, fases, calibración, umbral, manifiestos, dependencias y comandos; si alguna falla, registrar `BLOCKED_NO_CANDIDATE_PASSES_VAL` sin bundle habilitante
-- [ ] 6.2 Validar carga independiente y todos los SHA-256 del candidato congelado, y probar que sano, otro cultivo y baja confianza nunca producen diagnósticos publicables
-- [ ] 6.3 Actualizar OpenSpec, README, AI_MODEL e Incrementos con el resultado real y verificar que Sikkim sigue sellado, TEST intacto, G2 abierto y worker inactivo
+- [x] 6.1 Si todas las mínimas pasan, congelar checkpoint base, pesos ajustados, configuración, mapa, preprocesado, fases, calibración, umbral, manifiestos, dependencias y comandos; si alguna falla, registrar `BLOCKED_NO_CANDIDATE_PASSES_VAL` sin bundle habilitante
+- [x] 6.2 Validar carga independiente y todos los SHA-256 del candidato congelado, y probar que sano, otro cultivo y baja confianza nunca producen diagnósticos publicables
+- [x] 6.3 Actualizar OpenSpec, README, AI_MODEL e Incrementos con el resultado real y verificar que Sikkim sigue sellado, TEST intacto, G2 abierto y worker inactivo

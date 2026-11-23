@@ -286,8 +286,8 @@ def run(args: argparse.Namespace) -> None:
     comparison = {"source": "TRACKED_AGGREGATE_RESULT_ONLY",
                   "source_sha256": sha(args.repo_root / "ml/evaluation/train-val-result.v1.4.1.json"),
                   "historical_weights_loaded": False, "historical_predictions_loaded": False,
-                  "v1_4_1_status": historical.get("status"),
-                  "v1_4_1_selected_val": historical.get("selected_val", historical.get("selected_candidate"))}
+                  "v1_4_1_status": historical.get("decision"),
+                  "v1_4_1_selected_val": historical.get("candidate")}
     experiment = {"status": "VAL_ONLY_CANDIDATE_NOT_EXTERNAL_EVALUATED_NOT_G2",
         "cycle_version": "1.4.2", "g0_protocol_version": "1.4.1",
         "protected_external_partition_accessed": False, "historical_test_accessed": False,
