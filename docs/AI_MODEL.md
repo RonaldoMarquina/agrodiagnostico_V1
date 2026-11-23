@@ -1,4 +1,4 @@
-> Estado vigente 2026-11-23: v1.4.0 se conserva como ciclo VAL no elegible por 83/150 publicaciones sobre `OTHER_CROP`. [G0/G1 v1.4.1](evidence/INCREMENTO-4-G0-G1-V1.4.1.md) están cerrados con `OTHER_CROP` como cuarta clase técnica de rechazo. Solo ambos tizones son diagnósticos publicables. En este corte aún no se había ejecutado el entrenamiento v1.4.1; Sikkim EXTERNAL y TEST históricos continúan bloqueados, y G2/G3 abiertos.
+> Estado vigente 2026-11-23: [G0/G1 v1.4.1](evidence/INCREMENTO-4-G0-G1-V1.4.1.md) cerraron con cuatro clases técnicas. El [entrenamiento/selección VAL](evidence/INCREMENTO-4-TRAIN-VAL-V1.4.1.md) no produjo candidato elegible: 107/165 recall temprano y 9/28 sanas publicadas como tizón. No existe bundle congelado; Sikkim EXTERNAL y TEST históricos no se abrieron, y G2/G3 siguen abiertos.
 
 # Datos y modelo de IA
 

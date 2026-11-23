@@ -2,7 +2,7 @@
 
 Plataforma web de apoyo para analizar fotografías. El piloto de modelo real se limita a hoja de papa previamente identificada por el usuario. Muestra una condición visual probable solo cuando la clase está validada y la evidencia es suficiente. En los demás casos devuelve **NO_CONCLUYENTE** y orienta al usuario para repetir la fotografía. No reemplaza una evaluación profesional.
 
-> Estado: incrementos 0–3 implementados y verificados. Incremento 4 en desarrollo. v1.4.0 quedó como evidencia histórica al fallar `OTHER_CROP` con 83/150 publicaciones. En [v1.4.1](docs/evidence/INCREMENTO-4-G0-G1-V1.4.1.md), G0/G1 están cerrados con cuatro clases técnicas, TRAIN 1.623/412 grupos y VAL 496/126; solo ambos tizones son publicables. En este corte aún no se había entrenado. Sikkim EXTERNAL y los TEST históricos siguen bloqueados. **G2/G3 permanecen abiertos y el worker real apagado.** Incremento 5 pendiente.
+> Estado: incrementos 0–3 implementados y verificados. Incremento 4 en desarrollo. [v1.4.1](docs/evidence/INCREMENTO-4-G0-G1-V1.4.1.md) incorporó `OTHER_CROP` como cuarta clase técnica y entrenó solo con TRAIN/VAL. El [resultado VAL](docs/evidence/INCREMENTO-4-TRAIN-VAL-V1.4.1.md) no es elegible: falló recall de tizón temprano (107/165) y rechazo de papa sana (9/28 publicaciones). No se congeló bundle ni se abrió Sikkim; TEST históricos continúan bloqueados. **G2/G3 permanecen abiertos y el worker real apagado.** Incremento 5 pendiente.
 
 ## Alcance del piloto G0 v1.2.0
 

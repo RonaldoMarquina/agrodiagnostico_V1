@@ -30,16 +30,16 @@
 
 ## 5. Entrenamiento y selección exclusiva con VAL
 
-- [ ] 5.1 Hacer un commit local previo al entrenamiento con protocolo, contratos, G1, configuración y código verificados, y registrar su hash en el expediente sin hacer push ni abrir EXTERNAL
-- [ ] 5.2 Entrenar desde cero el candidato de cuatro clases usando solo las 1.623 filas TRAIN y 320 exposiciones por época, registrando semilla, manifiestos, dependencias, CPU/RAM, tiempos, pérdidas y exposición efectiva; verificar ausencia de rutas/hashes Sikkim en logs
-- [ ] 5.3 Seleccionar época, temperatura, ruta y umbral solo con las 496 filas VAL, y verificar F1 macro ≥0,80, recall por tizón ≥0,80, cobertura ≥0,70, error ≤0,10, sano ≤2/28, otro cultivo ≤7/150 y ECE ≤0,15 con numeradores/denominadores
-- [ ] 5.4 Comparar v1.4.1 con v1.4.0 únicamente como evidencia histórica agregada, sin reutilizar pesos/predicciones para selección, y publicar matriz, abstenciones, latencia y memoria dejando explícita cualquier mínima fallida
+- [x] 5.1 Hacer un commit local previo al entrenamiento con protocolo, contratos, G1, configuración y código verificados, y registrar su hash en el expediente sin hacer push ni abrir EXTERNAL
+- [x] 5.2 Entrenar desde cero el candidato de cuatro clases usando solo las 1.623 filas TRAIN y 320 exposiciones por época, registrando semilla, manifiestos, dependencias, CPU/RAM, tiempos, pérdidas y exposición efectiva; verificar ausencia de rutas/hashes Sikkim en logs
+- [x] 5.3 Seleccionar época, temperatura, ruta y umbral solo con las 496 filas VAL, y verificar F1 macro ≥0,80, recall por tizón ≥0,80, cobertura ≥0,70, error ≤0,10, sano ≤2/28, otro cultivo ≤7/150 y ECE ≤0,15 con numeradores/denominadores
+- [x] 5.4 Comparar v1.4.1 con v1.4.0 únicamente como evidencia histórica agregada, sin reutilizar pesos/predicciones para selección, y publicar matriz, abstenciones, latencia y memoria dejando explícita cualquier mínima fallida
 
 ## 6. Congelamiento previo a EXTERNAL
 
-- [ ] 6.1 Si todas las mínimas VAL pasan, congelar pesos, configuración, mapa técnico/publicable, preprocesado, calibración, umbral, manifiestos, dependencias y comandos; si alguna falla, registrar `BLOCKED_NO_CANDIDATE_PASSES_VAL` sin crear autorización EXTERNAL
+- [x] 6.1 Si todas las mínimas VAL pasan, congelar pesos, configuración, mapa técnico/publicable, preprocesado, calibración, umbral, manifiestos, dependencias y comandos; si alguna falla, registrar `BLOCKED_NO_CANDIDATE_PASSES_VAL` sin crear autorización EXTERNAL
 - [ ] 6.2 Validar carga independiente del bundle candidato y coincidencia de todos los SHA-256, y probar que sano/otro cultivo/baja confianza producen abstención y nunca un diagnóstico publicable
-- [ ] 6.3 Publicar el expediente TRAIN/VAL v1.4.1 y actualizar OpenSpec, README, AI_MODEL e Incrementos, verificando que no contiene predicciones ni métricas Sikkim y que G2 sigue abierto antes de la revisión externa
+- [x] 6.3 Publicar el expediente TRAIN/VAL v1.4.1 y actualizar OpenSpec, README, AI_MODEL e Incrementos, verificando que no contiene predicciones ni métricas Sikkim y que G2 sigue abierto antes de la revisión externa
 
 ## 7. EXTERNAL y G2 condicionados
 

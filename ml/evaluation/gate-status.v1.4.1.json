@@ -17,6 +17,15 @@
   "external_seal_sha256": "ab0e7e7c8a28a70a5bce4fd6424912454e2a31b31f463406233d811ed3f9a69a",
   "external_access": "SEALED_NOT_OPENED_FOR_MODELING",
   "external_rows_read_during_materialization": 0,
-  "G2": "OPEN_NOT_TRAINED",
+  "train_val_result": {
+    "public_result_sha256": "d63d1424112555a7a570652408427b700a2c0131b9aa7cb5bc4cbbbde66a6e3f",
+    "pretraining_commit": "7377819bec40d0c8c0ce3250e89164ee1adebf26",
+    "weights_sha256": "5be4672b75b0149a85f9a6828a073fed1cd6b1147630ac2504acf21f5ee60105",
+    "val_report_sha256": "7331a6d75434423a17c7a1ba5ac84ea9139a6327e34ea1d3c5d18cee901aab3f",
+    "selected_epoch": 9,
+    "decision": "BLOCKED_NO_CANDIDATE_PASSES_VAL",
+    "freeze_created": false
+  },
+  "G2": "OPEN_VAL_CANDIDATE_FAILED_NO_FREEZE",
   "G3": "OPEN"
 }

@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "cycle_version": "1.4.1",
+  "evaluated_at": "2026-11-23",
+  "decision": "BLOCKED_NO_CANDIDATE_PASSES_VAL",
+  "pretraining_commit": "7377819bec40d0c8c0ce3250e89164ee1adebf26",
+  "protocol_sha256": "a6efb7041bc958549df4bce602aa0b083336b9bb6e7470325a55588bd8123c93",
+  "plan_sha256": "8f7dd66ce4620a5564e56da8dce51d324473f515bc7c107e19181375c35503da",
+  "g1_manifest_sha256": "b16533a8cdce48463c1fd8d43e451a696cddfc6860244a7c10157eaa5a0db884",
+  "candidate": {
+    "architecture": "mobilenet_v3_small",
+    "strategy": "four-class-group-aware-balanced-sampler",
+    "selected_epoch": 9,
+    "weights_sha256": "5be4672b75b0149a85f9a6828a073fed1cd6b1147630ac2504acf21f5ee60105",
+    "configuration_sha256": "b2c55344cdc6feb6e43efcc53452dd87de4e2b56d1ebfedc203df5b10ec018a0",
+    "val_report_sha256": "7331a6d75434423a17c7a1ba5ac84ea9139a6327e34ea1d3c5d18cee901aab3f",
+    "val_predictions_sha256": "480c4d8d568904578dfdd3af34edafb018be675c81def2cf845ab5576c2bee1d",
+    "experiment_sha256": "2f4a12e212bb03e7e28c2574d1524a1bced7e63d95bf0d5700e98951bf57a4f",
+    "temperature": 0.8,
+    "threshold": 0.7
+  },
+  "val": {
+    "photos": 496,
+    "macro_f1_two_blights": 0.8001692400426577,
+    "early_recall": {"numerator": 107, "denominator": 165, "rate": 0.6484848484848484},
+    "late_recall": {"numerator": 129, "denominator": 153, "rate": 0.8431372549019608},
+    "coverage": {"numerator": 255, "denominator": 318, "rate": 0.8018867924528302},
+    "selective_error": {"numerator": 19, "denominator": 255, "rate": 0.07450980392156863},
+    "healthy_published_blight": {"numerator": 9, "denominator": 28, "maximum": 2},
+    "other_crop_published_blight": {"numerator": 7, "denominator": 150, "maximum": 7},
+    "ece_four_class": 0.03382278084401231,
+    "latency_ms": {"median": 4.3204, "p95": 5.0939, "max": 5.907},
+    "peak_rss_mb": 3840.99
+  },
+  "conditions": {
+    "macro_f1": true,
+    "recall_each_blight": false,
+    "coverage": true,
+    "selective_error": true,
+    "healthy_rejection": false,
+    "other_crop_rejection": true,
+    "calibration": true
+  },
+  "isolation": {
+    "network": "NONE",
+    "historical_test_mounted": false,
+    "historical_test_accessed": false,
+    "sikkim_external_mounted": false,
+    "sikkim_external_accessed": false,
+    "historical_weights_or_predictions_reused": false
+  },
+  "freeze_created": false,
+  "external_access_authorized": false,
+  "g2_status": "OPEN_BLOCKED_BY_VAL"
+}
