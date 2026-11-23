@@ -25,3 +25,6 @@ casos frontera y decisión G2. Resultado: `OK`.
 OpenSpec estricto: válido. No se ejecutó inferencia EXTERNAL, no se creó
 `access.json` real y G2 continúa abierto. El siguiente paso exige commit local
 de este evaluador y después una única apertura en una raíz privada nueva.
+
+Commit local previo a la apertura:
+`28d281262608d315c085d973e6e66b25e403a0de`. No se realizó push.

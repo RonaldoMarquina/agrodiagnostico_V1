@@ -15,7 +15,7 @@
 
 ## 3. Preflight y ejecución única real
 
-- [ ] 3.1 Ejecutar pruebas focalizadas y OpenSpec estricto sin montar imágenes Sikkim; registrar comandos y resultados, hacer commit local del evaluador antes de abrir EXTERNAL y verificar árbol limpio sin push
+- [x] 3.1 Ejecutar pruebas focalizadas y OpenSpec estricto sin montar imágenes Sikkim; registrar comandos y resultados, hacer commit local del evaluador antes de abrir EXTERNAL y verificar árbol limpio sin push
 - [ ] 3.2 Ejecutar una sola vez en contenedor sin red con bundle, manifiesto, sello y ZIP montados en solo lectura; verificar 362 predicciones, ausencia de escritura en entradas, cero entrenamiento/calibración/selección y finalización inmutable
 - [ ] 3.3 Validar en un proceso independiente hashes de acceso, predicciones y reporte, recomputar métricas desde predicciones y confirmar que coinciden exactamente antes de publicar el resultado
 
