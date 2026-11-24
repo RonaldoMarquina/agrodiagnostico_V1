@@ -1748,7 +1748,7 @@
       "patch": {
         "operationId": "identity_admin_block_user",
         "summary": "Bloqueo administrativo de cuenta",
-        "description": "Solo rol ADMIN. Actualiza status a BLOCKED, revoca inmediatamente todas las refresh sessions activas en PostgreSQL e inserta registro en audit_logs.",
+        "description": "Solo rol ADMIN. Impide auto-bloqueo (409 SELF_BLOCK_NOT_ALLOWED), acepta motivo opcional cerrado {reason} (5..300 caracteres) persistido en audit_logs.details, actualiza status a BLOCKED, revoca inmediatamente todas las refresh sessions activas en PostgreSQL e inserta USER_BLOCKED en audit_logs. Ver ADR-0016.",
         "security": [
           {
             "UserBearer": []
@@ -1775,6 +1775,19 @@
             "example": "11111111-1111-4111-8111-111111111111"
           }
         ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "../schemas/common.schema.json#/$defs/AdminBlockUserRequest"
+              },
+              "example": {
+                "reason": "Actividad sospechosa confirmada en auditoría."
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Cuenta bloqueada y sesiones revocadas.",
@@ -1811,7 +1824,7 @@
             }
           },
           "400": {
-            "description": "Identificador de usuario inválido.",
+            "description": "Identificador de usuario o motivo de bloqueo inválido.",
             "headers": {
               "X-Correlation-ID": {
                 "required": true,
@@ -1835,7 +1848,7 @@
                 },
                 "example": {
                   "code": "INVALID_REQUEST",
-                  "message": "Identificador inválido.",
+                  "message": "Identificador o motivo de bloqueo inválido.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
@@ -1929,6 +1942,37 @@
                 "example": {
                   "code": "NOT_FOUND",
                   "message": "Usuario no encontrado.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Un administrador no puede bloquear su propia cuenta.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "SELF_BLOCK_NOT_ALLOWED",
+                  "message": "No puedes bloquear tu propia cuenta de administrador.",
                   "correlation_id": "11111111-1111-4111-8111-111111111111"
                 }
               }
@@ -2135,6 +2179,398 @@
         "x-status": "implemented",
         "x-owner": "identity",
         "x-increment": 1,
+        "x-visibility": "admin"
+      }
+    },
+    "/api/v1/admin/users/stats": {
+      "get": {
+        "operationId": "identity_admin_user_stats",
+        "summary": "Estadísticas agregadas de cuentas de usuario",
+        "description": "Solo rol ADMIN. Devuelve conteos exactos sobre la tabla users (total, active, blocked, admins, users) sin leer tablas de otros servicios. Ver ADR-0016.",
+        "security": [
+          {
+            "UserBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "11111111-1111-4111-8111-111111111111",
+            "description": "UUID de correlación."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Estadísticas agregadas de cuentas.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/AdminUserStats"
+                },
+                "example": {
+                  "total": 10,
+                  "active": 9,
+                  "blocked": 1,
+                  "admins": 1,
+                  "users": 9
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Cabecera de correlación inválida.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "INVALID_REQUEST",
+                  "message": "Solicitud inválida.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado o token inválido.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "Identidad no válida o expirada.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permiso denegado; requiere rol ADMIN.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "Requiere rol de administrador.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          }
+        },
+        "x-status": "implemented",
+        "x-owner": "identity",
+        "x-increment": 5,
+        "x-visibility": "admin"
+      }
+    },
+    "/api/v1/admin/audit/identity": {
+      "get": {
+        "operationId": "identity_admin_list_audit",
+        "summary": "Consulta paginada de auditoría de seguridad de Identity",
+        "description": "Solo rol ADMIN. Lista registros inmutables de audit_logs en orden (created_at DESC, id DESC) mediante paginación keyset con cursor opaco HMAC y filtros acotados, excluyendo secretos y credenciales. Ver ADR-0016.",
+        "security": [
+          {
+            "UserBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "11111111-1111-4111-8111-111111111111",
+            "description": "UUID de correlación."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            },
+            "example": 20
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            "example": "cursor-opaco-auditoria-identity"
+          },
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            },
+            "example": "USER_BLOCKED"
+          },
+          {
+            "name": "actor_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "22222222-2222-4222-8222-222222222222"
+          },
+          {
+            "name": "target_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "33333333-3333-4333-8333-333333333333"
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UTC"
+            },
+            "example": "2026-11-01T00:00:00Z"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UTC"
+            },
+            "example": "2026-11-23T23:59:59Z"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Página de registros de auditoría de Identity.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/IdentityAuditPage"
+                },
+                "example": {
+                  "items": [
+                    {
+                      "id": "44444444-4444-4444-8444-444444444444",
+                      "action": "USER_BLOCKED",
+                      "actor_id": "22222222-2222-4222-8222-222222222222",
+                      "target_id": "33333333-3333-4333-8333-333333333333",
+                      "correlation_id": "11111111-1111-4111-8111-111111111111",
+                      "legacy": false,
+                      "details": {
+                        "reason": "Actividad sospechosa confirmada en auditoría."
+                      },
+                      "created_at": "2026-11-23T21:00:00Z"
+                    }
+                  ],
+                  "next_cursor": null
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Cursor o parámetros de consulta inválidos.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "INVALID_REQUEST",
+                  "message": "Cursor o parámetros inválidos.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado o token inválido.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "Identidad no válida o expirada.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permiso denegado; requiere rol ADMIN.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "Requiere rol de administrador.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          }
+        },
+        "x-status": "implemented",
+        "x-owner": "identity",
+        "x-increment": 5,
         "x-visibility": "admin"
       }
     },

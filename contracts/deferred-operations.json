@@ -101,9 +101,12 @@
     "increment": 5,
     "status": "pending-contract",
     "before_consumer": true,
-    "conceptual_routes": [],
+    "conceptual_routes": [
+      "GET /api/v1/admin/audit/identity",
+      "GET /api/v1/admin/audit/diagnosis"
+    ],
     "authorization": "ADMIN",
-    "note": "Rutas conceptuales de la fuente; forma final/payload/errores pendientes antes de integrar consumidores. No publicadas ni aliases exigidos."
+    "note": "Contratos formales definidos en identity.openapi.json (identity_admin_list_audit) y diagnosis.openapi.json (diagnosis_admin_list_audit) según ADR-0016; segregados por servicio dueño con paginación HMAC."
   },
   {
     "capability": "metrics",
@@ -111,9 +114,13 @@
     "increment": 5,
     "status": "pending-contract",
     "before_consumer": true,
-    "conceptual_routes": [],
+    "conceptual_routes": [
+      "GET /api/v1/admin/users/stats",
+      "GET /api/v1/admin/metrics/summary",
+      "GET /api/v1/admin/system/status"
+    ],
     "authorization": "ADMIN",
-    "note": "Rutas conceptuales de la fuente; forma final/payload/errores pendientes antes de integrar consumidores. No publicadas ni aliases exigidos."
+    "note": "Contratos formales definidos en identity.openapi.json (identity_admin_user_stats) y diagnosis.openapi.json (diagnosis_admin_metrics_summary, diagnosis_admin_system_status) según ADR-0016."
   },
   {
     "capability": "model-info",
@@ -121,8 +128,10 @@
     "increment": 5,
     "status": "pending-contract",
     "before_consumer": true,
-    "conceptual_routes": [],
+    "conceptual_routes": [
+      "GET /api/v1/admin/models"
+    ],
     "authorization": "ADMIN",
-    "note": "Rutas conceptuales de la fuente; forma final/payload/errores pendientes antes de integrar consumidores. No publicadas ni aliases exigidos."
+    "note": "Contrato formal solo lectura definido en diagnosis.openapi.json (diagnosis_admin_list_models) según ADR-0016; refleja honestamente REAL_INFERENCE_AUTHORIZED=false separado del histórico."
   }
 ]

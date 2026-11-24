@@ -268,15 +268,30 @@ def main():
             )
             assert st == 200 and b["status"] == "SUCCESS" and b["action"] == {"type": "NAVIGATE", "target": "USER_MANAGEMENT"}, (st, b)
 
-            # AT-09: ADMIN deferred audit/monitoring -> no executable action
-            for msg, expected_intent in [("Abrir auditoría", "OPEN_AUDIT"), ("Abrir monitoreo", "OPEN_MONITORING")]:
+            # ADR-0016: ADMIN audit/monitoring enabled -> 200 NAVIGATE; USER -> 403 FORBIDDEN
+            for msg, expected_intent, expected_target in [
+                ("Abrir auditoría", "OPEN_AUDIT", "AUDIT"),
+                ("Abrir monitoreo", "OPEN_MONITORING", "MONITORING"),
+            ]:
                 st, b, _ = http_json(
                     f"{proxy_url}/api/v1/assistant/messages",
                     method="POST",
                     body={"message": msg},
                     headers=admin_hdr,
                 )
-                assert st == 200 and b["status"] == "OUT_OF_SCOPE" and b["intent"] == expected_intent and b["action"] is None, (msg, st, b)
+                assert (
+                    st == 200
+                    and b["status"] == "SUCCESS"
+                    and b["intent"] == expected_intent
+                    and b["action"] == {"type": "NAVIGATE", "target": expected_target}
+                ), (msg, st, b)
+                st_u, b_u, _ = http_json(
+                    f"{proxy_url}/api/v1/assistant/messages",
+                    method="POST",
+                    body={"message": msg},
+                    headers=user_hdr,
+                )
+                assert st_u == 403 and b_u["code"] == "FORBIDDEN", (msg, st_u, b_u)
 
             # AT-17 & AT-18: Clarification & out-of-scope
             st, b, _ = http_json(f"{proxy_url}/api/v1/assistant/messages", method="POST", body={"message": "Hola quiero algo"}, headers=user_hdr)

@@ -79,7 +79,7 @@ Prioridad técnica asumida por Codex: completar 2.3 y 4.1–4.3 con recorrido CP
 
 ## Handoff al ciclo correctivo v1.3.0
 
-La decisión del responsable del 2026-11-20 abre [un cambio OpenSpec independiente](../incremento-4-v1-3-rechazo-papa-sana/tasks.md) para el rechazo verificable de papa sana, tras 4/4 falsas aceptaciones en [G3 local](../../../docs/evidence/INCREMENTO-4-G3-ACEPTACION-LOCAL.md). El [G0 v1.3.0](../../../docs/evidence/INCREMENTO-4-G0-V1.3-APROBACION.md) está aprobado por el responsable; G1, G2 y G3 siguen abiertos. Las aprobaciones G0/G1/G2 v1.2.0 son históricas y no se extienden al ciclo nuevo. Las tareas 9.1 y 9.4 de este cambio siguen abiertas hasta repetir aceptación y cierre con el nuevo bundle. El desglose 10.1–10.4 se trasladó al nuevo cambio para no contarlo dos veces; este cambio tiene 40 casillas.
+La decisión del responsable del 2026-11-20 abrió [un cambio OpenSpec independiente](../archive/2026-11-24-incremento-4-v1-3-rechazo-papa-sana/tasks.md) para el rechazo verificable de papa sana, tras 4/4 falsas aceptaciones en [G3 local](../../../docs/evidence/INCREMENTO-4-G3-ACEPTACION-LOCAL.md). El [G0 v1.3.0](../../../docs/evidence/INCREMENTO-4-G0-V1.3-APROBACION.md) fue aprobado por el responsable. Las aprobaciones G0/G1/G2 v1.2.0 pertenecen a ese ciclo histórico. El desglose 10.1–10.4 se trasladó al cambio independiente para evitar doble conteo y este cambio conserva 40 casillas. El [archivo administrativo](../../../docs/operations/ai-cycle-archive.md) registra el desenlace de los ciclos posteriores. 9.1 y 9.4 siguen abiertas y quedan fuera de la demostración.
 
 
 ## Corrección de la revisión (2026-10-15)

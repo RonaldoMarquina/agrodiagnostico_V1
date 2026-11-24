@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 import hashlib
 import hmac
 import json
-from typing import Tuple
+from typing import Optional, Tuple
 import uuid
 
 from fastapi import HTTPException, status
@@ -45,11 +45,17 @@ def parse_utc_iso(s: str) -> datetime:
     return dt.astimezone(timezone.utc)
 
 
+def compute_filter_hash(filters: dict) -> str:
+    canonical = json.dumps(filters, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(canonical).hexdigest()[:16]
+
+
 def encode_cursor(
     created_at: datetime,
     diagnosis_id: uuid.UUID,
     principal_id: uuid.UUID,
     purpose: str,
+    filter_hash: Optional[str] = None,
 ) -> str:
     """Generate an HMAC-SHA256 signed Base64URL pagination cursor token."""
     payload = {
@@ -59,6 +65,8 @@ def encode_cursor(
         "created_at": format_utc_iso(created_at),
         "id": str(diagnosis_id),
     }
+    if filter_hash is not None:
+        payload["fh"] = filter_hash
     canonical_bytes = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
     key = get_cursor_signing_key()
     sig = hmac.new(key, canonical_bytes, hashlib.sha256).digest()
@@ -72,6 +80,7 @@ def decode_cursor(
     cursor_str: str,
     expected_principal_id: uuid.UUID,
     expected_purpose: str,
+    expected_filter_hash: Optional[str] = None,
 ) -> Tuple[datetime, uuid.UUID]:
     """Validate and decode HMAC pagination cursor.
 
@@ -120,6 +129,8 @@ def decode_cursor(
         if data.get("purp") != expected_purpose:
             raise invalid_exc
         if data.get("sub") != str(expected_principal_id):
+            raise invalid_exc
+        if expected_filter_hash is not None and data.get("fh") != expected_filter_hash:
             raise invalid_exc
 
         item_id = uuid.UUID(data.get("id"))

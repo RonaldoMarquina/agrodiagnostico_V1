@@ -78,7 +78,7 @@ class FakeAssistantAdapter:
             return {"disposition": "INTENT", "intent": "OPEN_DIAGNOSIS_SUPERVISION", "parameters": {}, "message": ""}
         if any(kw in norm for kw in ("auditoria", "registro de auditoria", "abrir auditoria")):
             return {"disposition": "INTENT", "intent": "OPEN_AUDIT", "parameters": {}, "message": ""}
-        if any(kw in norm for kw in ("monitoreo", "metricas del sistema", "panel de monitoreo", "estado del modelo")):
+        if any(kw in norm for kw in ("monitoreo", "metricas del sistema", "panel de monitoreo", "estado del modelo", "estado del sistema")):
             return {"disposition": "INTENT", "intent": "OPEN_MONITORING", "parameters": {}, "message": ""}
 
         # Explanations

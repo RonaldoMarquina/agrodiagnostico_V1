@@ -5,7 +5,7 @@ import uuid
 
 from fastapi import HTTPException, status
 from pydantic import BaseModel, ConfigDict, StrictBool
-from sqlalchemy import and_, desc, or_, select, update
+from sqlalchemy import and_, desc, func, or_, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -131,6 +131,39 @@ def mark_notification_read(
         )
 
     return _serialize_notification(notif)
+
+
+def mark_all_notifications_read(
+    db: Session,
+    principal: Principal,
+) -> dict:
+    """Idempotently mark all unread notifications of the authenticated owner as read (ADR-0016)."""
+    now = datetime.now(timezone.utc)
+    stmt = (
+        update(Notification)
+        .where(
+            Notification.owner_id == principal.id,
+            Notification.read_at.is_(None),
+        )
+        .values(read_at=now)
+    )
+    result = db.execute(stmt)
+    db.commit()
+    return {"updated_count": int(result.rowcount or 0)}
+
+
+def get_unread_notifications_count(
+    db: Session,
+    principal: Principal,
+) -> dict:
+    """Return exact count of unread notifications belonging to the authenticated owner (ADR-0016)."""
+    count = db.execute(
+        select(func.count(Notification.id)).where(
+            Notification.owner_id == principal.id,
+            Notification.read_at.is_(None),
+        )
+    ).scalar_one()
+    return {"unread_count": int(count or 0)}
 
 
 def get_user_preferences(

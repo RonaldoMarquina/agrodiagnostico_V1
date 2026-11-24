@@ -14,4 +14,4 @@ npm --prefix frontend run build
 
 Versiones directas exactas y cierre transitivo en package-lock.json. La prueba de página renderiza el componente y verifica título, advertencia de indisponibilidad y ausencia de carga/botón de diagnóstico. El build Docker ejecuta las mismas comprobaciones antes de copiar dist a Nginx; un fallo interrumpe la imagen.
 
-El entorno integrado se prepara según [DEVELOPMENT](../docs/DEVELOPMENT.md). La UI funcional pertenece a incrementos posteriores, no a esta página.
+El entorno integrado se prepara según [DEVELOPMENT](../docs/DEVELOPMENT.md). La [guía de integración en modo demostración](../docs/FRONTEND_INTEGRACION_DEMO.md) reúne las rutas utilizables, estados, ejemplos y tareas pendientes para la UI funcional.

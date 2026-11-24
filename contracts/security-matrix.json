@@ -174,12 +174,14 @@
       }
     ],
     "negative_statuses": [
+      400,
       401,
       403,
-      404
+      404,
+      409
     ],
-    "runtime_verified": false,
-    "rule": "Requiere rol ADMIN. Revoca sesiones activas e inserta auditoría."
+    "runtime_verified": true,
+    "rule": "Requiere rol ADMIN. Impide auto-bloqueo (409 SELF_BLOCK_NOT_ALLOWED), acepta motivo opcional cerrado, revoca sesiones activas e inserta auditoría."
   },
   {
     "operation_id": "identity_admin_activate_user",
@@ -615,5 +617,140 @@
     ],
     "runtime_verified": false,
     "rule": "Propietario del diagnóstico; solo COMPLETADO o NO_CONCLUYENTE. Ajeno/borrado 404."
+  },
+  {
+    "operation_id": "identity_admin_user_stats",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      400,
+      401,
+      403
+    ],
+    "runtime_verified": true,
+    "rule": "Solo rol ADMIN. Conteos reales agregados sobre users."
+  },
+  {
+    "operation_id": "identity_admin_list_audit",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      400,
+      401,
+      403
+    ],
+    "runtime_verified": true,
+    "rule": "Solo rol ADMIN. Paginación keyset HMAC sobre audit_logs sin secretos."
+  },
+  {
+    "operation_id": "diagnosis_admin_metrics_summary",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      400,
+      401,
+      403
+    ],
+    "runtime_verified": true,
+    "rule": "Solo rol ADMIN. Rango UTC máximo 90 días; agregados reales sobre diagnoses."
+  },
+  {
+    "operation_id": "diagnosis_admin_list_audit",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      400,
+      401,
+      403
+    ],
+    "runtime_verified": true,
+    "rule": "Solo rol ADMIN. Paginación keyset HMAC sobre diagnosis_audit_logs."
+  },
+  {
+    "operation_id": "diagnosis_admin_list_models",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      400,
+      401,
+      403
+    ],
+    "runtime_verified": true,
+    "rule": "Solo rol ADMIN y solo lectura. Reporta REAL_INFERENCE_AUTHORIZED=false honestamente."
+  },
+  {
+    "operation_id": "diagnosis_admin_system_status",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      400,
+      401,
+      403
+    ],
+    "runtime_verified": true,
+    "rule": "Solo rol ADMIN y solo lectura. Sondeo interno /health/ready con timeout 2 s sin credenciales."
+  },
+  {
+    "operation_id": "diagnosis_admin_get_image",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      400,
+      401,
+      403,
+      404,
+      503
+    ],
+    "runtime_verified": true,
+    "rule": "Solo rol ADMIN (D-19). Asiento obligatorio ADMIN_VIEW_DIAGNOSIS_IMAGE antes de devolver binario privado con no-store."
+  },
+  {
+    "operation_id": "notification_mark_all_read",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      400,
+      401
+    ],
+    "runtime_verified": true,
+    "rule": "Identidad de usuario válida; lectura masiva idempotente solo de avisos propios."
+  },
+  {
+    "operation_id": "notification_unread_count",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      400,
+      401
+    ],
+    "runtime_verified": true,
+    "rule": "Identidad de usuario válida; contador de avisos propios no leídos."
   }
 ]

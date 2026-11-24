@@ -430,5 +430,86 @@
     "status": "implemented",
     "increment": 2,
     "authorization": "user"
+  },
+  {
+    "service": "identity",
+    "method": "GET",
+    "path": "/api/v1/admin/users/stats",
+    "operation_id": "identity_admin_user_stats",
+    "status": "implemented",
+    "increment": 5,
+    "authorization": "admin"
+  },
+  {
+    "service": "identity",
+    "method": "GET",
+    "path": "/api/v1/admin/audit/identity",
+    "operation_id": "identity_admin_list_audit",
+    "status": "implemented",
+    "increment": 5,
+    "authorization": "admin"
+  },
+  {
+    "service": "diagnosis",
+    "method": "GET",
+    "path": "/api/v1/admin/metrics/summary",
+    "operation_id": "diagnosis_admin_metrics_summary",
+    "status": "implemented",
+    "increment": 5,
+    "authorization": "admin"
+  },
+  {
+    "service": "diagnosis",
+    "method": "GET",
+    "path": "/api/v1/admin/audit/diagnosis",
+    "operation_id": "diagnosis_admin_list_audit",
+    "status": "implemented",
+    "increment": 5,
+    "authorization": "admin"
+  },
+  {
+    "service": "diagnosis",
+    "method": "GET",
+    "path": "/api/v1/admin/models",
+    "operation_id": "diagnosis_admin_list_models",
+    "status": "implemented",
+    "increment": 5,
+    "authorization": "admin"
+  },
+  {
+    "service": "diagnosis",
+    "method": "GET",
+    "path": "/api/v1/admin/system/status",
+    "operation_id": "diagnosis_admin_system_status",
+    "status": "implemented",
+    "increment": 5,
+    "authorization": "admin"
+  },
+  {
+    "service": "diagnosis",
+    "method": "GET",
+    "path": "/api/v1/admin/diagnoses/{id}/image",
+    "operation_id": "diagnosis_admin_get_image",
+    "status": "implemented",
+    "increment": 5,
+    "authorization": "admin"
+  },
+  {
+    "service": "notification",
+    "method": "PATCH",
+    "path": "/api/v1/notifications/read-all",
+    "operation_id": "notification_mark_all_read",
+    "status": "implemented",
+    "increment": 5,
+    "authorization": "user"
+  },
+  {
+    "service": "notification",
+    "method": "GET",
+    "path": "/api/v1/notifications/unread-count",
+    "operation_id": "notification_unread_count",
+    "status": "implemented",
+    "increment": 5,
+    "authorization": "user"
   }
 ]

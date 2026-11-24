@@ -29,30 +29,8 @@ def health(degraded=None):
     for service in SERVICES:
         doc = json.loads(Path('contracts/openapi/' + service + '.openapi.json').read_text())
         actual = http('http://' + service + ':8000/openapi.json').json()
-        if service in ('identity', 'notification'):
+        if service in ('identity', 'diagnosis', 'notification'):
             assert set(actual['paths']) == set(doc['paths'])
-        elif service == 'diagnosis':
-            expected_diag_paths = {
-                '/health/live', '/health/ready',
-                '/api/v1/diagnoses', '/api/v1/diagnoses/{id}',
-                '/api/v1/diagnoses/{id}/cancel',
-                '/api/v1/diagnoses/{id}/image',
-                '/api/v1/diagnoses/{id}/feedback',
-                '/api/v1/admin/diagnoses',
-                '/api/v1/crops',
-                '/api/v1/crops/{code}/problems',
-                '/api/v1/problems/{code}/recommendations',
-                '/api/v1/admin/crops',
-                '/api/v1/admin/crops/{code}',
-                '/api/v1/admin/problems',
-                '/api/v1/admin/problems/{code}',
-                '/api/v1/admin/recommendations',
-                '/api/v1/admin/recommendations/{id}',
-                '/internal/diagnoses/{id}/claim',
-                '/internal/diagnoses/{id}/lease/renew',
-                '/internal/diagnoses/{id}/image',
-            }
-            assert set(actual['paths']) == expected_diag_paths
         else:
             assert set(actual['paths']) == {'/health/live', '/health/ready'}
         for kind in ['live', 'ready']:

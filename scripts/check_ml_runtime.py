@@ -38,6 +38,8 @@ os.environ["TORCH_DEVICE"] = "cpu"
 os.environ["APP_ENV"] = "test"
 
 ROOT = Path(__file__).resolve().parents[1]
+# Historical governance tests import the repository's scripts as a namespace.
+sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "ml" / "src"))
 sys.path.insert(0, str(ROOT / "services" / "ai_inference"))
 

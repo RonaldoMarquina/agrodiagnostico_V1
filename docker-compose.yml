@@ -332,6 +332,11 @@ services:
       RABBITMQ_USER: rabbit_diagnosis
       RABBITMQ_PASSWORD_FILE: /run/secrets/rabbit_diagnosis_password
       INTERNAL_SERVICE_KEYS_FILE: /run/secrets/internal_service_keys
+      REAL_INFERENCE_AUTHORIZED: ${REAL_INFERENCE_AUTHORIZED:-false}
+      IDENTITY_HEALTH_URL: ${IDENTITY_HEALTH_URL:-http://identity:8000/health/ready}
+      AI_INFERENCE_HEALTH_URL: ${AI_INFERENCE_HEALTH_URL:-http://ai_inference:8000/health/ready}
+      NOTIFICATION_HEALTH_URL: ${NOTIFICATION_HEALTH_URL:-http://notification:8000/health/ready}
+      ASSISTANT_HEALTH_URL: ${ASSISTANT_HEALTH_URL:-http://assistant:8000/health/ready}
     secrets:
     - diagnosis_password
     - s3_diagnosis

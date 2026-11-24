@@ -26,7 +26,7 @@ class Contracts(unittest.TestCase):
 
     def test_package_and_all_embedded_examples(self):
         report = v.validate_package(CONTRACTS)
-        self.assertEqual(report['operations'], 48)
+        self.assertEqual(report['operations'], 57)
         self.assertEqual(report['extension_openapi'], 1)
         self.assertEqual(report['extension_operations'], 3)
         self.assertGreater(report['embedded_examples'], 100)
@@ -258,6 +258,47 @@ class Contracts(unittest.TestCase):
                 {'const': 'private, no-store'},
             )
         self.assertIn('Retry-After', send_op['responses']['429']['headers'])
+
+    def test_admin_observability_and_notification_ux_contracts(self):
+        block_op = self.op('identity', '/api/v1/admin/users/{id}/block', 'patch')
+        self.assertIn('409', block_op['responses'])
+        self.assertIn('requestBody', block_op)
+        self.assertFalse(block_op['requestBody']['required'])
+
+        expected_new = [
+            ('identity', '/api/v1/admin/users/stats', 'get', 'identity_admin_user_stats', ('200', '400', '401', '403')),
+            ('identity', '/api/v1/admin/audit/identity', 'get', 'identity_admin_list_audit', ('200', '400', '401', '403')),
+            ('diagnosis', '/api/v1/admin/metrics/summary', 'get', 'diagnosis_admin_metrics_summary', ('200', '400', '401', '403')),
+            ('diagnosis', '/api/v1/admin/audit/diagnosis', 'get', 'diagnosis_admin_list_audit', ('200', '400', '401', '403')),
+            ('diagnosis', '/api/v1/admin/models', 'get', 'diagnosis_admin_list_models', ('200', '400', '401', '403')),
+            ('diagnosis', '/api/v1/admin/system/status', 'get', 'diagnosis_admin_system_status', ('200', '400', '401', '403')),
+            ('diagnosis', '/api/v1/admin/diagnoses/{id}/image', 'get', 'diagnosis_admin_get_image', ('200', '400', '401', '403', '404', '503')),
+            ('notification', '/api/v1/notifications/read-all', 'patch', 'notification_mark_all_read', ('200', '400', '401')),
+            ('notification', '/api/v1/notifications/unread-count', 'get', 'notification_unread_count', ('200', '400', '401')),
+        ]
+        for service, path, method, op_id, statuses in expected_new:
+            with self.subTest(operation_id=op_id):
+                op = self.op(service, path, method)
+                self.assertEqual(op['operationId'], op_id)
+                self.assertEqual(op['x-increment'], 5)
+                self.assertEqual(op['security'], [{'UserBearer': []}])
+                for code in statuses:
+                    self.assertIn(code, op['responses'])
+                    self.assertEqual(
+                        op['responses'][code]['headers']['Cache-Control']['schema'],
+                        {'const': 'private, no-store'},
+                    )
+
+        admin_image = self.op('diagnosis', '/api/v1/admin/diagnoses/{id}/image', 'get')
+        self.assertNotIn('302', admin_image['responses'])
+        self.assertEqual(
+            set(admin_image['responses']['200']['content']),
+            {'image/jpeg', 'image/png', 'image/webp'},
+        )
+        models_example = self.op('diagnosis', '/api/v1/admin/models', 'get')['responses']['200']['content']['application/json']['example']
+        self.assertFalse(models_example['real_inference_authorized'])
+        self.assertIsNone(models_example['active_model'])
+        self.assertEqual(models_example['runtime_status'], 'INACTIVE_GATE_BLOCKED')
 
 
 if __name__ == '__main__':

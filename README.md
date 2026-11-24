@@ -61,6 +61,8 @@ El worker provisional **no produce diagnósticos reales**. Los comandos comproba
 | [docs/SECURITY.md](docs/SECURITY.md) | Control de acceso, imágenes, secretos |
 | [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Dominio, Cloudflare, TLS, CDN y operación |
 | [docs/AI_MODEL.md](docs/AI_MODEL.md) | Dataset, evaluación, abstención y versiones |
+| [Integración frontend en modo demo](docs/FRONTEND_INTEGRACION_DEMO.md) | API disponible, estados, mensajes y criterios de integración visual |
+| [Archivo administrativo de IA](docs/operations/ai-cycle-archive.md) | Ciclos históricos y sustituidos del Incremento 4 |
 | [docs/API_CONTRACTS.md](docs/API_CONTRACTS.md) | Inventario de contratos HTTP y eventos |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Flujo de propuestas, revisión y cierre |
 

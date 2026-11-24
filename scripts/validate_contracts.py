@@ -97,7 +97,25 @@ def validate_package(root):
                 if identifier in operation_ids:
                     raise ValueError(f'Duplicate operationId: {identifier}')
                 operation_ids.add(identifier)
-                expected_status = 'implemented' if (route in {'/health/live', '/health/ready'} or op['x-increment'] <= 2 or identifier in {'diagnosis_claim', 'diagnosis_renew', 'diagnosis_internal_image', 'notification_list', 'notification_mark_read', 'notification_get_preferences', 'notification_patch_preferences', 'identity_internal_user_contact'}) else 'contract-only'
+                expected_status = 'implemented' if (route in {'/health/live', '/health/ready'} or op['x-increment'] <= 2 or identifier in {
+                    'diagnosis_claim',
+                    'diagnosis_renew',
+                    'diagnosis_internal_image',
+                    'notification_list',
+                    'notification_mark_read',
+                    'notification_mark_all_read',
+                    'notification_unread_count',
+                    'notification_get_preferences',
+                    'notification_patch_preferences',
+                    'identity_internal_user_contact',
+                    'identity_admin_user_stats',
+                    'identity_admin_list_audit',
+                    'diagnosis_admin_metrics_summary',
+                    'diagnosis_admin_list_audit',
+                    'diagnosis_admin_list_models',
+                    'diagnosis_admin_system_status',
+                    'diagnosis_admin_get_image',
+                }) else 'contract-only'
                 if op['x-status'] != expected_status:
                     raise ValueError(f'Unexpected status for {identifier}: expected {expected_status}, got {op["x-status"]}')
                 if 'security' not in op:

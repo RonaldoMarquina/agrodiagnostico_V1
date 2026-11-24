@@ -9,8 +9,10 @@ from sqlalchemy.orm import Session
 from app.api.deps import get_correlation_id, require_user
 from app.application.notifications import (
     NotificationPreferencesPatchInput,
+    get_unread_notifications_count,
     get_user_preferences,
     list_user_notifications,
+    mark_all_notifications_read,
     mark_notification_read,
     patch_user_preferences,
 )
@@ -37,6 +39,59 @@ def list_notifications_endpoint(
     return JSONResponse(
         status_code=status.HTTP_200_OK,
         content=page,
+        headers={
+            "Cache-Control": "private, no-store",
+            "X-Correlation-ID": str(cid),
+        },
+    )
+
+
+@router.patch(
+    "/api/v1/notifications/read-all",
+    status_code=status.HTTP_200_OK,
+    operation_id="notification_mark_all_read",
+)
+async def mark_all_notifications_read_endpoint(
+    request: Request,
+    principal: Principal = Depends(require_user),
+    db: Session = Depends(get_db),
+    cid: uuid.UUID = Depends(get_correlation_id),
+):
+    raw_body = await request.body()
+    if raw_body and raw_body.strip():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={
+                "code": "INVALID_REQUEST",
+                "message": "Esta operación no acepta cuerpo de solicitud.",
+            },
+        )
+
+    result = mark_all_notifications_read(db=db, principal=principal)
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content=result,
+        headers={
+            "Cache-Control": "private, no-store",
+            "X-Correlation-ID": str(cid),
+        },
+    )
+
+
+@router.get(
+    "/api/v1/notifications/unread-count",
+    status_code=status.HTTP_200_OK,
+    operation_id="notification_unread_count",
+)
+def get_unread_notifications_count_endpoint(
+    principal: Principal = Depends(require_user),
+    db: Session = Depends(get_db),
+    cid: uuid.UUID = Depends(get_correlation_id),
+):
+    result = get_unread_notifications_count(db=db, principal=principal)
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content=result,
         headers={
             "Cache-Control": "private, no-store",
             "X-Correlation-ID": str(cid),

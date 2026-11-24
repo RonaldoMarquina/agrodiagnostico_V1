@@ -1,6 +1,6 @@
 # Contratos de API y eventos
 
-Los contratos iniciales del grupo 2 están en [contracts](../contracts/README.md): cuatro OpenAPI 3.1.1, componentes comunes y tres eventos JSON Schema 2020-12. Este documento explica su semántica; no sustituye esos archivos. Los incrementos 0–3 y el sub-incremento de notificaciones del incremento 5 implementan las **48 operaciones** contractuales vigentes: ocho de salud técnica, doce públicas de identidad, una interna de contacto de identidad, veinte de negocio de Diagnosis, tres internas de trabajo entre Diagnosis y AI, y cuatro públicas de Notification. Las capacidades de observabilidad, métricas y auditoría administrativa diferidas siguen pendientes en `contracts/deferred-operations.json`. Actualiza OpenSpec, ADR cuando corresponda y pruebas al cambiar una interfaz.
+Los contratos iniciales del grupo 2 están en [contracts](../contracts/README.md): cuatro OpenAPI 3.1.1, componentes comunes y tres eventos JSON Schema 2020-12. Este documento explica su semántica; no sustituye esos archivos. Los incrementos 0–3 y los sub-incrementos backend del incremento 5 (`notificaciones` y `admin-y-observabilidad`, ADR-0014 y ADR-0016) implementan las **57 operaciones núcleo** vigentes: ocho de salud técnica, catorce públicas de identidad, una interna de contacto de identidad, veinticinco de negocio/administración de Diagnosis, tres internas de trabajo entre Diagnosis y AI, y seis públicas de Notification (más **3 operaciones de extensión** en `contracts/openapi/extensions/assistant.openapi.json`, totalizando **60 operaciones implementadas**). Actualiza OpenSpec, ADR cuando corresponda y pruebas al cambiar una interfaz.
 
 ## Convenciones comunes
 
@@ -36,11 +36,19 @@ Los contratos iniciales del grupo 2 están en [contracts](../contracts/README.md
 | PATCH | `/api/v1/admin/problems/{code}` | Actualizar nombre y active de condición (ADMIN) |
 | GET/POST | `/api/v1/admin/recommendations` | Listar / registrar versión inmutable con fuentes y revisión (ADMIN) |
 | PATCH | `/api/v1/admin/recommendations/{id}` | Modificar exclusivamente active de una versión (ADMIN) |
-| GET | `/api/v1/admin/diagnoses` | Supervisión paginada de metadatos de diagnósticos con cursor HMAC (ADMIN) |
+| GET | `/api/v1/admin/diagnoses` | Supervisión paginada de metadatos de diagnósticos con cursor HMAC (ADMIN; sin fotos) |
+| GET | `/api/v1/admin/diagnoses/{id}/image` | Lectura administrativa explícita y auditada de fotografía (`D-19`; asiento obligatorio `ADMIN_VIEW_DIAGNOSIS_IMAGE`, `no-store`) |
+| GET | `/api/v1/admin/users/stats` | Estadísticas reales agregadas de cuentas (ADMIN, Identity) |
+| GET | `/api/v1/admin/audit/identity` | Auditoría de seguridad paginada con cursor HMAC sobre `audit_logs` (ADMIN, Identity) |
+| GET | `/api/v1/admin/audit/diagnosis` | Auditoría paginada con cursor HMAC sobre `diagnosis_audit_logs` (ADMIN, Diagnosis) |
+| GET | `/api/v1/admin/metrics/summary` | Métricas agregadas de diagnósticos por rango UTC <= 90 días (ADMIN, Diagnosis) |
+| GET | `/api/v1/admin/models` | Inventario solo lectura de modelos activos (`REAL_INFERENCE_AUTHORIZED=false`) e históricos (ADMIN, Diagnosis) |
+| GET | `/api/v1/admin/system/status` | Monitoreo operativo solo lectura con sondeo `/health/ready` (`2 s`) y colas locales (ADMIN, Diagnosis) |
 | GET | `/api/v1/notifications` | Avisos propios paginados con cursor HMAC (`purpose=user_notifications`) |
 | PATCH | `/api/v1/notifications/{id}/read` | Marcar aviso propio como leído (sin cuerpo, idempotente preservando primer `read_at`; `404` genérico en ajeno) |
+| PATCH | `/api/v1/notifications/read-all` | Lectura masiva idempotente de avisos propios no leídos (`{updated_count}`) |
+| GET | `/api/v1/notifications/unread-count` | Contador de avisos propios no leídos (`{unread_count}`) |
 | GET/PATCH | `/api/v1/notification-preferences` | Preferencia propia `email_enabled` (default `false`, opt-in explícito); avisos internos siempre activos |
-| Pendiente | Auditoría, métricas e información de modelo (incremento 5) | [Inventario con dueño e incremento](../contracts/deferred-operations.json) |
 
 La operación de reclamo `/internal/diagnoses/{id}/claim` está restringida a identidad de servicio, nunca al cliente ni a Internet. Se contratan POST `/internal/diagnoses/{id}/lease/renew`, GET `/internal/diagnoses/{id}/image` y GET `/api/v1/diagnoses/{id}/image`. Reclamo/renovación devuelven lease_owner, lease_token y expires_at; renovación usa body lease_token, imagen interna usa X-Lease-Token. Identidad AI obligatoria independientemente del lease; obsoleto responde 409 STALE_LEASE. Ninguna ruta entrega URL pública permanente de fotografías.
 
@@ -203,12 +211,12 @@ Conforme a [ADR-0014](adr/0014-notificaciones-y-contacto-interno.md), se impleme
 
 ## Decisiones contractuales de la extensión de Asistente Conversacional (`extensions/assistant`)
 
-Conforme a [ADR-0015](adr/0015-asistente-conversacional-y-adaptador-gemini.md), el asistente conversacional en español opera como extensión sin estado desacoplada del núcleo (perfil Compose `--profile assistant`), contratada por separado en `contracts/openapi/extensions/assistant.openapi.json` (`3` operaciones de extensión implementadas, manteniendo intactas las **48 operaciones núcleo** en `contracts/operations.json`):
+El asistente conversacional en español opera como extensión sin estado desacoplada del núcleo con el perfil Compose `assistant`. Las 3 operaciones de la extensión figuran en `contracts/openapi/extensions/assistant.openapi.json`. [ADR-0015](adr/0015-asistente-conversacional-y-adaptador-gemini.md).
 
 - **`POST /api/v1/assistant/messages` (`assistant_send_message`)**:
   - Exige `UserBearer` JWT Ed25519 verificado localmente (`401 UNAUTHORIZED` si falta, expira o es token interno), objeto JSON cerrado `{"message": "..."}` (`1..2000` caracteres no vacíos tras trim; `400 INVALID_REQUEST` o `413 PAYLOAD_TOO_LARGE` > 16 KiB) y respeta cuota por identidad (`429 RATE_LIMITED` con `Retry-After`).
   - Detecta y rechaza secretos en la entrada antes de invocar al proveedor (`400 SENSITIVE_INPUT_REJECTED`).
-  - Valida la salida del proveedor contra un registro cerrado de 16 intents (`14` habilitados y `2` diferidos `OPEN_AUDIT`/`OPEN_MONITORING` sin acción ejecutable) y aplica autorización RBAC independiente (`403 FORBIDDEN` para intents administrativos solicitados por `USER`).
+  - Valida la salida del proveedor contra un registro cerrado de 16 intents habilitados. `OPEN_AUDIT` y `OPEN_MONITORING` solo emiten navegación para `ADMIN`. Las intenciones administrativas solicitadas por `USER` devuelven `403 FORBIDDEN`.
   - Nunca realiza diagnósticos fitosanitarios oficiales ni mutaciones; las explicaciones (`EXPLAIN_*`) se sirven desde plantillas aprobadas locales coherentes con los estados oficiales y el cierre ML v1.4.3 (`REAL_INFERENCE_AUTHORIZED=false`).
   - Cuando `--profile assistant` no está activo, `ASSISTANT_ENABLED=false` o faltan credenciales en modo `gemini`, degrada de forma controlada con `503 ASSISTANT_UNAVAILABLE` (`504 ASSISTANT_TIMEOUT` ante timeout del proveedor) sin afectar el núcleo ni la navegación manual.
 

@@ -286,6 +286,86 @@ class TestNotificationsApi(unittest.TestCase):
             refreshed = db.get(Notification, other_b.id)
             self.assertIsNone(refreshed.read_at)
 
+    def test_mark_all_read_idempotent_unread_count_and_isolation(self):
+        # Unauthenticated -> 401
+        self.assertEqual(self.client.patch("/api/v1/notifications/read-all").status_code, 401)
+        self.assertEqual(self.client.get("/api/v1/notifications/unread-count").status_code, 401)
+
+        expected_a, other_b = self._seed_notifications()
+
+        # Initial unread counts: user_a has 4, user_b has 1
+        c_a0 = self.client.get(
+            "/api/v1/notifications/unread-count",
+            headers={"Authorization": f"Bearer {self.tok_a}"},
+        )
+        self.assertEqual(c_a0.status_code, 200)
+        self.assertEqual(c_a0.headers.get("cache-control"), "private, no-store")
+        self.assertEqual(c_a0.json(), {"unread_count": 4})
+
+        c_b0 = self.client.get(
+            "/api/v1/notifications/unread-count",
+            headers={"Authorization": f"Bearer {self.tok_b}"},
+        )
+        self.assertEqual(c_b0.status_code, 200)
+        self.assertEqual(c_b0.json(), {"unread_count": 1})
+
+        # Mark one of user_a's notifications read first to verify read_at immutability
+        first_read = self.client.patch(
+            f"/api/v1/notifications/{expected_a[0].id}/read",
+            headers={"Authorization": f"Bearer {self.tok_a}"},
+        )
+        self.assertEqual(first_read.status_code, 200)
+        original_read_at = first_read.json()["read_at"]
+        time.sleep(0.02)
+
+        # Reject non-empty body on read-all with 400
+        bad_body = self.client.patch(
+            "/api/v1/notifications/read-all",
+            json={"all": True},
+            headers={"Authorization": f"Bearer {self.tok_a}"},
+        )
+        self.assertEqual(bad_body.status_code, 400)
+        self.assertEqual(bad_body.json()["code"], "INVALID_REQUEST")
+
+        # Mark all remaining 3 notifications of user_a read
+        ra1 = self.client.patch(
+            "/api/v1/notifications/read-all",
+            headers={"Authorization": f"Bearer {self.tok_a}"},
+        )
+        self.assertEqual(ra1.status_code, 200)
+        self.assertEqual(ra1.headers.get("cache-control"), "private, no-store")
+        self.assertEqual(ra1.json(), {"updated_count": 3})
+
+        # Repeat call is idempotent -> updated_count == 0
+        ra2 = self.client.patch(
+            "/api/v1/notifications/read-all",
+            headers={"Authorization": f"Bearer {self.tok_a}"},
+        )
+        self.assertEqual(ra2.status_code, 200)
+        self.assertEqual(ra2.json(), {"updated_count": 0})
+
+        # Original read_at preserved on previously-read notification
+        re_read = self.client.patch(
+            f"/api/v1/notifications/{expected_a[0].id}/read",
+            headers={"Authorization": f"Bearer {self.tok_a}"},
+        )
+        self.assertEqual(re_read.json()["read_at"], original_read_at)
+
+        # user_a unread count is now 0, user_b remains isolated at 1
+        c_a1 = self.client.get(
+            "/api/v1/notifications/unread-count",
+            headers={"Authorization": f"Bearer {self.tok_a}"},
+        )
+        self.assertEqual(c_a1.json(), {"unread_count": 0})
+
+        c_b1 = self.client.get(
+            "/api/v1/notifications/unread-count",
+            headers={"Authorization": f"Bearer {self.tok_b}"},
+        )
+        self.assertEqual(c_b1.json(), {"unread_count": 1})
+        with self.SessionLocal() as db:
+            self.assertIsNone(db.get(Notification, other_b.id).read_at)
+
     def test_preferences_default_false_and_strict_patch_validation(self):
         # Default GET returns email_enabled=false without inserting row
         r_get = self.client.get(

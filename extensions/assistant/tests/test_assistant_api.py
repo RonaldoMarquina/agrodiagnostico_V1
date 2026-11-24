@@ -134,13 +134,20 @@ class AssistantApiTests(unittest.TestCase):
         self.assertEqual(r8.status_code, 200)
         self.assertEqual(r8.json()["action"], {"type": "NAVIGATE", "target": "USER_MANAGEMENT"})
 
-        # AT-09: ADMIN asks for deferred audit/monitoring -> no executable action
-        for msg, expected_intent in [("Abrir auditoría", "OPEN_AUDIT"), ("Abrir monitoreo", "OPEN_MONITORING")]:
-            r9 = self.client.post("/api/v1/assistant/messages", json={"message": msg}, headers=self.admin_headers)
-            self.assertEqual(r9.status_code, 200)
-            self.assertEqual(r9.json()["status"], "OUT_OF_SCOPE")
-            self.assertEqual(r9.json()["intent"], expected_intent)
-            self.assertIsNone(r9.json()["action"])
+        # ADR-0016: ADMIN asks for audit/monitoring -> 200 NAVIGATE; USER receives 403
+        for msg, expected_intent, expected_target in [
+            ("Abrir auditoría", "OPEN_AUDIT", "AUDIT"),
+            ("Muéstrame el estado del sistema", "OPEN_MONITORING", "MONITORING"),
+        ]:
+            r9_admin = self.client.post("/api/v1/assistant/messages", json={"message": msg}, headers=self.admin_headers)
+            self.assertEqual(r9_admin.status_code, 200)
+            self.assertEqual(r9_admin.json()["status"], "SUCCESS")
+            self.assertEqual(r9_admin.json()["intent"], expected_intent)
+            self.assertEqual(r9_admin.json()["action"], {"type": "NAVIGATE", "target": expected_target})
+
+            r9_user = self.client.post("/api/v1/assistant/messages", json={"message": msg}, headers=self.user_headers)
+            self.assertEqual(r9_user.status_code, 403)
+            self.assertEqual(r9_user.json()["code"], "FORBIDDEN")
 
         # AT-10: Prompt injection trying to gain admin privileges
         r10 = self.client.post(

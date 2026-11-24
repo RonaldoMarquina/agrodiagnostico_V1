@@ -35,7 +35,9 @@ class HealthTests(unittest.TestCase):
                 '/api/v1/auth/refresh', '/api/v1/auth/logout',
                 '/api/v1/auth/password-recovery', '/api/v1/auth/password-recovery/confirm',
                 '/api/v1/profile', '/api/v1/profile/password',
-                '/api/v1/admin/users', '/api/v1/admin/users/{id}/block', '/api/v1/admin/users/{id}/activate',
+                '/api/v1/admin/users', '/api/v1/admin/users/stats',
+                '/api/v1/admin/users/{id}/block', '/api/v1/admin/users/{id}/activate',
+                '/api/v1/admin/audit/identity',
                 '/internal/users/{id}/contact',
             }
             self.assertEqual(set(main.app.openapi()['paths']), expected_paths)
@@ -43,6 +45,8 @@ class HealthTests(unittest.TestCase):
             expected_paths = {
                 '/health/live', '/health/ready',
                 '/api/v1/notifications',
+                '/api/v1/notifications/read-all',
+                '/api/v1/notifications/unread-count',
                 '/api/v1/notifications/{id}/read',
                 '/api/v1/notification-preferences',
             }
@@ -55,6 +59,11 @@ class HealthTests(unittest.TestCase):
                 '/api/v1/diagnoses/{id}/image',
                 '/api/v1/diagnoses/{id}/feedback',
                 '/api/v1/admin/diagnoses',
+                '/api/v1/admin/diagnoses/{id}/image',
+                '/api/v1/admin/metrics/summary',
+                '/api/v1/admin/audit/diagnosis',
+                '/api/v1/admin/models',
+                '/api/v1/admin/system/status',
                 '/api/v1/crops',
                 '/api/v1/crops/{code}/problems',
                 '/api/v1/problems/{code}/recommendations',

@@ -1,8 +1,8 @@
 """Pydantic schemas matching contracts/schemas/common.schema.json exactly."""
 from datetime import datetime
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 from uuid import UUID
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class RegisterRequest(BaseModel):
@@ -97,3 +97,43 @@ class InternalUserContactResponse(BaseModel):
     user_id: UUID
     email: str
     active: bool
+
+
+class AdminBlockUserRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    reason: str = Field(..., min_length=5, max_length=300)
+
+    @field_validator("reason")
+    @classmethod
+    def strip_and_validate_reason(cls, value: str) -> str:
+        stripped = value.strip()
+        if len(stripped) < 5 or len(stripped) > 300:
+            raise ValueError("reason must contain between 5 and 300 non-whitespace characters")
+        return stripped
+
+
+class AdminUserStatsResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    total: int
+    active: int
+    blocked: int
+    admins: int
+    users: int
+
+
+class IdentityAuditEntryResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    id: UUID
+    action: str
+    actor_id: Optional[UUID]
+    target_id: Optional[UUID]
+    correlation_id: Optional[UUID]
+    legacy: bool
+    details: Optional[Dict[str, Any]]
+    created_at: str
+
+
+class IdentityAuditPageResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    items: List[IdentityAuditEntryResponse]
+    next_cursor: Optional[str] = None

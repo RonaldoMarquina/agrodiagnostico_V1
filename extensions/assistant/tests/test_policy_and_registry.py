@@ -17,12 +17,12 @@ class PolicyAndRegistryTests(unittest.TestCase):
         self.admin = Principal(id=uuid.uuid4(), role="ADMIN", token_id=str(uuid.uuid4()))
         self.req_id = str(uuid.uuid4())
 
-    def test_registry_has_16_intents_with_14_available_and_2_deferred(self):
+    def test_registry_has_all_16_intents_available(self):
         self.assertEqual(len(INTENT_REGISTRY), 16)
-        deferred = {k for k, v in INTENT_REGISTRY.items() if not v.available}
-        self.assertEqual(deferred, {"OPEN_AUDIT", "OPEN_MONITORING"})
         available = {k for k, v in INTENT_REGISTRY.items() if v.available}
-        self.assertEqual(len(available), 14)
+        self.assertEqual(len(available), 16)
+        self.assertTrue(INTENT_REGISTRY["OPEN_AUDIT"].available)
+        self.assertTrue(INTENT_REGISTRY["OPEN_MONITORING"].available)
 
     def test_user_navigation_intents_succeed_without_mutation(self):
         # AT-01, AT-02, AT-06 + RESULTS, NOTIFICATIONS, HELP
@@ -124,13 +124,18 @@ class PolicyAndRegistryTests(unittest.TestCase):
                     request_id=self.req_id,
                 )
 
-    def test_admin_allowed_available_admin_intents_and_blocked_from_deferred_targets(self):
-        # AT-08
+    def test_admin_allowed_all_admin_intents_and_unavailable_target_returns_no_action(self):
+        from unittest.mock import patch
+        from app.domain.registry import IntentSpec
+
+        # AT-08 + ADR-0016: All 6 admin navigation intents enabled for ADMIN
         for intent, target in [
             ("OPEN_USER_MANAGEMENT", "USER_MANAGEMENT"),
             ("OPEN_PHYTOSANITARY_CATALOG", "PHYTOSANITARY_CATALOG"),
             ("OPEN_RECOMMENDATIONS", "RECOMMENDATIONS"),
             ("OPEN_DIAGNOSIS_SUPERVISION", "DIAGNOSIS_SUPERVISION"),
+            ("OPEN_AUDIT", "AUDIT"),
+            ("OPEN_MONITORING", "MONITORING"),
         ]:
             resp = validate_and_authorize_candidate(
                 {"disposition": "INTENT", "intent": intent, "parameters": {}},
@@ -140,15 +145,26 @@ class PolicyAndRegistryTests(unittest.TestCase):
             self.assertEqual(resp.status, "SUCCESS")
             self.assertEqual(resp.action.target, target)
 
-        # AT-09: Deferred targets never emit NAVIGATE
-        for deferred_intent in ("OPEN_AUDIT", "OPEN_MONITORING"):
+        # Regression: any intent marked available=False in registry never emits NAVIGATE
+        unavailable_spec = IntentSpec(
+            intent="OPEN_MONITORING",
+            tool_name="open_monitoring",
+            kind="NAVIGATE",
+            target="MONITORING",
+            allowed_roles=frozenset({"ADMIN"}),
+            available=False,
+            deferred_reason="monitoring_deferred",
+        )
+        patched_registry = dict(INTENT_REGISTRY)
+        patched_registry["OPEN_MONITORING"] = unavailable_spec
+        with patch("app.domain.policy.INTENT_REGISTRY", patched_registry):
             resp = validate_and_authorize_candidate(
-                {"disposition": "INTENT", "intent": deferred_intent, "parameters": {}},
+                {"disposition": "INTENT", "intent": "OPEN_MONITORING", "parameters": {}},
                 principal=self.admin,
                 request_id=self.req_id,
             )
             self.assertEqual(resp.status, "OUT_OF_SCOPE")
-            self.assertEqual(resp.intent, deferred_intent)
+            self.assertEqual(resp.intent, "OPEN_MONITORING")
             self.assertIsNone(resp.action)
 
     def test_clarification_and_out_of_scope_never_emit_action(self):

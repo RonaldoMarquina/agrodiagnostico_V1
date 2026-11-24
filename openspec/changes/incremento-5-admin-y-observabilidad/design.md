@@ -68,14 +68,14 @@ Se documentará la decisión en `docs/adr/0016-observabilidad-auditoria-y-operac
     - `historical_versions`: filas agrupadas desde `diagnoses WHERE model_id IS NOT NULL` por `(model_id, model_version, dataset_version)` con `diagnoses_count` y `last_used_at`, ordenadas por `last_used_at DESC`.
 
 ### D4. Monitoreo operativo solo lectura (`GET /api/v1/admin/system/status`)
-- Reside en `diagnosis` como agregador solo lectura sobre la red interna `application`, usando `httpx.AsyncClient` con `timeout=2.0` segundos por petición y ejecución concurrente (`asyncio.gather`) para que el tiempo total no exceda ~2.2 s incluso si varios servicios están lentos.
+- Reside en `diagnosis` como agregador solo lectura sobre la red interna `application`. `httpx.AsyncClient` sondea en paralelo con `asyncio.gather`. Un plazo cancelable de `asyncio.timeout(2.0)` cubre la conexión y la lectura del cuerpo de cada dependencia. El chequeo local y los conteos de base de datos se ejecutan concurrentemente fuera del bucle asíncrono.
 - URLs internas configurables por variables de entorno en `diagnosis` (`IDENTITY_HEALTH_URL`, `AI_INFERENCE_HEALTH_URL`, `NOTIFICATION_HEALTH_URL`, `ASSISTANT_HEALTH_URL`) apuntando exclusivamente a `/health/ready` sin credenciales embebidas.
 - Para `diagnosis` mismo, evalúa su propio chequeo de readiness local (DB + RabbitMQ/MinIO) sin auto-llamada HTTP recursiva.
 - Clasificación determinista por servicio:
   - `OK`: HTTP `200` y body `status == "ready"` (o `"ok"`).
   - `DEGRADED`: HTTP `200` con estado degradado o HTTP `503` con respuesta estructurada de dependencia parcial.
   - `DOWN`: error de conexión/DNS o HTTP 5xx inesperado.
-  - `UNKNOWN`: `httpx.TimeoutException` al superar los `2.0 s`.
+  - `UNKNOWN`: `TimeoutError` al agotar el plazo o `httpx.TimeoutException` durante la petición.
 - `assistant` se marca con `optional: true`; su ausencia (perfil Compose inactivo) reporta `status: "DOWN"` o `"UNKNOWN"` sin degradar `overall_status` del núcleo.
 - `overall_status`: `"OK"` si todos los servicios núcleo (`identity`, `diagnosis`, `ai_inference`, `notification`) están en `"OK"`; `"DEGRADED"` si alguno del núcleo está en `"DEGRADED"`/`"UNKNOWN"` o hay servicios núcleo caídos parcialmente; `"DOWN"` si todos los del núcleo sondeados fallan.
 - Métricas locales de `diagnosis`: `outbox_pending_count` (`COUNT(*)` en `diagnosis_outbox WHERE published_at IS NULL`) y `quarantine_count` (`COUNT(*)` en `diagnosis_quarantine_messages`).

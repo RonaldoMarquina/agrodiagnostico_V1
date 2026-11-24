@@ -161,15 +161,15 @@ _RAW_REGISTRY = {
         available=True,
         nav_message="Te llevo a la vista de supervisión administrativa de diagnósticos.",
     ),
-    # ADMIN-only navigation (explicitly deferred in contracts/deferred-operations.json)
+    # ADMIN-only navigation (enabled in Incremento 5 — ADR-0016)
     "OPEN_AUDIT": IntentSpec(
         intent="OPEN_AUDIT",
         tool_name="open_audit",
         kind="NAVIGATE",
         target="AUDIT",
         allowed_roles=ADMIN_ONLY,
-        available=False,
-        deferred_reason="audit_deferred",
+        available=True,
+        nav_message="Te llevo al registro administrativo de auditoría.",
     ),
     "OPEN_MONITORING": IntentSpec(
         intent="OPEN_MONITORING",
@@ -177,8 +177,8 @@ _RAW_REGISTRY = {
         kind="NAVIGATE",
         target="MONITORING",
         allowed_roles=ADMIN_ONLY,
-        available=False,
-        deferred_reason="monitoring_deferred",
+        available=True,
+        nav_message="Te llevo al panel de monitoreo operativo y métricas del sistema.",
     ),
 }
 

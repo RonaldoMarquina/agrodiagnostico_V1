@@ -7781,14 +7781,14 @@
     }
   },
   {
-    "name": "assistant-response-invalid-action-on-deferred-audit",
+    "name": "assistant-response-valid-navigate-audit",
     "schema": "schemas/common.schema.json#/$defs/AssistantResponse",
-    "valid": false,
+    "valid": true,
     "value": {
       "request_id": "5d282d52-b28c-4eba-9f26-023859615b65",
       "status": "SUCCESS",
       "intent": "OPEN_AUDIT",
-      "message": "Auditoría.",
+      "message": "Te llevo al módulo de auditoría.",
       "action": {
         "type": "NAVIGATE",
         "target": "AUDIT"
@@ -7808,6 +7808,120 @@
         "type": "NAVIGATE",
         "target": "https://evil.example"
       }
+    }
+  },
+  {
+    "name": "admin-block-user-request-valid",
+    "schema": "schemas/common.schema.json#/$defs/AdminBlockUserRequest",
+    "valid": true,
+    "value": {
+      "reason": "Actividad sospechosa confirmada en auditoría."
+    }
+  },
+  {
+    "name": "admin-block-user-request-invalid-short",
+    "schema": "schemas/common.schema.json#/$defs/AdminBlockUserRequest",
+    "valid": false,
+    "value": {
+      "reason": "abc"
+    }
+  },
+  {
+    "name": "admin-block-user-request-invalid-extra-field",
+    "schema": "schemas/common.schema.json#/$defs/AdminBlockUserRequest",
+    "valid": false,
+    "value": {
+      "reason": "Motivo válido de bloqueo.",
+      "force": true
+    }
+  },
+  {
+    "name": "admin-models-inventory-valid-gate-blocked",
+    "schema": "schemas/common.schema.json#/$defs/AdminModelsInventory",
+    "valid": true,
+    "value": {
+      "real_inference_authorized": false,
+      "runtime_status": "INACTIVE_GATE_BLOCKED",
+      "active_model": null,
+      "active_policy_version": null,
+      "historical_versions": []
+    }
+  },
+  {
+    "name": "admin-models-inventory-invalid-active-model-when-unauthorized",
+    "schema": "schemas/common.schema.json#/$defs/AdminModelsInventory",
+    "valid": false,
+    "value": {
+      "real_inference_authorized": false,
+      "runtime_status": "INACTIVE_GATE_BLOCKED",
+      "active_model": {
+        "model_id": "fake-prod",
+        "model_version": "1.0.0",
+        "dataset_version": "v1"
+      },
+      "active_policy_version": null,
+      "historical_versions": []
+    }
+  },
+  {
+    "name": "admin-system-status-valid",
+    "schema": "schemas/common.schema.json#/$defs/AdminSystemStatus",
+    "valid": true,
+    "value": {
+      "overall_status": "OK",
+      "checked_at": "2026-11-23T21:15:00Z",
+      "services": [
+        {
+          "name": "identity",
+          "status": "OK",
+          "optional": false,
+          "latency_ms": 12
+        },
+        {
+          "name": "diagnosis",
+          "status": "OK",
+          "optional": false,
+          "latency_ms": 5
+        },
+        {
+          "name": "ai_inference",
+          "status": "OK",
+          "optional": false,
+          "latency_ms": 14
+        },
+        {
+          "name": "notification",
+          "status": "OK",
+          "optional": false,
+          "latency_ms": 11
+        }
+      ],
+      "outbox_pending_count": 0,
+      "quarantine_count": 0
+    }
+  },
+  {
+    "name": "notification-read-all-valid",
+    "schema": "schemas/common.schema.json#/$defs/NotificationReadAllResult",
+    "valid": true,
+    "value": {
+      "updated_count": 2
+    }
+  },
+  {
+    "name": "notification-read-all-invalid-negative",
+    "schema": "schemas/common.schema.json#/$defs/NotificationReadAllResult",
+    "valid": false,
+    "value": {
+      "updated_count": -1
+    }
+  },
+  {
+    "name": "notification-unread-count-valid",
+    "schema": "schemas/common.schema.json#/$defs/NotificationUnreadCount",
+    "valid": true,
+    "value": {
+      "unread_count": 0
     }
   }
 ]

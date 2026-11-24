@@ -4899,6 +4899,1039 @@
         "x-increment": 2,
         "x-visibility": "user"
       }
+    },
+    "/api/v1/admin/metrics/summary": {
+      "get": {
+        "operationId": "diagnosis_admin_metrics_summary",
+        "summary": "Métricas agregadas de diagnósticos por rango UTC",
+        "description": "Solo rol ADMIN. Agrega totales por los 6 estados oficiales, desglose por motivo de no concluyente, confianza media real (o null si no existen muestras) y serie diaria ordenada. Rango UTC opcional acotado a 90 días (por defecto últimos 30 días). Ver ADR-0016.",
+        "security": [
+          {
+            "UserBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "11111111-1111-4111-8111-111111111111",
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UTC"
+            },
+            "example": "2026-10-25T00:00:00Z",
+            "description": "Inicio de ventana UTC (inclusive)."
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UTC"
+            },
+            "example": "2026-11-23T23:59:59Z",
+            "description": "Fin de ventana UTC (inclusive); máximo 90 días desde from."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resumen agregado de diagnósticos.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/DiagnosisMetricsSummary"
+                },
+                "example": {
+                  "from_utc": "2026-10-25T00:00:00Z",
+                  "to_utc": "2026-11-23T23:59:59Z",
+                  "total": 4,
+                  "by_status": {
+                    "PENDIENTE": 1,
+                    "PROCESANDO": 0,
+                    "COMPLETADO": 1,
+                    "NO_CONCLUYENTE": 2,
+                    "FALLIDO": 0,
+                    "CANCELADO": 0
+                  },
+                  "by_inconclusive_reason": {
+                    "LOW_CONFIDENCE": 2
+                  },
+                  "average_confidence": 0.8425,
+                  "daily_series": [
+                    {
+                      "date": "2026-11-23",
+                      "total": 4,
+                      "completed": 1,
+                      "inconclusive": 2,
+                      "failed": 0
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Rango de fechas inválido (from > to o ventana > 90 días).",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "INVALID_REQUEST",
+                  "message": "Rango de fechas inválido o superior a 90 días.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Autenticación requerida o token inválido.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "Credenciales ausentes, vencidas o firma inválida.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rol insuficiente; requiere ADMIN.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "Se requiere rol administrativo para esta ruta.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          }
+        },
+        "x-status": "implemented",
+        "x-owner": "diagnosis",
+        "x-increment": 5,
+        "x-visibility": "admin"
+      }
+    },
+    "/api/v1/admin/audit/diagnosis": {
+      "get": {
+        "operationId": "diagnosis_admin_list_audit",
+        "summary": "Consulta paginada de auditoría administrativa de Diagnosis",
+        "description": "Solo rol ADMIN. Lista registros inmutables de diagnosis_audit_logs con paginación keyset HMAC (created_at DESC, id DESC) y filtros acotados. Ver ADR-0016.",
+        "security": [
+          {
+            "UserBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "11111111-1111-4111-8111-111111111111",
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            },
+            "example": 20
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            "example": "cursor-opaco-auditoria-diagnosis"
+          },
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            },
+            "example": "ADMIN_VIEW_DIAGNOSIS_IMAGE"
+          },
+          {
+            "name": "actor_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "22222222-2222-4222-8222-222222222222"
+          },
+          {
+            "name": "target_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60
+            },
+            "example": "DIAGNOSIS"
+          },
+          {
+            "name": "target_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            },
+            "example": "11111111-1111-4111-8111-111111111111"
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UTC"
+            },
+            "example": "2026-11-01T00:00:00Z"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UTC"
+            },
+            "example": "2026-11-23T23:59:59Z"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Página de auditoría de Diagnosis.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/DiagnosisAuditPage"
+                },
+                "example": {
+                  "items": [
+                    {
+                      "id": "44444444-4444-4444-8444-444444444444",
+                      "actor_id": "22222222-2222-4222-8222-222222222222",
+                      "action": "ADMIN_VIEW_DIAGNOSIS_IMAGE",
+                      "target_type": "DIAGNOSIS",
+                      "target_id": "11111111-1111-4111-8111-111111111111",
+                      "correlation_id": "33333333-3333-4333-8333-333333333333",
+                      "details": {
+                        "owner_id": "55555555-5555-4555-8555-555555555555",
+                        "status": "NO_CONCLUYENTE"
+                      },
+                      "created_at": "2026-11-23T21:00:00Z"
+                    }
+                  ],
+                  "next_cursor": null
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Cursor o parámetros de filtro inválidos.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "INVALID_REQUEST",
+                  "message": "Cursor o parámetros inválidos.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Autenticación requerida o token inválido.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "Credenciales ausentes, vencidas o firma inválida.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rol insuficiente; requiere ADMIN.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "Se requiere rol administrativo para esta ruta.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          }
+        },
+        "x-status": "implemented",
+        "x-owner": "diagnosis",
+        "x-increment": 5,
+        "x-visibility": "admin"
+      }
+    },
+    "/api/v1/admin/models": {
+      "get": {
+        "operationId": "diagnosis_admin_list_models",
+        "summary": "Inventario solo lectura de modelos activos e históricos",
+        "description": "Solo rol ADMIN y estrictamente de solo lectura. Separa el estado real de autorización (REAL_INFERENCE_AUTHORIZED=false => active_model=null y runtime_status=INACTIVE_GATE_BLOCKED) del histórico observado en diagnoses. Ver ADR-0016.",
+        "security": [
+          {
+            "UserBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "11111111-1111-4111-8111-111111111111",
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Estado honesto de modelos en runtime e histórico de versiones.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/AdminModelsInventory"
+                },
+                "example": {
+                  "real_inference_authorized": false,
+                  "runtime_status": "INACTIVE_GATE_BLOCKED",
+                  "active_model": null,
+                  "active_policy_version": null,
+                  "historical_versions": [
+                    {
+                      "model_id": "demo-no-concluyente",
+                      "model_version": "0.0.0-demo",
+                      "dataset_version": "demo-v1",
+                      "diagnoses_count": 3,
+                      "last_used_at": "2026-11-23T20:00:00Z"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Cabecera de correlación inválida.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "INVALID_REQUEST",
+                  "message": "Solicitud inválida.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Autenticación requerida o token inválido.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "Credenciales ausentes, vencidas o firma inválida.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rol insuficiente; requiere ADMIN.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "Se requiere rol administrativo para esta ruta.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          }
+        },
+        "x-status": "implemented",
+        "x-owner": "diagnosis",
+        "x-increment": 5,
+        "x-visibility": "admin"
+      }
+    },
+    "/api/v1/admin/system/status": {
+      "get": {
+        "operationId": "diagnosis_admin_system_status",
+        "summary": "Monitoreo operativo solo lectura del sistema",
+        "description": "Solo rol ADMIN. Sondea concurrentemente /health/ready de los servicios internos con timeout de 2 s (sin credenciales ni Management API de RabbitMQ) y reporta outbox_pending_count y quarantine_count locales de Diagnosis. Ver ADR-0016.",
+        "security": [
+          {
+            "UserBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "11111111-1111-4111-8111-111111111111",
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Estado operativo agregado de componentes y colas locales.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/AdminSystemStatus"
+                },
+                "example": {
+                  "overall_status": "OK",
+                  "checked_at": "2026-11-23T21:15:00Z",
+                  "services": [
+                    {
+                      "name": "identity",
+                      "status": "OK",
+                      "optional": false,
+                      "latency_ms": 12
+                    },
+                    {
+                      "name": "diagnosis",
+                      "status": "OK",
+                      "optional": false,
+                      "latency_ms": 5
+                    },
+                    {
+                      "name": "ai_inference",
+                      "status": "OK",
+                      "optional": false,
+                      "latency_ms": 14
+                    },
+                    {
+                      "name": "notification",
+                      "status": "OK",
+                      "optional": false,
+                      "latency_ms": 11
+                    },
+                    {
+                      "name": "assistant",
+                      "status": "DOWN",
+                      "optional": true,
+                      "latency_ms": null
+                    }
+                  ],
+                  "outbox_pending_count": 0,
+                  "quarantine_count": 0
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Cabecera de correlación inválida.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "INVALID_REQUEST",
+                  "message": "Solicitud inválida.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Autenticación requerida o token inválido.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "Credenciales ausentes, vencidas o firma inválida.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rol insuficiente; requiere ADMIN.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "Se requiere rol administrativo para esta ruta.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          }
+        },
+        "x-status": "implemented",
+        "x-owner": "diagnosis",
+        "x-increment": 5,
+        "x-visibility": "admin"
+      }
+    },
+    "/api/v1/admin/diagnoses/{id}/image": {
+      "get": {
+        "operationId": "diagnosis_admin_get_image",
+        "summary": "Lectura administrativa explícita y auditada de fotografía",
+        "description": "Solo rol ADMIN (patrón D-19: privacidad por defecto + lectura explícita auditada). Confirma existencia del diagnóstico no borrado y objeto en MinIO, inserta obligatoriamente ADMIN_VIEW_DIAGNOSIS_IMAGE en diagnosis_audit_logs antes de entregar el binario privado con Cache-Control: private, no-store. Sin URL pública ni redirección 302. Ver ADR-0016.",
+        "security": [
+          {
+            "UserBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "11111111-1111-4111-8111-111111111111",
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "11111111-1111-4111-8111-111111111111",
+            "description": "UUID del diagnóstico."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bytes privados de la fotografía tras registrar asiento obligatorio de auditoría.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "image/jpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                },
+                "example": "REPRESENTACION_SINTETICA_NO_ES_UN_ARCHIVO"
+              },
+              "image/png": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                },
+                "example": "REPRESENTACION_SINTETICA_NO_ES_UN_ARCHIVO"
+              },
+              "image/webp": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                },
+                "example": "REPRESENTACION_SINTETICA_NO_ES_UN_ARCHIVO"
+              }
+            }
+          },
+          "400": {
+            "description": "Identificador o cabecera inválida.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "INVALID_REQUEST",
+                  "message": "Solicitud inválida.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Autenticación requerida o token inválido.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "Credenciales ausentes, vencidas o firma inválida.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rol insuficiente; requiere ADMIN.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "Se requiere rol administrativo para esta ruta.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Diagnóstico inexistente, borrado o fotografía no disponible.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "RESOURCE_NOT_FOUND",
+                  "message": "Recurso no encontrado.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Almacenamiento privado temporalmente no disponible.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "STORAGE_UNAVAILABLE",
+                  "message": "Almacenamiento temporalmente no disponible.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          }
+        },
+        "x-status": "implemented",
+        "x-owner": "diagnosis",
+        "x-increment": 5,
+        "x-visibility": "admin"
+      }
     }
   },
   "components": {
