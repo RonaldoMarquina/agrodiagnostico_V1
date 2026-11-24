@@ -1,0 +1,32 @@
+[
+  {
+    "service": "assistant",
+    "method": "GET",
+    "path": "/health/live",
+    "operation_id": "assistant_live",
+    "status": "implemented",
+    "increment": 5,
+    "extension": true,
+    "authorization": "internal-network"
+  },
+  {
+    "service": "assistant",
+    "method": "GET",
+    "path": "/health/ready",
+    "operation_id": "assistant_ready",
+    "status": "implemented",
+    "increment": 5,
+    "extension": true,
+    "authorization": "internal-network"
+  },
+  {
+    "service": "assistant",
+    "method": "POST",
+    "path": "/api/v1/assistant/messages",
+    "operation_id": "assistant_send_message",
+    "status": "implemented",
+    "increment": 5,
+    "extension": true,
+    "authorization": "user"
+  }
+]

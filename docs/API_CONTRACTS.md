@@ -1,6 +1,6 @@
 # Contratos de API y eventos
 
-Los contratos iniciales del grupo 2 están en [contracts](../contracts/README.md): cuatro OpenAPI 3.1.1, componentes comunes y tres eventos JSON Schema 2020-12. Este documento explica su semántica; no sustituye esos archivos. Los incrementos 0–3 implementan ocho operaciones de salud, doce de identidad, veinte de negocio de Diagnosis y tres internas de trabajo. Las operaciones de Notification siguen **contract-only**. Actualiza OpenSpec, ADR cuando corresponda y pruebas al cambiar una interfaz.
+Los contratos iniciales del grupo 2 están en [contracts](../contracts/README.md): cuatro OpenAPI 3.1.1, componentes comunes y tres eventos JSON Schema 2020-12. Este documento explica su semántica; no sustituye esos archivos. Los incrementos 0–3 y el sub-incremento de notificaciones del incremento 5 implementan las **48 operaciones** contractuales vigentes: ocho de salud técnica, doce públicas de identidad, una interna de contacto de identidad, veinte de negocio de Diagnosis, tres internas de trabajo entre Diagnosis y AI, y cuatro públicas de Notification. Las capacidades de observabilidad, métricas y auditoría administrativa diferidas siguen pendientes en `contracts/deferred-operations.json`. Actualiza OpenSpec, ADR cuando corresponda y pruebas al cambiar una interfaz.
 
 ## Convenciones comunes
 
@@ -37,9 +37,10 @@ Los contratos iniciales del grupo 2 están en [contracts](../contracts/README.md
 | GET/POST | `/api/v1/admin/recommendations` | Listar / registrar versión inmutable con fuentes y revisión (ADMIN) |
 | PATCH | `/api/v1/admin/recommendations/{id}` | Modificar exclusivamente active de una versión (ADMIN) |
 | GET | `/api/v1/admin/diagnoses` | Supervisión paginada de metadatos de diagnósticos con cursor HMAC (ADMIN) |
-| GET | `/api/v1/notifications` | Avisos propios paginados |
-| GET/PATCH | `/api/v1/notification-preferences` | Preferencia propia email_enabled; avisos internos siempre activos |
-| Pendiente | Notificaciones y métricas (incremento 5) | [Inventario con dueño e incremento](../contracts/deferred-operations.json) |
+| GET | `/api/v1/notifications` | Avisos propios paginados con cursor HMAC (`purpose=user_notifications`) |
+| PATCH | `/api/v1/notifications/{id}/read` | Marcar aviso propio como leído (sin cuerpo, idempotente preservando primer `read_at`; `404` genérico en ajeno) |
+| GET/PATCH | `/api/v1/notification-preferences` | Preferencia propia `email_enabled` (default `false`, opt-in explícito); avisos internos siempre activos |
+| Pendiente | Auditoría, métricas e información de modelo (incremento 5) | [Inventario con dueño e incremento](../contracts/deferred-operations.json) |
 
 La operación de reclamo `/internal/diagnoses/{id}/claim` está restringida a identidad de servicio, nunca al cliente ni a Internet. Se contratan POST `/internal/diagnoses/{id}/lease/renew`, GET `/internal/diagnoses/{id}/image` y GET `/api/v1/diagnoses/{id}/image`. Reclamo/renovación devuelven lease_owner, lease_token y expires_at; renovación usa body lease_token, imagen interna usa X-Lease-Token. Identidad AI obligatoria independientemente del lease; obsoleto responde 409 STALE_LEASE. Ninguna ruta entrega URL pública permanente de fotografías.
 
@@ -177,12 +178,39 @@ Conforme a [ADR-0008](adr/0008-flujo-asincrono-confiable-y-leases-internos.md), 
   - `DiagnosisAnalyzed` v1: Publicado por worker en `inference_outbox`; enrutado a `diagnosis.diagnosis-analyzed.v1` con DLQ `diagnosis.diagnosis-analyzed.v1.dlq`. Variantes cerradas: `PREDICTION`, `ABSTENTION`, `FAILURE`.
   - `DiagnosisFinished` v1: Publicado por `diagnosis-publisher` hacia `notification.diagnosis-finished.v1`.
 - **Invariante de cola DiagnosisFinished y Notificaciones**:
-  - La cola durable `notification.diagnosis-finished.v1` acumula los eventos terminales sin consumidor en V1 (0 consumidores activos). El procesamiento de notificaciones por correo queda diferido a `services/notification` en el Incremento 5.
+  - La cola durable `notification.diagnosis-finished.v1` acumula los eventos terminales sin pérdida incluso cuando el consumidor está ausente o detenido (comportamiento verificado desde el Incremento 3 y preservado como regresión). En el sub-incremento de notificaciones del Incremento 5 se activa `notification-consumer` para procesar la cola de forma idempotente.
 - **Inferencia técnica provisional**:
   - En Incremento 3 la inferencia de visión se ejecuta con simulador determinista (`APP_ENV=local` o `test` con `ENABLE_SIMULATED_INFERENCE="true"`). El despliegue de pesos reales de Machine Learning (MobileNetV3/EfficientNet) y artefactos de evaluación se formaliza en el Incremento 4 (`ml/`).
 - **Aislamiento en Cuarentena y Replay Operativo**:
   - Mensajes con esquema inválido o colisiones de integridad se aíslan en `diagnosis_quarantine_messages` / `inference_quarantine_messages` emitiendo descriptores DLQ en `agrodiagnostico.dlq`.
   - Replay operativo auditado mediante CLI (`app.quarantine_replay`) e invariante estricta: diagnósticos terminales (`COMPLETADO`, `NO_CONCLUYENTE`, `FALLIDO`, `CANCELADO`) nunca se revierten a `PROCESANDO`.
+
+## Decisiones contractuales del Incremento 5 (Notificaciones y Contacto Interno)
+
+Conforme a [ADR-0014](adr/0014-notificaciones-y-contacto-interno.md), se implementan y verifican en runtime las 4 operaciones públicas de Notification y la operación interna de consulta de contacto en Identity (totalizando **48/48 operaciones implementadas** en `contracts/operations.json`):
+
+- **Operaciones públicas de Notification (`services/notification`)**:
+  - `GET /api/v1/notifications`: lista únicamente los avisos propios (`owner_id = sub`) en orden `(created_at DESC, id DESC)`, con `limit` 1..100 (defecto 20) y cursor opaco HMAC-SHA256 ligado a `owner_id` y `purpose = user_notifications`. Cursores alterados, de otro usuario o de otro propósito devuelven `400 INVALID_PAGINATION`.
+  - `PATCH /api/v1/notifications/{id}/read`: sin cuerpo requerido, idempotente; la primera invocación fija `read_at` en UTC y las repeticiones conservan intacto el primer `read_at`. Aviso inexistente o ajeno devuelve `404 NOT_FOUND` genérico (incluido para `ADMIN`).
+  - `GET /api/v1/notification-preferences`: devuelve la preferencia efectiva de correo del propietario con default `email_enabled = false` (opt-in explícito) si no existe fila previa; los avisos internos en plataforma están siempre activos y no son desactivables.
+  - `PATCH /api/v1/notification-preferences`: actualización parcial no vacía validada con booleano estricto `email_enabled`; solo afecta intentos de correo posteriores sin modificar diagnósticos ni avisos internos existentes.
+- **Operación interna de contacto en Identity (`services/identity`)**:
+  - `GET /internal/users/{id}/contact`: accesible solo en red interna (bloqueada con `404` por Nginx en `/internal`). Exige `ServiceBearer` Ed25519 verificado contra `internal_service_keys.json` con `iss = agrodiagnostico-internal`, `aud = identity-internal`, `sub = notification`, `jti` UUID y TTL entre 1 y 60 s. Sin credencial o expirado responde `401`; Bearer de usuario, `aud` o `sub` distintos responden `403`; usuario inexistente responde `404`. Devuelve únicamente `{ user_id, email, active }` con `Cache-Control: private, no-store` sin exponer credenciales, roles ni contraseñas.
+- **Consumidor `DiagnosisFinished`, cuarentena DLQ y aislamiento de correo**:
+  - `notification-consumer` consume `notification.diagnosis-finished.v1` con ACK manual posterior al commit local en `notification_db`. Deduplica por `(consumer, event_id)` en `notification_inbox` y garantiza unicidad por `diagnosis_id` en `notifications`.
+  - Eventos malformados, `schema_version != 1`, colisiones de `event_id` con distinto hash o `final_status = CANCELADO` se aíslan en `notification_quarantine_messages` y encolan descriptores DLQ en `notification_dlq_outbox` hacia `agrodiagnostico.events` (`notification.diagnosis-finished.v1.dlq`, con permiso `write` restringido a `agrodiagnostico.events`).
+  - La entrega de correo utiliza un adaptador desacoplado (`memory`, `logging`, `smtp`) con reintentos acotados y backoff en `notification_delivery_attempts` (`PENDING -> SENT | FAILED | SKIPPED`). Si `email_enabled = false` o el usuario está inactivo/ausente, el intento queda en `SKIPPED` y el aviso interno se conserva intacto. Un fallo del proveedor SMTP o de Identity nunca revierte un diagnóstico ni elimina el aviso interno.
+
+## Decisiones contractuales de la extensión de Asistente Conversacional (`extensions/assistant`)
+
+Conforme a [ADR-0015](adr/0015-asistente-conversacional-y-adaptador-gemini.md), el asistente conversacional en español opera como extensión sin estado desacoplada del núcleo (perfil Compose `--profile assistant`), contratada por separado en `contracts/openapi/extensions/assistant.openapi.json` (`3` operaciones de extensión implementadas, manteniendo intactas las **48 operaciones núcleo** en `contracts/operations.json`):
+
+- **`POST /api/v1/assistant/messages` (`assistant_send_message`)**:
+  - Exige `UserBearer` JWT Ed25519 verificado localmente (`401 UNAUTHORIZED` si falta, expira o es token interno), objeto JSON cerrado `{"message": "..."}` (`1..2000` caracteres no vacíos tras trim; `400 INVALID_REQUEST` o `413 PAYLOAD_TOO_LARGE` > 16 KiB) y respeta cuota por identidad (`429 RATE_LIMITED` con `Retry-After`).
+  - Detecta y rechaza secretos en la entrada antes de invocar al proveedor (`400 SENSITIVE_INPUT_REJECTED`).
+  - Valida la salida del proveedor contra un registro cerrado de 16 intents (`14` habilitados y `2` diferidos `OPEN_AUDIT`/`OPEN_MONITORING` sin acción ejecutable) y aplica autorización RBAC independiente (`403 FORBIDDEN` para intents administrativos solicitados por `USER`).
+  - Nunca realiza diagnósticos fitosanitarios oficiales ni mutaciones; las explicaciones (`EXPLAIN_*`) se sirven desde plantillas aprobadas locales coherentes con los estados oficiales y el cierre ML v1.4.3 (`REAL_INFERENCE_AUTHORIZED=false`).
+  - Cuando `--profile assistant` no está activo, `ASSISTANT_ENABLED=false` o faltan credenciales en modo `gemini`, degrada de forma controlada con `503 ASSISTANT_UNAVAILABLE` (`504 ASSISTANT_TIMEOUT` ante timeout del proveedor) sin afectar el núcleo ni la navegación manual.
 
 ## Verificación y compatibilidad comprobable
 

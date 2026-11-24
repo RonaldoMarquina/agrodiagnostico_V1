@@ -41,6 +41,13 @@ class ControlTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             validate_plan(plan)
 
+    def test_notification_acceptance_cannot_be_replaced_by_noop(self):
+        plan = json.loads((ROOT/'tooling/ci/plan.json').read_text())
+        step = next(s for s in plan['steps'] if s['id'] == 'notification-integration')
+        step['command'] = ['true']
+        with self.assertRaises(ValueError):
+            validate_plan(plan)
+
     def test_ml_contracts_and_runtime_cannot_be_replaced_by_noop(self):
         plan = json.loads((ROOT/'tooling/ci/plan.json').read_text())
         step = next(s for s in plan['steps'] if s['id'] == 'ml-contracts-and-runtime')

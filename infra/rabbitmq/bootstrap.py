@@ -70,7 +70,7 @@ SERVICE_PERMISSIONS = {
     "rabbit_notification": {
         "secret": "rabbit_notification_password",
         "configure": "^$",
-        "write": "^$",
+        "write": r"^(agrodiagnostico\.events)$",
         "read": r"^(notification\.diagnosis-finished\.v1|notification\.diagnosis-finished\.v1\.dlq)$",
     },
 }

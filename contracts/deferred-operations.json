@@ -47,7 +47,7 @@
       "PATCH /api/v1/notifications/{id}/read"
     ],
     "authorization": "USER-own",
-    "note": "Rutas conceptuales de la fuente; forma final/payload/errores pendientes antes de integrar consumidores. No publicadas ni aliases exigidos."
+    "note": "Contrato formal definido en notification.openapi.json (notification_mark_read, ADR-0014): sin body, idempotente preservando el primer read_at, 404 genérico para ajeno/inexistente; implementado y verificado en Incremento 5 (notificaciones)."
   },
   {
     "capability": "admin-users",

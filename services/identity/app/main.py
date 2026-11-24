@@ -5,9 +5,12 @@ from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict
+import psycopg
+from sqlalchemy.exc import SQLAlchemyError
 
 from app.api.admin import router as admin_router
 from app.api.auth import router as auth_router
+from app.api.internal import router as internal_router
 from app.api.profile import router as profile_router
 from app.persistence import SERVICE, schema_ready
 
@@ -128,6 +131,40 @@ async def http_exception_handler(request: Request, exc: HTTPException):
     return response
 
 
+@app.exception_handler(SQLAlchemyError)
+async def sqlalchemy_exception_handler(request: Request, exc: SQLAlchemyError):
+    cid = getattr(request.state, "correlation_id", str(uuid.uuid4()))
+    return JSONResponse(
+        status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        content={
+            "code": "PERSISTENCE_UNAVAILABLE",
+            "message": "Persistencia temporalmente no disponible.",
+            "correlation_id": cid,
+        },
+        headers={
+            "Cache-Control": "private, no-store",
+            "X-Correlation-ID": cid,
+        },
+    )
+
+
+@app.exception_handler(psycopg.Error)
+async def psycopg_exception_handler(request: Request, exc: psycopg.Error):
+    cid = getattr(request.state, "correlation_id", str(uuid.uuid4()))
+    return JSONResponse(
+        status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        content={
+            "code": "PERSISTENCE_UNAVAILABLE",
+            "message": "Persistencia temporalmente no disponible.",
+            "correlation_id": cid,
+        },
+        headers={
+            "Cache-Control": "private, no-store",
+            "X-Correlation-ID": cid,
+        },
+    )
+
+
 # Health checks (Incremento 0)
 @app.get("/health/live", response_model=Live, operation_id=SERVICE + "_live")
 def live():
@@ -152,3 +189,5 @@ def ready():
 app.include_router(auth_router)
 app.include_router(profile_router)
 app.include_router(admin_router)
+# Internal service routers (Incremento 5, ADR-0014)
+app.include_router(internal_router)

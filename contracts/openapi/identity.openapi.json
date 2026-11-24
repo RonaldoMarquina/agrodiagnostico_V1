@@ -2137,6 +2137,232 @@
         "x-increment": 1,
         "x-visibility": "admin"
       }
+    },
+    "/internal/users/{id}/contact": {
+      "get": {
+        "operationId": "identity_internal_user_contact",
+        "summary": "Consulta interna de contacto de usuario para Notification",
+        "description": "Solo red interna; bloqueada con 404 en el proxy público. Requiere ServiceBearer Ed25519 con iss=agrodiagnostico-internal, aud=identity-internal, sub=notification y TTL <= 60 s. Bearer de usuario o principal incorrecto devuelve 403. Ver ADR-0014.",
+        "security": [
+          {
+            "ServiceBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "11111111-1111-4111-8111-111111111111",
+            "description": "UUID de correlación."
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "33333333-3333-4333-8333-333333333333",
+            "description": "Identificador UUID del usuario destinatario."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Contacto mínimo del usuario para entrega de correo.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/InternalUserContact"
+                },
+                "example": {
+                  "user_id": "33333333-3333-4333-8333-333333333333",
+                  "email": "agricultor.sintetico@example.test",
+                  "active": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Identificador o cabecera de correlación inválida.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "INVALID_REQUEST",
+                  "message": "Solicitud inválida.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Credencial interna ausente, malformada o expirada.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "Credencial de servicio inválida o ausente.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Bearer de usuario o identidad de servicio sin autorización para identity-internal.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "Acceso interno denegado.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuario no encontrado.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "NOT_FOUND",
+                  "message": "Usuario no encontrado.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Persistencia temporalmente no disponible.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "PERSISTENCE_UNAVAILABLE",
+                  "message": "Persistencia temporalmente no disponible.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          }
+        },
+        "x-status": "implemented",
+        "x-owner": "identity",
+        "x-increment": 5,
+        "x-visibility": "internal"
+      }
     }
   },
   "components": {
@@ -2151,7 +2377,7 @@
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT",
-        "description": "Identidad ai_inference; audience interna dedicada. Bearer de usuario no autoriza. Algoritmo/configuración en ADR de seguridad antes de incremento 1/3."
+        "description": "Credencial interna Ed25519 de servicio (ai_inference o notification) con audience interna dedicada (diagnosis-internal o identity-internal) y TTL <= 60 s. Bearer de usuario no autoriza. Ver ADR-0008 y ADR-0014."
       },
       "RefreshCookie": {
         "type": "apiKey",

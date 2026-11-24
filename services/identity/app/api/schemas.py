@@ -90,3 +90,10 @@ class ErrorResponse(BaseModel):
     message: str
     correlation_id: UUID
     details: Optional[List[ErrorDetail]] = None
+
+
+class InternalUserContactResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    user_id: UUID
+    email: str
+    active: bool

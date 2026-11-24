@@ -340,10 +340,26 @@
       }
     ],
     "negative_statuses": [
+      400,
       401
     ],
-    "runtime_verified": false,
-    "rule": "Identidad de usuario válida, cuenta activa; recursos propios. Ajeno/inexistente404."
+    "runtime_verified": true,
+    "rule": "Identidad de usuario válida, cuenta activa; lista solo avisos propios con cursor HMAC."
+  },
+  {
+    "operation_id": "notification_mark_read",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      400,
+      401,
+      404
+    ],
+    "runtime_verified": true,
+    "rule": "Identidad de usuario válida, cuenta activa; lectura idempotente solo de avisos propios. Ajeno/inexistente 404 genérico (incluido ADMIN)."
   },
   {
     "operation_id": "notification_get_preferences",
@@ -353,10 +369,11 @@
       }
     ],
     "negative_statuses": [
+      400,
       401
     ],
-    "runtime_verified": false,
-    "rule": "Identidad de usuario válida, cuenta activa; recursos propios. Ajeno/inexistente404."
+    "runtime_verified": true,
+    "rule": "Identidad de usuario válida, cuenta activa; preferencia propia con default email_enabled=false."
   },
   {
     "operation_id": "notification_patch_preferences",
@@ -366,10 +383,28 @@
       }
     ],
     "negative_statuses": [
+      400,
       401
     ],
-    "runtime_verified": false,
-    "rule": "Identidad de usuario válida, cuenta activa; recursos propios. Ajeno/inexistente404."
+    "runtime_verified": true,
+    "rule": "Identidad de usuario válida, cuenta activa; actualización parcial validada de preferencia propia."
+  },
+  {
+    "operation_id": "identity_internal_user_contact",
+    "security": [
+      {
+        "ServiceBearer": []
+      }
+    ],
+    "negative_statuses": [
+      400,
+      401,
+      403,
+      404,
+      503
+    ],
+    "runtime_verified": true,
+    "rule": "Solo red interna; credencial Ed25519 con sub=notification y aud=identity-internal. Bearer de usuario 403, sin credencial 401, inexistente 404."
   },
   {
     "operation_id": "diagnosis_list_crops",

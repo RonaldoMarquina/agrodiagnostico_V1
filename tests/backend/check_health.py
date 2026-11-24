@@ -36,6 +36,15 @@ class HealthTests(unittest.TestCase):
                 '/api/v1/auth/password-recovery', '/api/v1/auth/password-recovery/confirm',
                 '/api/v1/profile', '/api/v1/profile/password',
                 '/api/v1/admin/users', '/api/v1/admin/users/{id}/block', '/api/v1/admin/users/{id}/activate',
+                '/internal/users/{id}/contact',
+            }
+            self.assertEqual(set(main.app.openapi()['paths']), expected_paths)
+        elif getattr(main, 'SERVICE', None) == 'notification':
+            expected_paths = {
+                '/health/live', '/health/ready',
+                '/api/v1/notifications',
+                '/api/v1/notifications/{id}/read',
+                '/api/v1/notification-preferences',
             }
             self.assertEqual(set(main.app.openapi()['paths']), expected_paths)
         elif getattr(main, 'SERVICE', None) == 'diagnosis':

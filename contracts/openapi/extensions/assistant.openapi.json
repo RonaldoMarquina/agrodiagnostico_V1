@@ -1,0 +1,553 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "AgroDiagnóstico assistant extension",
+    "version": "1.0.0",
+    "description": "Contrato formal de la extensión desacoplada de asistencia conversacional y navegación controlada (ADR-0015). Operaciones implementadas y verificadas en pruebas unitarias e integración E2E vía Nginx (VERIFIED_FAKE; smoke real opt-in con GEMINI_API_KEY). Sin servidores públicos inventados."
+  },
+  "paths": {
+    "/health/live": {
+      "get": {
+        "operationId": "assistant_live",
+        "summary": "Salud live interna de la extensión assistant",
+        "description": "Solo red interna. No expuesta por proxy. Liveness indica proceso activo sin sondear dependencias externas.",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Proceso activo.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "const": "alive"
+                    },
+                    "service": {
+                      "const": "assistant"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "service"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "status": "alive",
+                  "service": "assistant"
+                }
+              }
+            }
+          }
+        },
+        "x-status": "implemented",
+        "x-owner": "assistant",
+        "x-increment": 5,
+        "x-extension": true,
+        "x-visibility": "internal"
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "operationId": "assistant_ready",
+        "summary": "Salud ready interna de la extensión assistant",
+        "description": "Solo red interna. Devuelve 200 cuando la extensión está habilitada y cuenta con clave pública JWT y configuración del proveedor válido; 503 en caso contrario sin exponer secretos.",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Extensión lista para recibir solicitudes autenticadas.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "const": "ready"
+                    },
+                    "service": {
+                      "const": "assistant"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "service"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "status": "ready",
+                  "service": "assistant"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Extensión desactivada o configuración indispensable ausente; sin detalles sensibles.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "const": "not_ready"
+                    },
+                    "service": {
+                      "const": "assistant"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "service"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "status": "not_ready",
+                  "service": "assistant"
+                }
+              }
+            }
+          }
+        },
+        "x-status": "implemented",
+        "x-owner": "assistant",
+        "x-increment": 5,
+        "x-extension": true,
+        "x-visibility": "internal"
+      }
+    },
+    "/api/v1/assistant/messages": {
+      "post": {
+        "operationId": "assistant_send_message",
+        "summary": "Interpretar solicitud textual en español y autorizar navegación o explicación",
+        "description": "Exige UserBearer JWT Ed25519 emitido por Identity. El proveedor interpreta la solicitud y el backend valida el esquema cerrado y autoriza el intent según RBAC y disponibilidad real. Nunca realiza diagnósticos fitosanitarios oficiales ni ejecuta mutaciones. Ver ADR-0015.",
+        "security": [
+          {
+            "UserBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "../../schemas/common.schema.json#/$defs/UUID"
+            },
+            "example": "11111111-1111-4111-8111-111111111111",
+            "description": "UUID del cliente o generado por servidor si falta; valor inválido 400; eco en respuesta."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "../../schemas/common.schema.json#/$defs/AssistantMessageRequest"
+              },
+              "example": {
+                "message": "Llévame a mi historial"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Respuesta normalizada del asistente (SUCCESS, CLARIFICATION_REQUIRED u OUT_OF_SCOPE).",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../schemas/common.schema.json#/$defs/AssistantResponse"
+                },
+                "examples": {
+                  "navigateHistory": {
+                    "summary": "Navegación autorizada al historial",
+                    "value": {
+                      "request_id": "0d282d52-b28c-4eba-9f26-023859615b60",
+                      "status": "SUCCESS",
+                      "intent": "OPEN_HISTORY",
+                      "message": "Te llevo a tu historial de diagnósticos.",
+                      "action": {
+                        "type": "NAVIGATE",
+                        "target": "HISTORY"
+                      }
+                    }
+                  },
+                  "explainStatus": {
+                    "summary": "Explicación aprobada sin acción",
+                    "value": {
+                      "request_id": "1d282d52-b28c-4eba-9f26-023859615b61",
+                      "status": "SUCCESS",
+                      "intent": "EXPLAIN_DIAGNOSIS_STATUS",
+                      "message": "NO_CONCLUYENTE indica que la plataforma no pudo emitir un resultado publicable con suficiente respaldo técnico.",
+                      "action": null
+                    }
+                  },
+                  "clarification": {
+                    "summary": "Solicitud ambigua",
+                    "value": {
+                      "request_id": "2d282d52-b28c-4eba-9f26-023859615b62",
+                      "status": "CLARIFICATION_REQUIRED",
+                      "intent": null,
+                      "message": "¿A qué sección deseas ir o qué concepto de la plataforma quieres que te explique?",
+                      "action": null
+                    }
+                  },
+                  "outOfScope": {
+                    "summary": "Solicitud fuera del alcance del asistente",
+                    "value": {
+                      "request_id": "3d282d52-b28c-4eba-9f26-023859615b63",
+                      "status": "OUT_OF_SCOPE",
+                      "intent": null,
+                      "message": "No puedo diagnosticar enfermedades ni modificar resultados. Usa el flujo oficial de diagnóstico o consulta a un profesional agronómico.",
+                      "action": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitud inválida, campos extra, texto vacío/excedido o contenido sensible rechazado.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "INVALID_REQUEST",
+                  "message": "Solicitud inválida.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Autenticación requerida, expirada o inválida.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "Autenticación requerida o inválida.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Intención administrativa no autorizada para el rol efectivo del usuario.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "No tienes permisos para acceder a esa funcionalidad.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Cuerpo HTTP excede el límite de transporte (16 KiB).",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "PAYLOAD_TOO_LARGE",
+                  "message": "La solicitud excede el tamaño máximo permitido.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Límite de solicitudes por identidad excedido.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              },
+              "Retry-After": {
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "example": 60
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "RATE_LIMITED",
+                  "message": "Has superado el límite de solicitudes al asistente. Intenta nuevamente en unos momentos.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno no previsto; sin detalles sensibles.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "INTERNAL_ERROR",
+                  "message": "Ocurrió un error interno. Puedes continuar usando la navegación manual.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Asistente desactivado, perfil inactivo, proveedor indisponible o salida inválida del proveedor.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "ASSISTANT_UNAVAILABLE",
+                  "message": "El asistente no está disponible en este momento. Puedes continuar usando la navegación manual.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Tiempo de espera agotado al consultar el proveedor del asistente.",
+            "headers": {
+              "X-Correlation-ID": {
+                "required": true,
+                "schema": {
+                  "$ref": "../../schemas/common.schema.json#/$defs/UUID"
+                },
+                "example": "11111111-1111-4111-8111-111111111111"
+              },
+              "Cache-Control": {
+                "required": true,
+                "schema": {
+                  "const": "private, no-store"
+                },
+                "example": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../schemas/common.schema.json#/$defs/Error"
+                },
+                "example": {
+                  "code": "ASSISTANT_TIMEOUT",
+                  "message": "El asistente tardó demasiado en responder. Puedes continuar usando la navegación manual.",
+                  "correlation_id": "11111111-1111-4111-8111-111111111111"
+                }
+              }
+            }
+          }
+        },
+        "x-status": "implemented",
+        "x-owner": "assistant",
+        "x-increment": 5,
+        "x-extension": true,
+        "x-limits": {
+          "max_input_chars": 2000,
+          "max_transport_bytes": 16384
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "UserBearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Firma asimétrica Ed25519 (algoritmo EdDSA), issuer agrodiagnostico-identity, audience agrodiagnostico-api. Solo identidad de usuario (USER o ADMIN). Ver ADR-0004 y ADR-0015."
+      }
+    }
+  }
+}

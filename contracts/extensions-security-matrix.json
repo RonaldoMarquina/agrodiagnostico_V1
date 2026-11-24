@@ -1,0 +1,38 @@
+[
+  {
+    "operation_id": "assistant_live",
+    "security": [],
+    "negative_statuses": [],
+    "runtime_verified": true,
+    "rule": "Solo red interna; proxy no publica salud."
+  },
+  {
+    "operation_id": "assistant_ready",
+    "security": [],
+    "negative_statuses": [
+      503
+    ],
+    "runtime_verified": true,
+    "rule": "Solo red interna; 503 cuando la extensión está desactivada o sin configuración válida del proveedor."
+  },
+  {
+    "operation_id": "assistant_send_message",
+    "security": [
+      {
+        "UserBearer": []
+      }
+    ],
+    "negative_statuses": [
+      400,
+      401,
+      403,
+      413,
+      429,
+      500,
+      503,
+      504
+    ],
+    "runtime_verified": true,
+    "rule": "JWT Ed25519 válido (USER o ADMIN); RBAC local independiente del proveedor; sin diagnóstico oficial ni mutaciones; secretos rechazados antes de invocar proveedor."
+  }
+]

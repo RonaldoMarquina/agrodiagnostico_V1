@@ -6,6 +6,7 @@ WORKDIR /service
 COPY services/notification/pyproject.toml services/notification/uv.lock ./
 RUN uv sync --locked --no-dev --no-install-project
 COPY services/notification/app ./app
+COPY contracts ./contracts
 COPY services/notification/alembic.ini ./
 COPY services/notification/migrations ./migrations
 ENV PATH="/service/.venv/bin:$PATH"

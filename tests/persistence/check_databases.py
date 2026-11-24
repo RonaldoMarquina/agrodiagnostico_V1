@@ -40,7 +40,15 @@ EXPECTED_TABLES = {
         'inference_quarantine_messages',
         'inference_audit_logs',
     },
-    'notification': {'alembic_version'},
+    'notification': {
+        'alembic_version',
+        'notifications',
+        'notification_preferences',
+        'notification_inbox',
+        'notification_delivery_attempts',
+        'notification_quarantine_messages',
+        'notification_dlq_outbox',
+    },
 }
 checks = []
 

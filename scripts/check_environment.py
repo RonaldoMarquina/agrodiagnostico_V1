@@ -85,8 +85,8 @@ def main():
             assert assets
             for asset in assets:
                 assert urllib.request.urlopen(f'http://127.0.0.1:{port}'+asset,timeout=5).status==200
-            expected_routes = {'/internal/diagnoses/x/claim': 404, '/health/ready': 404,
-                               '/ai': 404, '/api/v1/diagnoses': 401}
+            expected_routes = {'/internal/diagnoses/x/claim': 404, '/internal/users/11111111-1111-4111-8111-111111111111/contact': 404,
+                               '/health/ready': 404, '/ai': 404, '/api/v1/diagnoses': 401, '/api/v1/notifications': 401}
             for route, expected_status in expected_routes.items():
                 try:urllib.request.urlopen(f'http://127.0.0.1:{port}'+route,timeout=5)
                 except urllib.error.HTTPError as exc:

@@ -29,7 +29,7 @@ def health(degraded=None):
     for service in SERVICES:
         doc = json.loads(Path('contracts/openapi/' + service + '.openapi.json').read_text())
         actual = http('http://' + service + ':8000/openapi.json').json()
-        if service == 'identity':
+        if service in ('identity', 'notification'):
             assert set(actual['paths']) == set(doc['paths'])
         elif service == 'diagnosis':
             expected_diag_paths = {

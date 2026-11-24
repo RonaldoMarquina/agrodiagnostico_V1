@@ -265,7 +265,16 @@
     "method": "GET",
     "path": "/api/v1/notifications",
     "operation_id": "notification_list",
-    "status": "contract-only",
+    "status": "implemented",
+    "increment": 5,
+    "authorization": "user"
+  },
+  {
+    "service": "notification",
+    "method": "PATCH",
+    "path": "/api/v1/notifications/{id}/read",
+    "operation_id": "notification_mark_read",
+    "status": "implemented",
     "increment": 5,
     "authorization": "user"
   },
@@ -274,7 +283,7 @@
     "method": "GET",
     "path": "/api/v1/notification-preferences",
     "operation_id": "notification_get_preferences",
-    "status": "contract-only",
+    "status": "implemented",
     "increment": 5,
     "authorization": "user"
   },
@@ -283,9 +292,18 @@
     "method": "PATCH",
     "path": "/api/v1/notification-preferences",
     "operation_id": "notification_patch_preferences",
-    "status": "contract-only",
+    "status": "implemented",
     "increment": 5,
     "authorization": "user"
+  },
+  {
+    "service": "identity",
+    "method": "GET",
+    "path": "/internal/users/{id}/contact",
+    "operation_id": "identity_internal_user_contact",
+    "status": "implemented",
+    "increment": 5,
+    "authorization": "service"
   },
   {
     "service": "diagnosis",

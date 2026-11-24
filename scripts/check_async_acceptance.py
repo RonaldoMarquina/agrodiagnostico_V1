@@ -660,7 +660,10 @@ def main():
                 assert not bindings, f"Service '{svc}' unexpectedly published ports to host: {bindings}"
         print("  ✓ Verified: only Nginx proxy publishes host port on loopback", flush=True)
 
-        # 5. Execute acceptance test runner inside container network
+        # 5. Stop notification-consumer during the async retention phase so Finished events remain queued for verification
+        run_cmd(base_compose + ["stop", "notification-consumer"])
+
+        # Execute acceptance test runner inside container network
         print("Executing Increment 3 Acceptance Test Suite inside container network...", flush=True)
         runner_cmd = [
             "docker", "compose",

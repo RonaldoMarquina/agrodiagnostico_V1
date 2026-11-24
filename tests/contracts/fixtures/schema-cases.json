@@ -7627,5 +7627,187 @@
         }
       }
     }
+  },
+  {
+    "name": "internal-user-contact-valid-active",
+    "schema": "schemas/common.schema.json#/$defs/InternalUserContact",
+    "valid": true,
+    "value": {
+      "user_id": "33333333-3333-4333-8333-333333333333",
+      "email": "agricultor.sintetico@example.test",
+      "active": true
+    }
+  },
+  {
+    "name": "internal-user-contact-valid-inactive",
+    "schema": "schemas/common.schema.json#/$defs/InternalUserContact",
+    "valid": true,
+    "value": {
+      "user_id": "33333333-3333-4333-8333-333333333333",
+      "email": "agricultor.sintetico@example.test",
+      "active": false
+    }
+  },
+  {
+    "name": "internal-user-contact-invalid-extra-field",
+    "schema": "schemas/common.schema.json#/$defs/InternalUserContact",
+    "valid": false,
+    "value": {
+      "user_id": "33333333-3333-4333-8333-333333333333",
+      "email": "agricultor.sintetico@example.test",
+      "active": true,
+      "password_hash": "forbidden"
+    }
+  },
+  {
+    "name": "internal-user-contact-invalid-email",
+    "schema": "schemas/common.schema.json#/$defs/InternalUserContact",
+    "valid": false,
+    "value": {
+      "user_id": "33333333-3333-4333-8333-333333333333",
+      "email": "not-an-email",
+      "active": true
+    }
+  },
+  {
+    "name": "internal-user-contact-missing-active",
+    "schema": "schemas/common.schema.json#/$defs/InternalUserContact",
+    "valid": false,
+    "value": {
+      "user_id": "33333333-3333-4333-8333-333333333333",
+      "email": "agricultor.sintetico@example.test"
+    }
+  },
+  {
+    "name": "assistant-message-request-valid",
+    "schema": "schemas/common.schema.json#/$defs/AssistantMessageRequest",
+    "valid": true,
+    "value": {
+      "message": "Llévame a mi historial"
+    }
+  },
+  {
+    "name": "assistant-message-request-invalid-empty",
+    "schema": "schemas/common.schema.json#/$defs/AssistantMessageRequest",
+    "valid": false,
+    "value": {
+      "message": ""
+    }
+  },
+  {
+    "name": "assistant-message-request-invalid-whitespace-only",
+    "schema": "schemas/common.schema.json#/$defs/AssistantMessageRequest",
+    "valid": false,
+    "value": {
+      "message": "    \t\n  "
+    }
+  },
+  {
+    "name": "assistant-message-request-invalid-extra-role-field",
+    "schema": "schemas/common.schema.json#/$defs/AssistantMessageRequest",
+    "valid": false,
+    "value": {
+      "message": "Abrir usuarios",
+      "role": "ADMIN"
+    }
+  },
+  {
+    "name": "assistant-response-valid-navigate",
+    "schema": "schemas/common.schema.json#/$defs/AssistantResponse",
+    "valid": true,
+    "value": {
+      "request_id": "0d282d52-b28c-4eba-9f26-023859615b60",
+      "status": "SUCCESS",
+      "intent": "OPEN_HISTORY",
+      "message": "Te llevo a tu historial de diagnósticos.",
+      "action": {
+        "type": "NAVIGATE",
+        "target": "HISTORY"
+      }
+    }
+  },
+  {
+    "name": "assistant-response-valid-explain-no-action",
+    "schema": "schemas/common.schema.json#/$defs/AssistantResponse",
+    "valid": true,
+    "value": {
+      "request_id": "1d282d52-b28c-4eba-9f26-023859615b61",
+      "status": "SUCCESS",
+      "intent": "EXPLAIN_CONFIDENCE",
+      "message": "La confianza refleja el respaldo técnico del análisis y no sustituye al criterio profesional.",
+      "action": null
+    }
+  },
+  {
+    "name": "assistant-response-valid-out-of-scope-deferred-audit",
+    "schema": "schemas/common.schema.json#/$defs/AssistantResponse",
+    "valid": true,
+    "value": {
+      "request_id": "2d282d52-b28c-4eba-9f26-023859615b62",
+      "status": "OUT_OF_SCOPE",
+      "intent": "OPEN_AUDIT",
+      "message": "El módulo de auditoría aún no está disponible en esta versión.",
+      "action": null
+    }
+  },
+  {
+    "name": "assistant-response-invalid-action-on-out-of-scope",
+    "schema": "schemas/common.schema.json#/$defs/AssistantResponse",
+    "valid": false,
+    "value": {
+      "request_id": "3d282d52-b28c-4eba-9f26-023859615b63",
+      "status": "OUT_OF_SCOPE",
+      "intent": null,
+      "message": "Fuera de alcance.",
+      "action": {
+        "type": "NAVIGATE",
+        "target": "HISTORY"
+      }
+    }
+  },
+  {
+    "name": "assistant-response-invalid-action-on-explain-intent",
+    "schema": "schemas/common.schema.json#/$defs/AssistantResponse",
+    "valid": false,
+    "value": {
+      "request_id": "4d282d52-b28c-4eba-9f26-023859615b64",
+      "status": "SUCCESS",
+      "intent": "EXPLAIN_CONFIDENCE",
+      "message": "Explicación.",
+      "action": {
+        "type": "NAVIGATE",
+        "target": "HELP"
+      }
+    }
+  },
+  {
+    "name": "assistant-response-invalid-action-on-deferred-audit",
+    "schema": "schemas/common.schema.json#/$defs/AssistantResponse",
+    "valid": false,
+    "value": {
+      "request_id": "5d282d52-b28c-4eba-9f26-023859615b65",
+      "status": "SUCCESS",
+      "intent": "OPEN_AUDIT",
+      "message": "Auditoría.",
+      "action": {
+        "type": "NAVIGATE",
+        "target": "AUDIT"
+      }
+    }
+  },
+  {
+    "name": "assistant-response-invalid-external-url-target",
+    "schema": "schemas/common.schema.json#/$defs/AssistantResponse",
+    "valid": false,
+    "value": {
+      "request_id": "6d282d52-b28c-4eba-9f26-023859615b66",
+      "status": "SUCCESS",
+      "intent": "OPEN_HISTORY",
+      "message": "Ir afuera.",
+      "action": {
+        "type": "NAVIGATE",
+        "target": "https://evil.example"
+      }
+    }
   }
 ]

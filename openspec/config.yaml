@@ -42,5 +42,6 @@ context: |
   Despliegue obligatorio: dominio real, Cloudflare, SSL/TLS y CDN.
   Contratos HTTP: contracts/openapi/. Eventos: contracts/events/.
   Diagramas C4: docs/c4/. ADR: docs/adr/. Evidencia: docs/evidence/.
-  services/optional/ está fuera del MVP obligatorio.
+  extensions/ aloja extensiones desacopladas (como extensions/assistant/ bajo --profile assistant);
+  services/optional/ conserva marcadores aún no implementados fuera del MVP obligatorio.
   Estado inicial: solo estructura; sin lógica de negocio, entrenamiento ni servicios externos reales.

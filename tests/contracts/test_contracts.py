@@ -26,7 +26,9 @@ class Contracts(unittest.TestCase):
 
     def test_package_and_all_embedded_examples(self):
         report = v.validate_package(CONTRACTS)
-        self.assertEqual(report['operations'], 46)
+        self.assertEqual(report['operations'], 48)
+        self.assertEqual(report['extension_openapi'], 1)
+        self.assertEqual(report['extension_operations'], 3)
         self.assertGreater(report['embedded_examples'], 100)
 
     def test_positive_and_negative_fixtures(self):
@@ -196,6 +198,66 @@ class Contracts(unittest.TestCase):
             self.assertTrue(item['owner'])
             self.assertIn(item['increment'], [1, 2, 5])
             self.assertTrue(item['before_consumer'])
+
+    def test_notification_and_internal_contact_contracts(self):
+        mark_read = self.op('notification', '/api/v1/notifications/{id}/read', 'patch')
+        self.assertEqual(mark_read['operationId'], 'notification_mark_read')
+        self.assertEqual(mark_read['x-status'], 'implemented')
+        self.assertEqual(mark_read['x-increment'], 5)
+        self.assertEqual(mark_read['security'], [{'UserBearer': []}])
+        self.assertNotIn('requestBody', mark_read)
+        for status in ('200', '400', '401', '404'):
+            self.assertIn(status, mark_read['responses'])
+
+        prefs = self.op('notification', '/api/v1/notification-preferences', 'get')
+        self.assertEqual(prefs['x-status'], 'implemented')
+        self.assertEqual(
+            prefs['responses']['200']['content']['application/json']['example'],
+            {'email_enabled': False},
+        )
+
+        contact = self.op('identity', '/internal/users/{id}/contact', 'get')
+        self.assertEqual(contact['operationId'], 'identity_internal_user_contact')
+        self.assertEqual(contact['x-status'], 'implemented')
+        self.assertEqual(contact['x-increment'], 5)
+        self.assertEqual(contact['x-visibility'], 'internal')
+        self.assertEqual(contact['security'], [{'ServiceBearer': []}])
+        for status in ('200', '400', '401', '403', '404', '503'):
+            self.assertIn(status, contact['responses'])
+        self.assertEqual(
+            contact['responses']['200']['headers']['Cache-Control']['schema'],
+            {'const': 'private, no-store'},
+        )
+
+    def test_extension_assistant_contract_and_security_matrix(self):
+        ext_doc = v.read(CONTRACTS / 'openapi/extensions/assistant.openapi.json')
+        ext_ops = v.read(CONTRACTS / 'extensions-operations.json')
+        ext_matrix = v.read(CONTRACTS / 'extensions-security-matrix.json')
+
+        self.assertEqual({r['operation_id'] for r in ext_ops}, {r['operation_id'] for r in ext_matrix})
+        self.assertEqual({r['operation_id'] for r in ext_ops}, {'assistant_live', 'assistant_ready', 'assistant_send_message'})
+
+        for row in ext_matrix:
+            entry = next(r for r in ext_ops if r['operation_id'] == row['operation_id'])
+            op = ext_doc['paths'][entry['path']][entry['method'].lower()]
+            self.assertEqual(op['security'], row['security'])
+            self.assertTrue(op['x-extension'])
+            self.assertEqual(op['x-owner'], 'assistant')
+            for status in row['negative_statuses']:
+                self.assertIn(str(status), op['responses'])
+
+        send_op = ext_doc['paths']['/api/v1/assistant/messages']['post']
+        self.assertEqual(send_op['operationId'], 'assistant_send_message')
+        self.assertEqual(send_op['x-status'], 'implemented')
+        self.assertEqual(send_op['security'], [{'UserBearer': []}])
+        self.assertEqual(send_op['x-limits'], {'max_input_chars': 2000, 'max_transport_bytes': 16384})
+        for status in ('200', '400', '401', '403', '413', '429', '500', '503', '504'):
+            self.assertIn(status, send_op['responses'])
+            self.assertEqual(
+                send_op['responses'][status]['headers']['Cache-Control']['schema'],
+                {'const': 'private, no-store'},
+            )
+        self.assertIn('Retry-After', send_op['responses']['429']['headers'])
 
 
 if __name__ == '__main__':

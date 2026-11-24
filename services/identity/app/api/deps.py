@@ -91,6 +91,23 @@ def get_current_user(
             detail={"code": "UNAUTHORIZED", "message": "Bearer token required"},
         )
 
+    # Internal service tokens must never authorize user routes
+    try:
+        import jwt as pyjwt
+        unverified = pyjwt.decode(auth.credentials, options={"verify_signature": False})
+        if unverified.get("iss") == "agrodiagnostico-internal" or unverified.get("aud") in {
+            "diagnosis-internal",
+            "identity-internal",
+        }:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail={"code": "FORBIDDEN", "message": "Operación no autorizada."},
+            )
+    except HTTPException:
+        raise
+    except Exception:
+        pass
+
     token_mgr = get_token_manager()
     try:
         payload = token_mgr.decode_access_token(auth.credentials)
@@ -144,3 +161,51 @@ def require_admin(current_user: User = Depends(get_current_user)) -> User:
             detail={"code": "FORBIDDEN", "message": "Administrator role required"},
         )
     return current_user
+
+
+def require_notification_service(
+    auth: Optional[HTTPAuthorizationCredentials] = Depends(bearer_scheme),
+):
+    """Authenticate internal Notification service using dedicated Ed25519 service keys (ADR-0014)."""
+    if not auth or not auth.credentials:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail={"code": "UNAUTHORIZED", "message": "Credencial de servicio inválida o ausente."},
+        )
+
+    # Valid user Bearer token (USER or ADMIN) must receive 403 FORBIDDEN on internal routes
+    try:
+        token_mgr = get_token_manager()
+        try:
+            token_mgr.decode_access_token(auth.credentials)
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail={"code": "FORBIDDEN", "message": "Acceso interno denegado."},
+            )
+        except (TokenExpiredError, TokenInvalidError, TokenError):
+            pass
+    except HTTPException:
+        raise
+    except Exception:
+        pass
+
+    from app.infrastructure.internal_auth import (
+        InternalAuthError,
+        InternalTokenExpiredError,
+        InternalTokenForbiddenError,
+        InternalTokenInvalidError,
+        verify_internal_token,
+    )
+
+    try:
+        return verify_internal_token(auth.credentials)
+    except InternalTokenForbiddenError:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={"code": "FORBIDDEN", "message": "Acceso interno denegado."},
+        )
+    except (InternalTokenExpiredError, InternalTokenInvalidError, InternalAuthError):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail={"code": "UNAUTHORIZED", "message": "Credencial de servicio inválida o ausente."},
+        )

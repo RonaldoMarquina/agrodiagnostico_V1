@@ -168,6 +168,14 @@
         "scripts/check_async_acceptance.py"
       ],
       "timeout_seconds": 1200
+    },
+    {
+      "id": "notification-integration",
+      "command": [
+        "python3",
+        "scripts/check_notification_integration.py"
+      ],
+      "timeout_seconds": 1200
     }
   ]
 }

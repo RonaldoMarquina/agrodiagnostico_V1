@@ -97,7 +97,7 @@ def validate_package(root):
                 if identifier in operation_ids:
                     raise ValueError(f'Duplicate operationId: {identifier}')
                 operation_ids.add(identifier)
-                expected_status = 'implemented' if (route in {'/health/live', '/health/ready'} or op['x-increment'] <= 2 or identifier in {'diagnosis_claim', 'diagnosis_renew', 'diagnosis_internal_image'}) else 'contract-only'
+                expected_status = 'implemented' if (route in {'/health/live', '/health/ready'} or op['x-increment'] <= 2 or identifier in {'diagnosis_claim', 'diagnosis_renew', 'diagnosis_internal_image', 'notification_list', 'notification_mark_read', 'notification_get_preferences', 'notification_patch_preferences', 'identity_internal_user_contact'}) else 'contract-only'
                 if op['x-status'] != expected_status:
                     raise ValueError(f'Unexpected status for {identifier}: expected {expected_status}, got {op["x-status"]}')
                 if 'security' not in op:
@@ -113,6 +113,40 @@ def validate_package(root):
                 v['increment'], v['status']) for v in index]
     if len(indexed) != len(set(indexed)) or set(indexed) != set(operations):
         raise ValueError('Operation inventory differs from OpenAPI')
+
+    ext_documents = sorted((root / 'openapi' / 'extensions').glob('*.openapi.json'))
+    ext_operations = []
+    for path in ext_documents:
+        doc = resolve(read(path), path, root)
+        OpenAPIV31SpecValidator(doc).validate()
+        examples += embedded_examples(doc)
+        for route, methods in doc['paths'].items():
+            for method, op in methods.items():
+                if method not in METHODS:
+                    continue
+                identifier = op['operationId']
+                if identifier in operation_ids:
+                    raise ValueError(f'Duplicate operationId: {identifier}')
+                operation_ids.add(identifier)
+                if op.get('x-extension') is not True:
+                    raise ValueError(f'Missing x-extension=true on extension operation: {identifier}')
+                if op['x-status'] not in {'contract-only', 'implemented'}:
+                    raise ValueError(f'Invalid status for extension {identifier}: {op["x-status"]}')
+                if 'security' not in op:
+                    raise ValueError(f'Missing explicit security: {identifier}')
+                for code, response in op['responses'].items():
+                    for media in response.get('content', {}).values():
+                        if 'example' not in media and not media.get('examples'):
+                            raise ValueError(f'Missing example: {identifier}/{code}')
+                ext_operations.append((op['x-owner'], method.upper(), route, identifier,
+                                       op['x-increment'], op['x-status']))
+    if ext_documents:
+        ext_index = read(root / 'extensions-operations.json')
+        ext_indexed = [(v['service'], v['method'], v['path'], v['operation_id'],
+                        v['increment'], v['status']) for v in ext_index]
+        if len(ext_indexed) != len(set(ext_indexed)) or set(ext_indexed) != set(ext_operations):
+            raise ValueError('Extension operation inventory differs from OpenAPI')
+
     schemas = (
         sorted((root / 'schemas').glob('*.schema.json'))
         + sorted((root / 'events').glob('*.schema.json'))
@@ -123,6 +157,7 @@ def validate_package(root):
     for path in schemas:
         validator(resolve(read(path), path, root))
     return {'openapi': len(documents), 'operations': len(operations),
+            'extension_openapi': len(ext_documents), 'extension_operations': len(ext_operations),
             'schemas': len(schemas), 'embedded_examples': examples}
 
 

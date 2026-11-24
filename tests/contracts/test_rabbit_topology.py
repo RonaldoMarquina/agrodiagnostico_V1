@@ -88,14 +88,17 @@ class TestRabbitTopologyAndCredentials(unittest.TestCase):
         self.assertFalse(ai_read_re.match("diagnosis.diagnosis-analyzed.v1"))
         self.assertFalse(ai_read_re.match("notification.diagnosis-finished.v1"))
 
-        # 3. Notification permissions
+        # 3. Notification permissions (ADR-0014: write strictly to event exchange for DLQ descriptors)
         notif = SERVICE_PERMISSIONS["rabbit_notification"]
         notif_read_re = re.compile(notif["read"])
         notif_write_re = re.compile(notif["write"])
+        notif_cfg_re = re.compile(notif["configure"])
 
-        # CANNOT write to any exchange (read-only consumer)
-        self.assertFalse(notif_write_re.match("agrodiagnostico.events"))
+        # Can write only to agrodiagnostico.events (DLQ descriptors), never other exchanges
+        self.assertTrue(notif_write_re.match("agrodiagnostico.events"))
         self.assertFalse(notif_write_re.match("amq.default"))
+        self.assertFalse(notif_write_re.match("other.exchange"))
+        self.assertFalse(notif_cfg_re.match("notification.diagnosis-finished.v1"))
 
         # Can read notification queues
         self.assertTrue(notif_read_re.match("notification.diagnosis-finished.v1"))
